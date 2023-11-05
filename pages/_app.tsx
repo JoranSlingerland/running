@@ -7,15 +7,20 @@ import React from 'react';
 import useTheme from '../components/hooks/useTheme';
 import { useUserInfo } from '../components/services/.auth/me';
 import { PropsContext } from '../components/hooks/useProps';
+import { useUserSettings } from '../components/services/user/get';
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const userSettings = useUserSettings();
   const { data: userInfo } = useUserInfo();
-  const { algorithmTheme, className } = useTheme('system');
+  const { algorithmTheme, className } = useTheme(
+    userSettings.data?.dark_mode || 'system'
+  );
 
   return (
     <PropsContext.Provider
       value={{
         userInfo,
+        userSettings,
       }}
     >
       <ConfigProvider

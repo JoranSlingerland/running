@@ -1,4 +1,13 @@
-import { Divider, Button, message, Tabs, Typography } from 'antd';
+import {
+  Divider,
+  Button,
+  message,
+  Tabs,
+  Typography,
+  List,
+  Input,
+  Select,
+} from 'antd';
 import useWindowDimensions from '../../components/hooks/useWindowDimensions';
 import AntdTable from '../../components/elements/antdTable';
 import useSessionStorageState from '../../components/hooks/useSessionStorageState';
@@ -6,6 +15,8 @@ import { startOrchestrator } from '../../components/services/orchestrator/start'
 import { orchestratorColumns } from '../../components/elements/columns/orchestratorColumns';
 import { useListOrchestrator } from '../../components/services/orchestrator/list';
 import { RedoOutlined } from '@ant-design/icons';
+import { useProps } from '../../components/hooks/useProps';
+import { addUserData } from '../../components/services/user/post';
 
 const { Text, Title } = Typography;
 
@@ -28,8 +39,23 @@ export default function Home() {
     refetchData: orchestratorListRefetch,
   } = useListOrchestrator({
     query: { days: 7 },
-    enabled: tab === '2',
+    enabled: tab === '3',
   });
+  const { userSettings } = useProps();
+
+  // handle click functions
+  async function handleSaveAccountSettings() {
+    console.log(userSettings);
+    if (userSettings?.data) {
+      await addUserData({
+        body: userSettings?.data,
+      }).then(() => {
+        userSettings?.refetchData({
+          cacheOnly: true,
+        });
+      });
+    }
+  }
 
   // constants
   const buttonRow = (
@@ -47,6 +73,89 @@ export default function Home() {
   const items = [
     {
       key: '1',
+      Title: 'Account',
+      label: 'Account',
+      children: (
+        <List
+          size="large"
+          loading={userSettings?.isLoading}
+          footer={
+            <div className="flex flex-col items-center">
+              <Button
+                type="primary"
+                onClick={() => {
+                  handleSaveAccountSettings();
+                }}
+                disabled={userSettings?.isLoading}
+              >
+                Save
+              </Button>
+            </div>
+          }
+        >
+          <List.Item>
+            <List.Item.Meta
+              title={<Text strong>Strava Client ID</Text>}
+              description={
+                <Input
+                  className="w-72 sm:w-96"
+                  value={userSettings?.data.strava_client_id}
+                  onChange={(e: any) => {
+                    userSettings?.overwriteData({
+                      ...userSettings?.data,
+                      strava_client_id: e.target.value,
+                    });
+                  }}
+                  size="small"
+                />
+              }
+            />
+          </List.Item>
+          <List.Item>
+            <List.Item.Meta
+              title={<Text strong>Strava Client Secret</Text>}
+              description={
+                <Input.Password
+                  className="w-72 sm:w-96"
+                  value={userSettings?.data.strava_client_secret}
+                  onChange={(e) => {
+                    userSettings?.overwriteData({
+                      ...userSettings?.data,
+                      strava_client_secret: e.target.value,
+                    });
+                  }}
+                  size="small"
+                />
+              }
+            />
+          </List.Item>
+          <List.Item>
+            <List.Item.Meta
+              title={<Text strong>Theme</Text>}
+              description={
+                <Select
+                  value={userSettings?.data.dark_mode}
+                  onChange={(value: any) => {
+                    userSettings?.overwriteData({
+                      ...userSettings?.data,
+                      dark_mode: value,
+                    });
+                  }}
+                  options={[
+                    { value: 'system', label: 'System' },
+                    { value: 'dark', label: 'Dark' },
+                    { value: 'light', label: 'Light' },
+                  ]}
+                  loading={userSettings?.isLoading}
+                />
+              }
+            />
+          </List.Item>
+        </List>
+      ),
+    },
+    {
+      key: '2',
       title: 'Actions',
       label: 'Actions',
       children: (
@@ -89,7 +198,7 @@ export default function Home() {
       ),
     },
     {
-      key: '2',
+      key: '3',
       title: 'Orchestrations',
       label: 'Orchestrations',
       children: (
