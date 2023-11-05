@@ -10,6 +10,11 @@ interface UserInfo {
 
 type UserSettings = {
   dark_mode: 'dark' | 'light' | 'system';
-  strava_client_id: string;
-  strava_client_secret: string;
+  strava_authentication: {
+    access_token: string;
+    refresh_token: string;
+    expires_at: number;
+    client_id: string;
+    client_secret: string;
+  };
 };

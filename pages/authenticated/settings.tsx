@@ -57,6 +57,26 @@ export default function Home() {
     }
   }
 
+  function handleStravaAuthentication() {
+    const callback_url = `${window.location.origin}/api/callback/strava`;
+    const client_id = userSettings?.data.strava_authentication.client_id;
+    const scope = 'profile:read_all,activity:read_all';
+
+    const stravaAuthenticationWindow = window.open(
+      `https://www.strava.com/oauth/authorize?client_id=${client_id}&redirect_uri=${callback_url}&response_type=code&%20response_type=force&scope=${scope}`,
+      'Strava Authentication',
+      'width=500,height=500'
+    );
+    const stravaAuthenticationInterval = setInterval(() => {
+      if (stravaAuthenticationWindow?.closed) {
+        clearInterval(stravaAuthenticationInterval);
+        userSettings?.refetchData({
+          cacheOnly: true,
+        });
+      }
+    }, 100);
+  }
+
   // constants
   const buttonRow = (
     title: string,
@@ -99,11 +119,14 @@ export default function Home() {
               description={
                 <Input
                   className="w-72 sm:w-96"
-                  value={userSettings?.data.strava_client_id}
+                  value={userSettings?.data.strava_authentication.client_id}
                   onChange={(e: any) => {
                     userSettings?.overwriteData({
                       ...userSettings?.data,
-                      strava_client_id: e.target.value,
+                      strava_authentication: {
+                        ...userSettings?.data.strava_authentication,
+                        client_id: e.target.value,
+                      },
                     });
                   }}
                   size="small"
@@ -117,11 +140,14 @@ export default function Home() {
               description={
                 <Input.Password
                   className="w-72 sm:w-96"
-                  value={userSettings?.data.strava_client_secret}
+                  value={userSettings?.data.strava_authentication.client_secret}
                   onChange={(e) => {
                     userSettings?.overwriteData({
                       ...userSettings?.data,
-                      strava_client_secret: e.target.value,
+                      strava_authentication: {
+                        ...userSettings?.data.strava_authentication,
+                        client_secret: e.target.value,
+                      },
                     });
                   }}
                   size="small"
@@ -191,6 +217,18 @@ export default function Home() {
                 size="large"
               >
                 Clear
+              </Button>
+            )}
+            <Divider plain></Divider>
+            {buttonRow(
+              'Authenticate Strava',
+              'This will authenticate strava again or for the first time.',
+              <Button
+                onClick={() => handleStravaAuthentication()}
+                type="primary"
+                size="large"
+              >
+                Authenticate
               </Button>
             )}
           </div>

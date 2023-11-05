@@ -15,8 +15,13 @@ async function getUserSettings({ overwrite }: { overwrite?: boolean }) {
     method: 'GET',
     fallback_data: {
       dark_mode: 'system',
-      strava_client_id: '',
-      strava_client_secret: '',
+      strava_authentication: {
+        access_token: '',
+        refresh_token: '',
+        expires_at: 0,
+        client_id: '',
+        client_secret: '',
+      },
     },
     overwrite,
   });
@@ -32,8 +37,13 @@ function useUserSettings({
     enabled,
     initialData: {
       dark_mode: 'system',
-      strava_client_id: '',
-      strava_client_secret: '',
+      strava_authentication: {
+        access_token: '',
+        refresh_token: '',
+        expires_at: 0,
+        client_id: '',
+        client_secret: '',
+      },
     },
   });
   return fetchResult as UseUserSettings;
