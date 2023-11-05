@@ -1,0 +1,36 @@
+{
+  "routes": [
+    {
+      "route": "/",
+      "redirect": "/authenticated/portfolio"
+    },
+    {
+      "route": "/authenticated/*",
+      "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/api/orchestrator/*",
+      "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/.auth/login/twitter",
+      "statusCode": 404
+    },
+    {
+      "route": "/.auth/login/github",
+      "statusCode": 404
+    }
+  ],
+  "responseOverrides": {
+    "401": {
+      "statusCode": 302,
+      "redirect": "/login"
+    },
+    "403": {
+      "redirect": "/error_pages/403"
+    },
+    "404": {
+      "redirect": "/error_pages/404"
+    }
+  }
+}

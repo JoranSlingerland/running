@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Ant design overwrites */
+
+.ant-btn-primary {
+  background: #1677ff;
+}
+
+div.ant-list-pagination {
+  justify-content: center;
+  display: flex;
+  margin-top: 10px !important;
+}
+
+.ant-tag {
+  cursor: default;
+}
