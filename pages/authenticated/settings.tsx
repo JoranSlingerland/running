@@ -64,7 +64,7 @@ export default function Home() {
     const stravaAuthenticationWindow = window.open(
       `https://www.strava.com/oauth/authorize?client_id=${client_id}&redirect_uri=${callback_url}&response_type=code&%20response_type=force&scope=${scope}`,
       'Strava Authentication',
-      'width=500,height=500',
+      'width=500,height=500'
     );
     const stravaAuthenticationInterval = setInterval(() => {
       if (stravaAuthenticationWindow?.closed) {
@@ -80,7 +80,7 @@ export default function Home() {
   const buttonRow = (
     title: string,
     description: string,
-    button: JSX.Element,
+    button: JSX.Element
   ) => (
     <div className="grid grid-cols-2 grid-rows-2">
       <Title level={4}>{title}</Title>
@@ -196,7 +196,7 @@ export default function Home() {
                 onClick={() =>
                   startOrchestrator({
                     query: {
-                      functionName: 'orchestrator_gather_data',
+                      functionName: 'orch_gather_data',
                     },
                   })
                 }
@@ -204,7 +204,7 @@ export default function Home() {
                 size="large"
               >
                 Refresh
-              </Button>,
+              </Button>
             )}
             <Divider plain></Divider>
             {buttonRow(
@@ -216,7 +216,7 @@ export default function Home() {
                 size="large"
               >
                 Clear
-              </Button>,
+              </Button>
             )}
             <Divider plain></Divider>
             {buttonRow(
@@ -228,7 +228,7 @@ export default function Home() {
                 size="large"
               >
                 Authenticate
-              </Button>,
+              </Button>
             )}
           </div>
         </div>

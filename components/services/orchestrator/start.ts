@@ -1,7 +1,7 @@
 import { ApiWithMessage } from '../../utils/api';
 
 interface StartOrchestratorQuery {
-  functionName: 'orchestrator_gather_data';
+  functionName: 'orch_gather_data';
 }
 
 function startOrchestrator({ query }: { query: StartOrchestratorQuery }) {
