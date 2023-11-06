@@ -25,13 +25,13 @@ export default function AntdTable<T>({
 }): JSX.Element {
   const sorterBy = (key: Key | undefined) => (a: any, b: any) => {
     if (!key) return 0;
-    if (typeof key === 'number') {
+    if (typeof key === 'number' || typeof key === 'bigint') {
       if (a < b) return -1;
       if (a > b) return 1;
       return 0;
     }
     const keyList = key.split('.');
-    keyList.forEach((key) => {
+    keyList.forEach((key: any) => {
       a = a[key];
       b = b[key];
     });
