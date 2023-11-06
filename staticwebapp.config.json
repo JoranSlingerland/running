@@ -2,7 +2,7 @@
   "routes": [
     {
       "route": "/",
-      "redirect": "/authenticated/portfolio"
+      "redirect": "/authenticated/settings"
     },
     {
       "route": "/authenticated/*",

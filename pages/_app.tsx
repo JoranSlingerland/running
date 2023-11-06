@@ -13,7 +13,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const userSettings = useUserSettings();
   const { data: userInfo } = useUserInfo();
   const { algorithmTheme, className } = useTheme(
-    userSettings.data?.dark_mode || 'system'
+    userSettings.data?.dark_mode || 'system',
   );
 
   return (

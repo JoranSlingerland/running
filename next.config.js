@@ -5,4 +5,5 @@ module.exports = {
     domains: [],
     unoptimized: true,
   },
+  transpilePackages: ['ahooks'],
 };
