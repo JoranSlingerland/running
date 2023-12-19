@@ -9,20 +9,22 @@ interface UseUserSettings {
   overwriteData: (data: UserSettings) => void;
 }
 
+const initialData: UserSettings = {
+  dark_mode: 'system',
+  strava_authentication: {
+    access_token: '',
+    refresh_token: '',
+    expires_at: 0,
+    client_id: '',
+    client_secret: '',
+  },
+};
+
 async function getUserSettings({ overwrite }: { overwrite?: boolean }) {
   const response = await cachedFetch({
     url: `/api/user`,
     method: 'GET',
-    fallback_data: {
-      dark_mode: 'system',
-      strava_authentication: {
-        access_token: '',
-        refresh_token: '',
-        expires_at: 0,
-        client_id: '',
-        client_secret: '',
-      },
-    },
+    fallback_data: initialData,
     overwrite,
   });
   return response;
@@ -35,16 +37,7 @@ function useUserSettings({
     body: undefined,
     fetchData: getUserSettings,
     enabled,
-    initialData: {
-      dark_mode: 'system',
-      strava_authentication: {
-        access_token: '',
-        refresh_token: '',
-        expires_at: 0,
-        client_id: '',
-        client_secret: '',
-      },
-    },
+    initialData: initialData,
   });
   return fetchResult as UseUserSettings;
 }

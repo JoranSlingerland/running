@@ -1,0 +1,86 @@
+interface Query {
+  start_date?: string;
+  end_date?: string;
+}
+
+interface Activity {
+  id: string;
+  achievement_count: number;
+  athlete_count: number;
+  average_speed: number;
+  average_watts: number;
+  comment_count: number;
+  commute: boolean;
+  device_watts: boolean;
+  distance: number;
+  elapsed_time: number;
+  elev_high: number;
+  elev_low: number;
+  end_latlng: [number, number];
+  external_id: string;
+  flagged: boolean;
+  gear_id: null | string;
+  has_kudoed: boolean;
+  hide_from_home: null | boolean;
+  kilojoules: number;
+  kudos_count: number;
+  manual: boolean;
+  map: {
+    id: string;
+    polyline: null | string;
+    summary_polyline: string;
+  };
+  max_speed: number;
+  max_watts: number;
+  moving_time: number;
+  name: string;
+  photo_count: number;
+  private: boolean;
+  sport_type: string;
+  start_date: string;
+  start_date_local: string;
+  start_latlng: [number, number];
+  timezone: string;
+  total_elevation_gain: number;
+  total_photo_count: number;
+  trainer: boolean;
+  type: string;
+  upload_id: number;
+  upload_id_str: string;
+  weighted_average_watts: number;
+  workout_type: null | number;
+  best_efforts: null;
+  calories: null | number;
+  description: null | string;
+  device_name: null | string;
+  embed_token: null | string;
+  gear: null;
+  laps: null;
+  photos: null | string[];
+  segment_efforts: null;
+  splits_metric: null;
+  guid: null | string;
+  utc_offset: number;
+  location_city: null | string;
+  location_state: null | string;
+  location_country: null | string;
+  start_latitude: null | string;
+  start_longitude: null | string;
+  pr_count: number;
+  suffer_score: number;
+  has_heartrate: boolean;
+  average_heartrate: number;
+  max_heartrate: number;
+  average_cadence: number;
+  average_temp: null | number;
+  instagram_primary_photo: null | string;
+  partner_logo_url: null | string;
+  partner_brand_tag: null | string;
+  from_accepted_tag: boolean;
+  segment_leaderboard_opt_out: null | boolean;
+  perceived_exertion: null | number;
+  userId: string;
+  full_data: boolean;
+}
+
+export type { Activity, Query };

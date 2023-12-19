@@ -27,3 +27,10 @@ div.ant-list-pagination {
 .ant-tag {
   cursor: default;
 }
+
+.ant-picker-content tr {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: 1fr;
+  column-gap: 10px;
+}

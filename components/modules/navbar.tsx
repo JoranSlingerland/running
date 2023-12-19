@@ -2,6 +2,7 @@ import {
   LogoutOutlined,
   SettingOutlined,
   UserOutlined,
+  CalendarOutlined,
 } from '@ant-design/icons';
 import { Menu, Typography, Drawer } from 'antd';
 import { useEffect, useState } from 'react';
@@ -30,16 +31,16 @@ export default function App() {
   }, []);
 
   const navItems: MenuItem[] = [
-    // {
-    //   key: '/authenticated/settings/',
-    //   icon: <SettingOutlined />,
-    //   label: (
-    //     <span>
-    //       <a className="" href="/authenticated/settings/"></a>
-    //       <p className="inline-block">Settings</p>
-    //     </span>
-    //   ),
-    // },
+    {
+      key: '/authenticated/calendar/',
+      icon: <CalendarOutlined />,
+      label: (
+        <span>
+          <a className="" href="/authenticated/calendar/"></a>
+          <p className="inline-block">calendar</p>
+        </span>
+      ),
+    },
   ];
 
   const userMenu: MenuItem[] = [
