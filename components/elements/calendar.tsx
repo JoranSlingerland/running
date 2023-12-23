@@ -125,9 +125,9 @@ export default function AntdCalendar({
               </div>
             }
             bordered={false}
+            loading={isLoading}
             style={{ height: '100%', minHeight: '200px' }}
             bodyStyle={{ padding: '0px' }}
-            loading={isLoading}
             headStyle={{ padding: '0px', paddingLeft: '8px' }}
           >
             <div>{filtered.map((item) => calendarItem({ item }))}</div>
