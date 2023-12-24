@@ -25,7 +25,7 @@ async function getUserInfo() {
       },
     },
   });
-  return response as { response: UserInfo; error: boolean };
+  return response;
 }
 
 function useUserInfo({ enabled = true }: { enabled?: boolean } = {}) {
