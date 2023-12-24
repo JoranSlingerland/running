@@ -44,7 +44,7 @@ export default function AntdCalendar({
           monthOptions.push(
             <Select.Option key={i} value={i}>
               {months[i]}
-            </Select.Option>
+            </Select.Option>,
           );
         }
 
@@ -55,7 +55,7 @@ export default function AntdCalendar({
           options.push(
             <Select.Option key={i} value={i}>
               {i}
-            </Select.Option>
+            </Select.Option>,
           );
         }
         return (

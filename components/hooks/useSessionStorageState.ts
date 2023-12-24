@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 export default function useSessionStorageState<T>(
   key: string,
-  defaultValue: T
+  defaultValue: T,
 ): [T, React.Dispatch<React.SetStateAction<T>>] {
   const [state, setState] = useState(defaultValue);
 
