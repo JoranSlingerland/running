@@ -3,6 +3,7 @@ import wretch from 'wretch';
 import QueryStringAddon from 'wretch/addons/queryString';
 import AbortAddon from 'wretch/addons/abort';
 import hash from 'object-hash';
+import { WretchError } from 'wretch/resolver';
 
 // Helper functions
 function setWithExpiry<T>(key: string, value: T, ttl: number) {
@@ -41,8 +42,6 @@ function newKey(url: string, method: string, body?: object, query?: object) {
   return hash(url + body_string + query_string + method);
 }
 
-// End of helper functions
-
 // main functions
 async function regularFetch({
   url,
@@ -58,9 +57,14 @@ async function regularFetch({
   query?: object;
   body?: object;
   controller?: AbortController;
-}): Promise<{ response: any; error: boolean }> {
+}): Promise<{
+  response: any;
+  isError: boolean;
+  error: WretchError | undefined;
+}> {
   controller = controller || new AbortController();
-  let error = false;
+  let isError = false;
+  let error: WretchError | undefined = undefined;
 
   const w = wretch()
     .url(url)
@@ -73,11 +77,12 @@ async function regularFetch({
       .query(query || {})
       .get()
       .onAbort(() => {
-        error = true;
+        isError = true;
       })
       .json()
-      .catch(() => {
-        error = true;
+      .catch((err: WretchError) => {
+        isError = true;
+        error = err;
       });
   } else if (method === 'POST') {
     var response = await w
@@ -85,11 +90,12 @@ async function regularFetch({
       .json(body || {})
       .post()
       .onAbort(() => {
-        error = true;
+        isError = true;
       })
       .json()
-      .catch(() => {
-        error = true;
+      .catch((err: WretchError) => {
+        isError = true;
+        error = err;
       });
   } else if (method === 'DELETE') {
     var response = await w
@@ -97,20 +103,20 @@ async function regularFetch({
       .json(body || {})
       .delete()
       .onAbort(() => {
-        error = true;
+        isError = true;
       })
       .json()
-      .catch(() => {
-        error = true;
+      .catch((err: WretchError) => {
+        isError = true;
+        error = err;
       });
   } else {
-    error = true;
+    isError = true;
   }
-
-  if (error) {
-    return { response: fallback_data, error: error };
+  if (isError && fallback_data) {
+    return { response: fallback_data, isError: isError, error: error };
   }
-  return { response, error };
+  return { response, isError, error };
 }
 
 async function cachedFetch({
@@ -131,14 +137,19 @@ async function cachedFetch({
   hours?: number;
   controller?: AbortController;
   overwrite?: boolean;
-}): Promise<{ response: any; error: boolean }> {
+}): Promise<{
+  response: any;
+  isError: boolean;
+  error: WretchError | undefined;
+}> {
   const key = newKey(url, method, body, query);
   let response = getWithExpiry(key);
-  let error = false;
+  let isError = false;
+  let error: WretchError | undefined = undefined;
   if (response && !overwrite) {
-    return { response, error };
+    return { response, isError, error };
   } else {
-    const { response, error } = await regularFetch({
+    const { response, isError, error } = await regularFetch({
       url,
       fallback_data,
       method,
@@ -146,11 +157,11 @@ async function cachedFetch({
       controller,
       query,
     });
-    if (error) {
-      return { response: fallback_data, error };
+    if (isError && fallback_data) {
+      return { response: fallback_data, isError, error };
     }
     setWithExpiry(key, response, hours * 1000 * 60 * 60);
-    return { response, error };
+    return { response, isError, error };
   }
 }
 
@@ -178,7 +189,7 @@ async function ApiWithMessage({
     query,
   });
 
-  if (response.error) {
+  if (response.isError) {
     hide();
     message.error('Something went wrong :(');
   } else {
@@ -186,7 +197,5 @@ async function ApiWithMessage({
     message.success(successMessage);
   }
 }
-
-// End of main functions
 
 export { ApiWithMessage, regularFetch, cachedFetch };

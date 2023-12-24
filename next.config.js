@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 module.exports = {
   trailingSlash: true,
   images: {
@@ -6,4 +8,7 @@ module.exports = {
     unoptimized: true,
   },
   transpilePackages: ['ahooks'],
+  publicRuntimeConfig: {
+    NEXT_PUBLIC_STRAVA_CLIENT_ID: process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID,
+  },
 };

@@ -15,8 +15,6 @@ const initialData: UserSettings = {
     access_token: '',
     refresh_token: '',
     expires_at: 0,
-    client_id: '',
-    client_secret: '',
   },
 };
 

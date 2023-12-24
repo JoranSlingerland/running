@@ -14,7 +14,5 @@ type UserSettings = {
     access_token: string;
     refresh_token: string;
     expires_at: number;
-    client_id: string;
-    client_secret: string;
   };
 };

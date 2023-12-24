@@ -1,13 +1,4 @@
-import {
-  Divider,
-  Button,
-  message,
-  Tabs,
-  Typography,
-  List,
-  Input,
-  Select,
-} from 'antd';
+import { Divider, Button, message, Tabs, Typography, List, Select } from 'antd';
 import useWindowDimensions from '../../components/hooks/useWindowDimensions';
 import AntdTable from '../../components/elements/antdTable';
 import useSessionStorageState from '../../components/hooks/useSessionStorageState';
@@ -17,6 +8,8 @@ import { useListOrchestrator } from '../../components/services/orchestrator/list
 import { RedoOutlined } from '@ant-design/icons';
 import { useProps } from '../../components/hooks/useProps';
 import { addUserData } from '../../components/services/user/post';
+import getConfig from 'next/config';
+import { useRouter } from 'next/router';
 
 const { Text, Title } = Typography;
 
@@ -42,6 +35,8 @@ export default function Home() {
     enabled: tab === '3',
   });
   const { userSettings } = useProps();
+  const router = useRouter();
+  const { publicRuntimeConfig } = getConfig();
 
   // handle click functions
   async function handleSaveAccountSettings() {
@@ -57,30 +52,25 @@ export default function Home() {
   }
 
   function handleStravaAuthentication() {
-    const callback_url = `${window.location.origin}/api/callback/strava`;
-    const client_id = userSettings?.data.strava_authentication.client_id;
+    const callback_url = `${window.location.origin}/authenticated/callback/strava`;
     const scope = 'profile:read_all,activity:read_all';
 
-    const stravaAuthenticationWindow = window.open(
-      `https://www.strava.com/oauth/authorize?client_id=${client_id}&redirect_uri=${callback_url}&response_type=code&%20response_type=force&scope=${scope}`,
-      'Strava Authentication',
-      'width=500,height=500'
+    if (!publicRuntimeConfig.NEXT_PUBLIC_STRAVA_CLIENT_ID) {
+      message.error('Strava client id not found');
+      return;
+    }
+
+    // Push the strava authentication page to the router
+    router.push(
+      `https://www.strava.com/oauth/authorize?client_id=${publicRuntimeConfig.NEXT_PUBLIC_STRAVA_CLIENT_ID}&redirect_uri=${callback_url}&response_type=code&%20response_type=force&scope=${scope}`,
     );
-    const stravaAuthenticationInterval = setInterval(() => {
-      if (stravaAuthenticationWindow?.closed) {
-        clearInterval(stravaAuthenticationInterval);
-        userSettings?.refetchData({
-          cacheOnly: true,
-        });
-      }
-    }, 100);
   }
 
   // constants
   const buttonRow = (
     title: string,
     description: string,
-    button: JSX.Element
+    button: JSX.Element,
   ) => (
     <div className="grid grid-cols-2 grid-rows-2">
       <Title level={4}>{title}</Title>
@@ -112,48 +102,6 @@ export default function Home() {
             </div>
           }
         >
-          <List.Item>
-            <List.Item.Meta
-              title={<Text strong>Strava Client ID</Text>}
-              description={
-                <Input
-                  className="w-72 sm:w-96"
-                  value={userSettings?.data.strava_authentication.client_id}
-                  onChange={(e: any) => {
-                    userSettings?.overwriteData({
-                      ...userSettings?.data,
-                      strava_authentication: {
-                        ...userSettings?.data.strava_authentication,
-                        client_id: e.target.value,
-                      },
-                    });
-                  }}
-                  size="small"
-                />
-              }
-            />
-          </List.Item>
-          <List.Item>
-            <List.Item.Meta
-              title={<Text strong>Strava Client Secret</Text>}
-              description={
-                <Input.Password
-                  className="w-72 sm:w-96"
-                  value={userSettings?.data.strava_authentication.client_secret}
-                  onChange={(e) => {
-                    userSettings?.overwriteData({
-                      ...userSettings?.data,
-                      strava_authentication: {
-                        ...userSettings?.data.strava_authentication,
-                        client_secret: e.target.value,
-                      },
-                    });
-                  }}
-                  size="small"
-                />
-              }
-            />
-          </List.Item>
           <List.Item>
             <List.Item.Meta
               title={<Text strong>Theme</Text>}
@@ -204,7 +152,7 @@ export default function Home() {
                 size="large"
               >
                 Refresh
-              </Button>
+              </Button>,
             )}
             <Divider plain></Divider>
             {buttonRow(
@@ -216,7 +164,7 @@ export default function Home() {
                 size="large"
               >
                 Clear
-              </Button>
+              </Button>,
             )}
             <Divider plain></Divider>
             {buttonRow(
@@ -228,7 +176,7 @@ export default function Home() {
                 size="large"
               >
                 Authenticate
-              </Button>
+              </Button>,
             )}
           </div>
         </div>

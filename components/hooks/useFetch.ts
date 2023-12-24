@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useDeepCompareEffect } from 'ahooks';
+import { WretchError } from 'wretch/resolver';
 
 interface UseFetchOptions<Body, Query, Response> {
   body?: Body;
@@ -9,7 +10,11 @@ interface UseFetchOptions<Body, Query, Response> {
     body?: Body;
     abortController: AbortController;
     overwrite?: boolean;
-  }) => Promise<{ response: Response; error: boolean }>;
+  }) => Promise<{
+    response: Response;
+    isError: boolean;
+    error: WretchError | undefined;
+  }>;
   enabled?: boolean;
   background?: boolean;
   overwrite?: boolean;
@@ -20,6 +25,7 @@ interface UseFetchResult<Response> {
   data: Response | undefined;
   isLoading: boolean;
   isError: boolean;
+  error: WretchError | undefined;
   refetchData: (params?: { cacheOnly?: boolean }) => void;
   overwriteData: (data: Response) => void;
 }
@@ -39,6 +45,7 @@ function useFetch<Body, Query, Response>({
   const [refetch, setRefetch] = useState(false);
   const [data, setData] = useState<Response | undefined>(initialData);
   const [cacheOnly, setCacheOnly] = useState(false);
+  const [error, setError] = useState<WretchError | undefined>(undefined);
 
   // Functions
   const refetchData = ({ cacheOnly = false }: { cacheOnly?: boolean } = {}) => {
@@ -58,9 +65,10 @@ function useFetch<Body, Query, Response>({
       if (cacheOnly) return;
 
       setData(data.response);
-      setIsError(data.error);
+      setIsError(data.isError);
       setIsLoading(false);
       setRefetch(false);
+      setError(data.error);
     });
   };
 
@@ -70,6 +78,7 @@ function useFetch<Body, Query, Response>({
 
     if (enabled) {
       setIsError(false);
+      setError(undefined);
       setIsLoading(background || refetch ? false : true);
       fetchDataAsync(abortController);
     }
@@ -79,7 +88,7 @@ function useFetch<Body, Query, Response>({
     };
   }, [enabled, refetch, body, query]);
 
-  return { data, isLoading, isError, refetchData, overwriteData };
+  return { data, isLoading, isError, error, refetchData, overwriteData };
 }
 
 export { useFetch };
