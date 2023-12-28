@@ -4,6 +4,11 @@ import { useState } from 'react';
 import { GetActivitiesQuery } from '../../components/services/data/activities';
 import { CalendarMode } from 'antd/es/calendar/generateCalendar';
 import dayjs from 'dayjs';
+import dayLocaleData from 'dayjs/plugin/localeData';
+import updateLocale from 'dayjs/plugin/updateLocale';
+
+dayjs.extend(dayLocaleData);
+dayjs.extend(updateLocale);
 
 function getMonthBoundaries(date?: dayjs.Dayjs) {
   const today = date || dayjs();

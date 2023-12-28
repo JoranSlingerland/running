@@ -12,10 +12,17 @@ function setWithExpiry<T>(key: string, value: T, ttl: number) {
     value: value,
     expiry: now.getTime() + ttl,
   };
-  try {
-    sessionStorage.setItem(key, JSON.stringify(item));
-  } catch (err) {
-    console.log(err);
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      sessionStorage.setItem(key, JSON.stringify(item));
+      break;
+    } catch (err) {
+      if (attempt === 0) {
+        removeExpiredItems();
+        continue;
+      }
+      console.error('Failed to set item in sessionStorage:', err);
+    }
   }
 }
 
@@ -44,6 +51,22 @@ function newKey(url: string, method: string, body?: object, query?: object) {
   }
 
   return hash(url + body_string + query_string + method);
+}
+
+function removeExpiredItems() {
+  for (let i = 0; i < sessionStorage.length; i++) {
+    const key = sessionStorage.key(i);
+    if (key) {
+      const itemStr = sessionStorage.getItem(key);
+      if (itemStr) {
+        const item = JSON.parse(itemStr);
+        const now = new Date();
+        if (now.getTime() > item.expiry) {
+          sessionStorage.removeItem(key);
+        }
+      }
+    }
+  }
 }
 
 // main functions
