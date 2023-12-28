@@ -18,11 +18,13 @@ export default function AntdCalendar({
   startOfWeekDay = 1,
   isLoading = false,
   onPanelChange,
+  currentMonth,
 }: {
   data: Activity[] | undefined;
   startOfWeekDay?: number;
   isLoading?: boolean;
   onPanelChange?: (value: dayjs.Dayjs, mode: CalendarMode) => void;
+  currentMonth?: dayjs.Dayjs;
 }): JSX.Element {
   dayjs.updateLocale('en', {
     weekStart: startOfWeekDay,
@@ -85,9 +87,7 @@ export default function AntdCalendar({
               </Select>
               <Button
                 onClick={() => {
-                  const now = dayjs();
-                  onChange(now);
-                  console.log(now.format('DD-MM-YYYY'));
+                  onChange(dayjs());
                 }}
               >
                 Today
@@ -110,7 +110,8 @@ export default function AntdCalendar({
           </div>
         );
       }}
-      fullCellRender={(value: Dayjs) => {
+      fullCellRender={(value: Dayjs, info) => {
+        const isCurrentMonth = value.month() === currentMonth?.month();
         const date = value.format('YYYY-MM-DD');
         const filtered = data
           ? data.filter((item) => {
@@ -122,10 +123,12 @@ export default function AntdCalendar({
             size="default"
             title={
               <div className="flex justify-between">
-                <div>{value.format('DD')}</div>
-                <div>
+                <Text type={isCurrentMonth ? undefined : 'secondary'}>
+                  {value.format('DD')}
+                </Text>
+                <Text type={isCurrentMonth ? undefined : 'secondary'}>
                   {value.format('DD') === '01' ? value.format('MMMM') : ''}
-                </div>
+                </Text>
               </div>
             }
             bordered={false}
@@ -133,6 +136,7 @@ export default function AntdCalendar({
             style={{ height: '100%', minHeight: '200px' }}
             bodyStyle={{ padding: '0px' }}
             headStyle={{ padding: '0px', paddingLeft: '8px' }}
+            hoverable
           >
             <div>{filtered.map((item) => calendarItem({ item }))}</div>
           </Card>

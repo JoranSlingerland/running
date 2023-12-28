@@ -12,33 +12,25 @@ dayjs.extend(updateLocale);
 
 function getMonthBoundaries(date?: dayjs.Dayjs) {
   const today = date || dayjs();
-  const firstDay = today
-    .startOf('month')
-    .startOf('week')
-    .subtract(7, 'day')
-    .format('YYYY-MM-DD');
-  const lastDay = today
+  const startDate = today.startOf('month').startOf('week').format('YYYY-MM-DD');
+  const endDate = today
     .endOf('month')
     .endOf('week')
     .add(7, 'day')
     .format('YYYY-MM-DD');
 
-  return { firstDay, lastDay };
+  return { startDate, endDate };
 }
 
 export default function App() {
-  const { firstDay, lastDay } = getMonthBoundaries();
   const [query, setQuery] = useState<GetActivitiesQuery>({
-    startDate: firstDay,
-    endDate: lastDay,
+    ...getMonthBoundaries(),
   });
+  const [currentMonth, setCurrentMonth] = useState<dayjs.Dayjs>(dayjs());
 
   function onPanelChange(value: dayjs.Dayjs, mode: CalendarMode) {
-    const { firstDay, lastDay } = getMonthBoundaries(value);
-    setQuery({
-      startDate: firstDay,
-      endDate: lastDay,
-    });
+    setQuery(getMonthBoundaries(value));
+    setCurrentMonth(value);
   }
 
   const { data: activitiesData, isLoading: activitiesIsLoading } =
@@ -51,6 +43,7 @@ export default function App() {
       data={activitiesData}
       isLoading={activitiesIsLoading}
       onPanelChange={onPanelChange}
+      currentMonth={currentMonth}
     />
   );
 }
