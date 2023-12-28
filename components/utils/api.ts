@@ -12,7 +12,11 @@ function setWithExpiry<T>(key: string, value: T, ttl: number) {
     value: value,
     expiry: now.getTime() + ttl,
   };
-  sessionStorage.setItem(key, JSON.stringify(item));
+  try {
+    sessionStorage.setItem(key, JSON.stringify(item));
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 function getWithExpiry(key: string) {
