@@ -3,9 +3,10 @@ import dayLocaleData from 'dayjs/plugin/localeData';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
 import updateLocale from 'dayjs/plugin/updateLocale';
-import type { Activity } from '../services/data/data';
+import type { Activity } from '../services/data/activities';
 import { formatDistance, formatTime, formatPace } from '../utils/formatting';
 import { CaretRightOutlined, CaretLeftOutlined } from '@ant-design/icons';
+import { CalendarMode } from 'antd/es/calendar/generateCalendar';
 
 const { Text } = Typography;
 
@@ -16,10 +17,12 @@ export default function AntdCalendar({
   data,
   startOfWeekDay = 1,
   isLoading = false,
+  onPanelChange,
 }: {
   data: Activity[] | undefined;
   startOfWeekDay?: number;
   isLoading?: boolean;
+  onPanelChange?: (value: dayjs.Dayjs, mode: CalendarMode) => void;
 }): JSX.Element {
   dayjs.updateLocale('en', {
     weekStart: startOfWeekDay,
@@ -27,6 +30,7 @@ export default function AntdCalendar({
 
   return (
     <Calendar
+      onPanelChange={onPanelChange}
       headerRender={({ value, type, onChange, onTypeChange }) => {
         const start = 0;
         const end = 12;
