@@ -16,6 +16,15 @@ const initialData: UserSettings = {
     refresh_token: '',
     expires_at: 0,
   },
+  heart_rate: {
+    max: 0,
+    resting: 0,
+    threshold: 0,
+    zones: [],
+  },
+  pace: {
+    threshold: 0,
+  },
 };
 
 async function getUserSettings({ overwrite }: { overwrite?: boolean }) {

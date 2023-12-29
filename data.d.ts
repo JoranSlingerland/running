@@ -15,4 +15,17 @@ type UserSettings = {
     refresh_token: string;
     expires_at: number;
   };
+  heart_rate: {
+    max: number;
+    resting: number;
+    threshold: number;
+    zones: {
+      name: string;
+      min: number;
+      max: number;
+    }[];
+  };
+  pace: {
+    threshold: number;
+  };
 };

@@ -1,9 +1,19 @@
-import { Divider, Button, message, Tabs, Typography, List, Select } from 'antd';
+import {
+  Divider,
+  Button,
+  message,
+  Tabs,
+  Typography,
+  List,
+  Select,
+  Input,
+} from 'antd';
 import useWindowDimensions from '../../components/hooks/useWindowDimensions';
 import AntdTable from '../../components/elements/antdTable';
 import useSessionStorageState from '../../components/hooks/useSessionStorageState';
 import { startOrchestrator } from '../../components/services/orchestrator/start';
 import { orchestratorColumns } from '../../components/elements/columns/orchestratorColumns';
+import { heartRateZoneColumns } from '../../components/elements/columns/heartRateZoneColumns';
 import { useListOrchestrator } from '../../components/services/orchestrator/list';
 import { RedoOutlined } from '@ant-design/icons';
 import { useProps } from '../../components/hooks/useProps';
@@ -21,6 +31,39 @@ function handleSessionStorageClearClick() {
   } else {
     message.error('Something went wrong :(');
   }
+}
+
+// Helper functions
+function calculateHeartRateZones({ threshold }: { threshold: number }) {
+  const zonePercentages = {
+    'Zone 1: Recovery': [0, 0.85],
+    'Zone 2: Aerobic': [0.85, 0.89],
+    'Zone 3: Tempo': [0.89, 0.94],
+    'Zone 4: SubThreshold': [0.94, 0.99],
+    'Zone 5A: SuperThreshold': [0.99, 1.02],
+    'Zone 5B: Aerobic Capacity': [1.02, 1.06],
+    'Zone 5C: Anaerobic Capacity': [1.06, 2],
+  };
+
+  const zones = Object.keys(zonePercentages);
+
+  const zonesWithValues = zones.map((name) => {
+    const percentage = zonePercentages[name as keyof typeof zonePercentages];
+    let min = threshold * percentage[0];
+    let max = threshold * percentage[1];
+
+    if (name === 'Zone 5C: Anaerobic Capacity') {
+      max = 255;
+    }
+
+    return {
+      name,
+      min,
+      max,
+    };
+  });
+
+  return zonesWithValues;
 }
 
 export default function Home() {
@@ -121,6 +164,100 @@ export default function Home() {
                   ]}
                   loading={userSettings?.isLoading}
                 />
+              }
+            />
+          </List.Item>
+          <List.Item>
+            <List.Item.Meta
+              title={<Text strong>Heart rate</Text>}
+              description={
+                <div className="space-y-2">
+                  <div className="grid space-y-2 sm:space-y-0 sm:grid-cols-3 sm:grid-rows-1 sm:space-x-2">
+                    <div className="flex">
+                      <Text className="pr-2" type="secondary">
+                        Threshold heart rate
+                      </Text>
+                      <Input
+                        placeholder="Threshold"
+                        value={userSettings?.data.heart_rate.threshold}
+                        onChange={(e) => {
+                          userSettings?.overwriteData({
+                            ...userSettings?.data,
+                            heart_rate: {
+                              ...userSettings?.data.heart_rate,
+                              threshold: parseInt(e.target.value),
+                              zones: calculateHeartRateZones({
+                                threshold:
+                                  userSettings?.data.heart_rate.threshold,
+                              }),
+                            },
+                          });
+                        }}
+                        type="number"
+                        maxLength={3}
+                        disabled={userSettings?.isLoading}
+                        addonAfter="bpm"
+                        className="w-32 ml-auto sm:ml-0"
+                      />
+                    </div>
+                    <div className="flex">
+                      <Text className="pr-2" type="secondary">
+                        Max heart rate
+                      </Text>
+                      <Input
+                        placeholder="Max"
+                        value={userSettings?.data.heart_rate.max}
+                        onChange={(e) => {
+                          userSettings?.overwriteData({
+                            ...userSettings?.data,
+                            heart_rate: {
+                              ...userSettings?.data.heart_rate,
+                              max: parseInt(e.target.value),
+                            },
+                          });
+                        }}
+                        type="number"
+                        maxLength={3}
+                        disabled={userSettings?.isLoading}
+                        addonAfter="bpm"
+                        className="w-32 ml-auto sm:ml-0"
+                      />
+                    </div>
+                    <div className="flex">
+                      <Text className="pr-2" type="secondary">
+                        Resting heart rate
+                      </Text>
+                      <Input
+                        placeholder="Rest"
+                        value={userSettings?.data.heart_rate.resting}
+                        onChange={(e) => {
+                          userSettings?.overwriteData({
+                            ...userSettings?.data,
+                            heart_rate: {
+                              ...userSettings?.data.heart_rate,
+                              resting: parseInt(e.target.value),
+                            },
+                          });
+                        }}
+                        type="number"
+                        maxLength={3}
+                        disabled={userSettings?.isLoading}
+                        addonAfter="bpm"
+                        className="w-32 ml-auto sm:ml-0"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <AntdTable
+                      isLoading={userSettings?.isLoading || false}
+                      columns={heartRateZoneColumns}
+                      data={userSettings?.data.heart_rate.zones}
+                      tableProps={{
+                        size: 'small',
+                      }}
+                    />
+                  </div>
+                </div>
               }
             />
           </List.Item>

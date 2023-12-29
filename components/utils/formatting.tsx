@@ -68,4 +68,8 @@ function formatMinute(seconds: number) {
   );
 }
 
-export { formatDistance, formatTime, formatSpeed, formatPace };
+function formatHeartRate(heartRate: number) {
+  return <Text>{Math.floor(heartRate)} BPM</Text>;
+}
+
+export { formatDistance, formatTime, formatSpeed, formatPace, formatHeartRate };
