@@ -7,7 +7,6 @@ module.exports = {
     domains: [],
     unoptimized: true,
   },
-  transpilePackages: ['ahooks'],
   publicRuntimeConfig: {
     NEXT_PUBLIC_STRAVA_CLIENT_ID: process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID,
   },

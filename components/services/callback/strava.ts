@@ -10,22 +10,6 @@ interface StravaCallbackData {
   result: string;
 }
 
-async function stravaCallback({
-  query,
-  abortController,
-}: {
-  query?: StravaCallbackQuery;
-  abortController: AbortController;
-}) {
-  const response = await regularFetch({
-    url: '/api/callback/strava',
-    method: 'GET',
-    query,
-    controller: abortController,
-  });
-  return response;
-}
-
 function useStravaCallback({
   query,
   enabled = true,
@@ -38,8 +22,10 @@ function useStravaCallback({
     StravaCallbackQuery,
     StravaCallbackData
   >({
+    url: '/api/callback/strava',
+    method: 'GET',
     query,
-    fetchData: stravaCallback,
+    fetchData: regularFetch,
     enabled,
   });
 

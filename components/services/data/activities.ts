@@ -150,22 +150,6 @@ interface streams {
   time?: stream<number>;
 }
 
-async function getActivities({
-  query,
-  abortController,
-}: {
-  query?: GetActivitiesQuery;
-  abortController: AbortController;
-}) {
-  const response = await cachedFetch({
-    url: `/api/data/activities`,
-    method: 'GET',
-    query,
-    controller: abortController,
-  });
-  return response;
-}
-
 function useActivities({
   query,
   enabled = true,
@@ -176,8 +160,10 @@ function useActivities({
   background?: boolean;
 }) {
   const fetchResult = useFetch<undefined, GetActivitiesQuery, Activity[]>({
+    url: '/api/data/activities',
+    method: 'GET',
     query,
-    fetchData: getActivities,
+    fetchData: cachedFetch,
     enabled,
     background,
   });

@@ -1,15 +1,20 @@
 import { useState } from 'react';
-import { useDeepCompareEffect } from 'ahooks';
+import { useDeepCompareEffect } from 'rooks';
 import { WretchError } from 'wretch/resolver';
 
 interface UseFetchOptions<Body, Query, Response> {
   body?: Body;
   query?: Query;
+  url: string;
+  method: 'GET' | 'POST' | 'DELETE';
   fetchData: (params: {
+    url: string;
+    method: 'GET' | 'POST' | 'DELETE';
     query?: Query;
     body?: Body;
     abortController: AbortController;
     overwrite?: boolean;
+    fallback_data?: Response;
   }) => Promise<{
     response: Response;
     isError: boolean;
@@ -31,6 +36,8 @@ interface UseFetchResult<Response> {
 }
 
 function useFetch<Body, Query, Response>({
+  url,
+  method,
   body,
   query,
   fetchData,
@@ -57,6 +64,9 @@ function useFetch<Body, Query, Response>({
   };
   const fetchDataAsync = async (abortController: AbortController) => {
     await fetchData({
+      fallback_data: initialData,
+      url,
+      method,
       body,
       query,
       abortController,
@@ -86,9 +96,16 @@ function useFetch<Body, Query, Response>({
     return () => {
       abortController.abort();
     };
-  }, [enabled, refetch, body, query]);
+  }, [enabled, refetch, url, method, body, query]);
 
-  return { data, isLoading, isError, error, refetchData, overwriteData };
+  return {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetchData,
+    overwriteData,
+  };
 }
 
 export { useFetch };

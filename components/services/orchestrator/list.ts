@@ -12,22 +12,6 @@ interface ListOrchestratorData {
   runtimeStatus: string;
 }
 
-async function getListOrchestrator({
-  query,
-  abortController,
-}: {
-  query?: ListOrchestratorQuery;
-  abortController: AbortController;
-}) {
-  const response = await regularFetch({
-    url: `/api/orchestrator/list`,
-    method: 'GET',
-    query,
-    controller: abortController,
-  });
-  return response;
-}
-
 function useListOrchestrator({
   query,
   enabled = true,
@@ -42,8 +26,10 @@ function useListOrchestrator({
     ListOrchestratorQuery,
     ListOrchestratorData[]
   >({
+    url: '/api/orchestrator/list',
+    method: 'GET',
     query,
-    fetchData: getListOrchestrator,
+    fetchData: regularFetch,
     enabled,
     background,
   });

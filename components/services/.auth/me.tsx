@@ -11,26 +11,11 @@ interface UserInfo {
   };
 }
 
-async function getUserInfo() {
-  const response = await regularFetch({
-    url: '/.auth/me',
-    method: 'GET',
-    fallback_data: {
-      clientPrincipal: {
-        userId: '',
-        userRoles: ['anonymous'],
-        claims: [],
-        identityProvider: '',
-        userDetails: '',
-      },
-    },
-  });
-  return response;
-}
-
 function useUserInfo({ enabled = true }: { enabled?: boolean } = {}) {
   const fetchResult = useFetch<undefined, undefined, UserInfo>({
-    fetchData: getUserInfo,
+    url: '/.auth/me',
+    method: 'GET',
+    fetchData: regularFetch,
     enabled,
     initialData: {
       clientPrincipal: {

@@ -24,25 +24,18 @@ const initialData: UserSettings = {
   },
   pace: {
     threshold: 0,
+    zones: [],
   },
 };
-
-async function getUserSettings({ overwrite }: { overwrite?: boolean }) {
-  const response = await cachedFetch({
-    url: `/api/user`,
-    method: 'GET',
-    fallback_data: initialData,
-    overwrite,
-  });
-  return response;
-}
 
 function useUserSettings({
   enabled = true,
 }: { enabled?: boolean } = {}): UseUserSettings {
   const fetchResult = useFetch<undefined, undefined, UserSettings>({
+    url: '/api/user',
+    method: 'GET',
     body: undefined,
-    fetchData: getUserSettings,
+    fetchData: cachedFetch,
     enabled,
     initialData: initialData,
   });
