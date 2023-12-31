@@ -1,4 +1,8 @@
 import { Typography } from 'antd';
+import {
+  convertSecondsToMinutes,
+  convertSpeedToPaceInSeconds,
+} from './convert';
 
 const { Text } = Typography;
 
@@ -43,29 +47,29 @@ function formatSpeed(metersPerSecond: number, unit: string, decimals = 2) {
   }
 }
 
-function formatPace(metersPerSecond: number, unit: string) {
-  switch (unit) {
-    case 'm':
-      return <Text>{formatMinute(1000 / metersPerSecond)}MIN/KM</Text>;
-    case 'km':
-      return <Text>{formatMinute(1000 / metersPerSecond)}MIN/KM</Text>;
-    case 'mi':
-      return <Text>{formatMinute(1609 / metersPerSecond)}MIN/MI</Text>;
-    case 'ft':
-      return <Text>{formatMinute(0.3048 / metersPerSecond)}MIN/FT</Text>;
-  }
+function formatPace(
+  metersPerSecond: number | undefined,
+  unit: 'km' | 'mi' = 'km',
+  addUnit = true,
+  wrapInText = true,
+) {
+  const minutes = formatMinute(
+    convertSpeedToPaceInSeconds(metersPerSecond, unit),
+    addUnit,
+    false,
+  );
+  return wrapInText ? <Text>{minutes}</Text> : minutes;
 }
 
-function formatMinute(seconds: number) {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = Math.floor(seconds % 60);
+function formatMinute(seconds: number, addUnit = true, wrapInText = true) {
+  const [minutes, remainingSeconds] = convertSecondsToMinutes(seconds);
+  const formattedTime = `${minutes
+    .toString()
+    .padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}${
+    addUnit ? ' MIN/KM' : ''
+  }`;
 
-  return (
-    <Text>
-      {minutes.toString().padStart(2, '0')}:
-      {remainingSeconds.toString().padStart(2, '0')}
-    </Text>
-  );
+  return wrapInText ? <Text>{formattedTime}</Text> : formattedTime;
 }
 
 function formatHeartRate(heartRate: number) {

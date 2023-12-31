@@ -27,5 +27,10 @@ type UserSettings = {
   };
   pace: {
     threshold: number;
+    zones: {
+      name: string;
+      min: number;
+      max: number;
+    }[];
   };
 };
