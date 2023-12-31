@@ -167,6 +167,7 @@ function useActivities({
     cache: {
       enabled: true,
       hours: 24,
+      storageType: 'sessionStorage',
     },
   });
 

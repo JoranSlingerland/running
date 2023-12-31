@@ -6,37 +6,41 @@ import hash from 'object-hash';
 import { WretchError } from 'wretch/resolver';
 
 // Helper functions
-function setWithExpiry<T>(key: string, value: T, ttl: number) {
+function setWithExpiry<T>(
+  key: string,
+  value: T,
+  ttl: number,
+  storageType: StorageType,
+) {
   const now = new Date();
   const item = {
     value: value,
     expiry: now.getTime() + ttl,
   };
+  const storage = window[storageType];
   try {
-    sessionStorage.setItem(key, JSON.stringify(item));
+    storage.setItem(key, JSON.stringify(item));
   } catch (err) {
-    console.error('Failed to set item in sessionStorage:', err);
-    removeExpiredItems();
+    console.error(`Error setting ${storageType} key “${key}”:`, err);
+    removeExpiredItems(storageType);
     try {
-      sessionStorage.setItem(key, JSON.stringify(item));
+      storage.setItem(key, JSON.stringify(item));
     } catch (err) {
-      console.error(
-        'Failed to set item in sessionStorage after removing expired items:',
-        err,
-      );
+      console.error(`Error setting ${storageType} key “${key}”:`, err);
     }
   }
 }
 
-function getWithExpiry(key: string) {
-  const itemStr = sessionStorage.getItem(key);
+function getWithExpiry(key: string, storageType: StorageType) {
+  const storage = window[storageType];
+  const itemStr = storage.getItem(key);
   if (!itemStr) {
     return null;
   }
   const item = JSON.parse(itemStr);
   const now = new Date();
   if (now.getTime() > item.expiry) {
-    sessionStorage.removeItem(key);
+    storage.removeItem(key);
     return null;
   }
   return item.value;
@@ -54,14 +58,15 @@ function newKey<Query, Body>(
   return hash(url + body_string + query_string + method);
 }
 
-function removeExpiredItems() {
+function removeExpiredItems(storageType: StorageType) {
   const now = new Date().getTime();
-  Object.keys(sessionStorage).forEach((key) => {
-    const itemStr = sessionStorage.getItem(key);
+  const storage = window[storageType];
+  Object.keys(storage).forEach((key) => {
+    const itemStr = storage.getItem(key);
     if (itemStr) {
       const item = JSON.parse(itemStr);
       if (now > item.expiry) {
-        sessionStorage.removeItem(key);
+        storage.removeItem(key);
       }
     }
   });
@@ -87,6 +92,7 @@ async function regularFetch<Query, Body>({
     enabled: boolean;
     hours: number;
     overwrite: boolean;
+    storageType: StorageType;
   };
 }): Promise<{
   response: any;
@@ -99,7 +105,7 @@ async function regularFetch<Query, Body>({
   const key = newKey(url, method, body, query);
 
   if (cache && cache.enabled && !cache.overwrite) {
-    const response = getWithExpiry(key);
+    const response = getWithExpiry(key, cache.storageType);
     if (response) {
       return { response, isError, error };
     }
@@ -154,7 +160,12 @@ async function regularFetch<Query, Body>({
   }
 
   if (cache && cache.enabled && !isError) {
-    setWithExpiry(key, response, cache.hours * 1000 * 60 * 60);
+    setWithExpiry(
+      key,
+      response,
+      cache.hours * 1000 * 60 * 60,
+      cache.storageType,
+    );
   }
 
   if (isError && fallback_data) {

@@ -34,3 +34,5 @@ type UserSettings = {
     }[];
   };
 };
+
+type StorageType = 'sessionStorage' | 'localStorage';

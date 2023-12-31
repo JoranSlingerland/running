@@ -39,6 +39,7 @@ function useUserSettings({
     cache: {
       enabled: true,
       hours: 24,
+      storageType: 'sessionStorage',
     },
   });
   return fetchResult as UseUserSettings;

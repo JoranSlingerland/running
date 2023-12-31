@@ -15,6 +15,7 @@ interface UseFetchOptions<Body, Query, Response> {
   cache?: {
     enabled: boolean;
     hours: number;
+    storageType: StorageType;
   };
 }
 
@@ -65,6 +66,8 @@ function useFetch<Body, Query, Response>({
         enabled: cache && cache.enabled ? cache.enabled : false,
         hours: 24,
         overwrite: overwrite || refetch,
+        storageType:
+          cache && cache.storageType ? cache.storageType : 'sessionStorage',
       },
       controller: abortController,
     }).then((data) => {
