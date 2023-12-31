@@ -4,28 +4,6 @@ const { darkAlgorithm, defaultAlgorithm } = antdTheme;
 
 type ThemeType = 'light' | 'dark' | 'system';
 
-const getTheme = (themeType: ThemeType) => {
-  switch (themeType) {
-    case 'light':
-      return defaultAlgorithm;
-    case 'dark':
-      return darkAlgorithm;
-    default:
-      return defaultAlgorithm;
-  }
-};
-
-const getClassName = (themeType: ThemeType) => {
-  switch (themeType) {
-    case 'light':
-      return 'bg-white';
-    case 'dark':
-      return 'bg-neutral-900 dark';
-    default:
-      return 'bg-white';
-  }
-};
-
 const useTheme = (dark_mode: ThemeType) => {
   const [themeType, setThemeType] = useState<ThemeType>('system');
 
@@ -43,14 +21,18 @@ const useTheme = (dark_mode: ThemeType) => {
 
   const algorithmTheme =
     dark_mode === 'system'
-      ? getTheme(themeType)
+      ? themeType === 'dark'
+        ? darkAlgorithm
+        : defaultAlgorithm
       : dark_mode === 'dark'
       ? darkAlgorithm
       : defaultAlgorithm;
 
   const className =
     dark_mode === 'system'
-      ? getClassName(themeType)
+      ? themeType === 'dark'
+        ? 'dark bg-neutral-900'
+        : 'bg-white'
       : dark_mode === 'dark'
       ? 'dark bg-neutral-900'
       : 'bg-white';
