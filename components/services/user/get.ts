@@ -1,4 +1,3 @@
-import { cachedFetch } from '../../utils/api';
 import { useFetch } from '../../hooks/useFetch';
 
 interface UseUserSettings {
@@ -35,9 +34,12 @@ function useUserSettings({
     url: '/api/user',
     method: 'GET',
     body: undefined,
-    fetchData: cachedFetch,
     enabled,
     initialData: initialData,
+    cache: {
+      enabled: true,
+      hours: 24,
+    },
   });
   return fetchResult as UseUserSettings;
 }

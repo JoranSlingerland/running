@@ -12,16 +12,18 @@ function setWithExpiry<T>(key: string, value: T, ttl: number) {
     value: value,
     expiry: now.getTime() + ttl,
   };
-  for (let attempt = 0; attempt < 2; attempt++) {
+  try {
+    sessionStorage.setItem(key, JSON.stringify(item));
+  } catch (err) {
+    console.error('Failed to set item in sessionStorage:', err);
+    removeExpiredItems();
     try {
       sessionStorage.setItem(key, JSON.stringify(item));
-      break;
     } catch (err) {
-      if (attempt === 0) {
-        removeExpiredItems();
-        continue;
-      }
-      console.error('Failed to set item in sessionStorage:', err);
+      console.error(
+        'Failed to set item in sessionStorage after removing expired items:',
+        err,
+      );
     }
   }
 }
@@ -40,50 +42,52 @@ function getWithExpiry(key: string) {
   return item.value;
 }
 
-function newKey(url: string, method: string, body?: object, query?: object) {
-  let body_string = '';
-  let query_string = '';
-  if (body) {
-    body_string = JSON.stringify(body);
-  }
-  if (query) {
-    query_string = JSON.stringify(query);
-  }
+function newKey<Query, Body>(
+  url: string,
+  method: string,
+  body?: Body,
+  query?: Query,
+) {
+  const body_string = body ? JSON.stringify(body) : '';
+  const query_string = query ? JSON.stringify(query) : '';
 
   return hash(url + body_string + query_string + method);
 }
 
 function removeExpiredItems() {
-  for (let i = 0; i < sessionStorage.length; i++) {
-    const key = sessionStorage.key(i);
-    if (key) {
-      const itemStr = sessionStorage.getItem(key);
-      if (itemStr) {
-        const item = JSON.parse(itemStr);
-        const now = new Date();
-        if (now.getTime() > item.expiry) {
-          sessionStorage.removeItem(key);
-        }
+  const now = new Date().getTime();
+  Object.keys(sessionStorage).forEach((key) => {
+    const itemStr = sessionStorage.getItem(key);
+    if (itemStr) {
+      const item = JSON.parse(itemStr);
+      if (now > item.expiry) {
+        sessionStorage.removeItem(key);
       }
     }
-  }
+  });
 }
 
 // main functions
-async function regularFetch({
+async function regularFetch<Query, Body>({
   url,
-  fallback_data,
   method,
   query,
   body,
+  fallback_data,
+  cache,
   controller,
 }: {
   url: string;
   fallback_data?: any;
   method: 'GET' | 'POST' | 'DELETE';
-  query?: object;
-  body?: object;
+  query?: Query;
+  body?: Body;
   controller?: AbortController;
+  cache?: {
+    enabled: boolean;
+    hours: number;
+    overwrite: boolean;
+  };
 }): Promise<{
   response: any;
   isError: boolean;
@@ -92,6 +96,14 @@ async function regularFetch({
   controller = controller || new AbortController();
   let isError = false;
   let error: WretchError | undefined = undefined;
+  const key = newKey(url, method, body, query);
+
+  if (cache && cache.enabled && !cache.overwrite) {
+    const response = getWithExpiry(key);
+    if (response) {
+      return { response, isError, error };
+    }
+  }
 
   const w = wretch()
     .url(url)
@@ -140,56 +152,15 @@ async function regularFetch({
   } else {
     isError = true;
   }
+
+  if (cache && cache.enabled && !isError) {
+    setWithExpiry(key, response, cache.hours * 1000 * 60 * 60);
+  }
+
   if (isError && fallback_data) {
     return { response: fallback_data, isError: isError, error: error };
   }
   return { response, isError, error };
-}
-
-async function cachedFetch({
-  url,
-  fallback_data,
-  method,
-  query,
-  body,
-  hours = 24,
-  controller,
-  overwrite = false,
-}: {
-  url: string;
-  fallback_data?: any;
-  method: 'GET' | 'POST' | 'DELETE';
-  query?: any;
-  body?: any;
-  hours?: number;
-  controller?: AbortController;
-  overwrite?: boolean;
-}): Promise<{
-  response: any;
-  isError: boolean;
-  error: WretchError | undefined;
-}> {
-  const key = newKey(url, method, body, query);
-  let response = getWithExpiry(key);
-  let isError = false;
-  let error: WretchError | undefined = undefined;
-  if (response && !overwrite) {
-    return { response, isError, error };
-  } else {
-    const { response, isError, error } = await regularFetch({
-      url,
-      fallback_data,
-      method,
-      body,
-      controller,
-      query,
-    });
-    if (isError && fallback_data) {
-      return { response: fallback_data, isError, error };
-    }
-    setWithExpiry(key, response, hours * 1000 * 60 * 60);
-    return { response, isError, error };
-  }
 }
 
 async function ApiWithMessage({
@@ -225,4 +196,4 @@ async function ApiWithMessage({
   }
 }
 
-export { ApiWithMessage, regularFetch, cachedFetch };
+export { ApiWithMessage, regularFetch };

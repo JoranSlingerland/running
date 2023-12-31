@@ -1,4 +1,3 @@
-import { regularFetch } from '../../utils/api';
 import { useFetch } from '../../hooks/useFetch';
 
 interface UserInfo {
@@ -15,7 +14,6 @@ function useUserInfo({ enabled = true }: { enabled?: boolean } = {}) {
   const fetchResult = useFetch<undefined, undefined, UserInfo>({
     url: '/.auth/me',
     method: 'GET',
-    fetchData: regularFetch,
     enabled,
     initialData: {
       clientPrincipal: {

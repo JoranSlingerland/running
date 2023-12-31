@@ -1,4 +1,3 @@
-import { cachedFetch } from '../../utils/api';
 import { useFetch } from '../../hooks/useFetch';
 
 interface GetActivitiesQuery {
@@ -163,9 +162,12 @@ function useActivities({
     url: '/api/data/activities',
     method: 'GET',
     query,
-    fetchData: cachedFetch,
     enabled,
     background,
+    cache: {
+      enabled: true,
+      hours: 24,
+    },
   });
 
   return fetchResult;

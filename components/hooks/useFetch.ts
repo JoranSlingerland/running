@@ -1,29 +1,21 @@
 import { useState } from 'react';
 import { useDeepCompareEffect } from 'rooks';
 import { WretchError } from 'wretch/resolver';
+import { regularFetch } from '../utils/api';
 
 interface UseFetchOptions<Body, Query, Response> {
   body?: Body;
   query?: Query;
   url: string;
   method: 'GET' | 'POST' | 'DELETE';
-  fetchData: (params: {
-    url: string;
-    method: 'GET' | 'POST' | 'DELETE';
-    query?: Query;
-    body?: Body;
-    abortController: AbortController;
-    overwrite?: boolean;
-    fallback_data?: Response;
-  }) => Promise<{
-    response: Response;
-    isError: boolean;
-    error: WretchError | undefined;
-  }>;
   enabled?: boolean;
   background?: boolean;
   overwrite?: boolean;
   initialData?: Response;
+  cache?: {
+    enabled: boolean;
+    hours: number;
+  };
 }
 
 interface UseFetchResult<Response> {
@@ -40,11 +32,11 @@ function useFetch<Body, Query, Response>({
   method,
   body,
   query,
-  fetchData,
   enabled = true,
   background = false,
   overwrite = false,
   initialData,
+  cache,
 }: UseFetchOptions<Body, Query, Response>): UseFetchResult<Response> {
   // Constants
   const [isLoading, setIsLoading] = useState(true);
@@ -63,14 +55,18 @@ function useFetch<Body, Query, Response>({
     setData(data);
   };
   const fetchDataAsync = async (abortController: AbortController) => {
-    await fetchData({
-      fallback_data: initialData,
+    await regularFetch({
       url,
       method,
-      body,
       query,
-      abortController,
-      overwrite: overwrite || refetch,
+      body,
+      fallback_data: initialData,
+      cache: {
+        enabled: cache && cache.enabled ? cache.enabled : false,
+        hours: 24,
+        overwrite: overwrite || refetch,
+      },
+      controller: abortController,
     }).then((data) => {
       if (cacheOnly) return;
 

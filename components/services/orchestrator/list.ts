@@ -1,4 +1,3 @@
-import { regularFetch } from '../../utils/api';
 import { useFetch } from '../../hooks/useFetch';
 
 interface ListOrchestratorQuery {
@@ -29,7 +28,6 @@ function useListOrchestrator({
     url: '/api/orchestrator/list',
     method: 'GET',
     query,
-    fetchData: regularFetch,
     enabled,
     background,
   });

@@ -1,4 +1,3 @@
-import { regularFetch } from '../../utils/api';
 import { useFetch } from '../../hooks/useFetch';
 
 interface StravaCallbackQuery {
@@ -25,7 +24,6 @@ function useStravaCallback({
     url: '/api/callback/strava',
     method: 'GET',
     query,
-    fetchData: regularFetch,
     enabled,
   });
 
