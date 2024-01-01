@@ -156,9 +156,7 @@ async function regularFetch<Query, Body>({
   if (cacheEnabled && !overwrite) {
     const response = getWithExpiry(key, storageType);
     if (response) {
-      if (messageEnabled) {
-        sendSuccessMessage();
-      }
+      if (messageEnabled) sendSuccessMessage();
       return { response, isError, error };
     }
   }
@@ -167,11 +165,11 @@ async function regularFetch<Query, Body>({
     .url(url)
     .addon(AbortAddon())
     .addon(QueryStringAddon)
-    .signal(controller);
+    .signal(controller)
+    .query(query || {});
 
   if (method === 'GET') {
     response = await w
-      .query(query || {})
       .get()
       .onAbort(() => {
         isError = true;
@@ -183,7 +181,6 @@ async function regularFetch<Query, Body>({
       });
   } else if (method === 'POST') {
     var response = await w
-      .query(query || {})
       .json(body || {})
       .post()
       .onAbort(() => {
@@ -196,7 +193,6 @@ async function regularFetch<Query, Body>({
       });
   } else if (method === 'DELETE') {
     var response = await w
-      .query(query || {})
       .json(body || {})
       .delete()
       .onAbort(() => {
@@ -211,25 +207,21 @@ async function regularFetch<Query, Body>({
     isError = true;
   }
 
-  if (messageEnabled) {
-    if (isError) {
-      sendErrorMessage();
-    } else {
-      sendSuccessMessage();
-    }
+  if (isError) {
+    if (messageEnabled) sendErrorMessage();
+    return {
+      response: fallback_data || response,
+      isError,
+      error,
+    };
   }
 
-  if (cacheEnabled && !isError) {
+  if (messageEnabled) sendSuccessMessage();
+
+  if (cacheEnabled) {
     setWithExpiry(key, response, hours * 1000 * 60 * 60, storageType);
   }
 
-  if (isError && fallback_data) {
-    return {
-      response: fallback_data,
-      isError: isError,
-      error: error,
-    };
-  }
   return { response, isError, error };
 }
 
