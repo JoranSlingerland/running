@@ -161,51 +161,37 @@ async function regularFetch<Query, Body>({
     }
   }
 
-  const w = wretch()
+  let w;
+  w = wretch()
     .url(url)
     .addon(AbortAddon())
     .addon(QueryStringAddon)
     .signal(controller)
     .query(query || {});
 
-  if (method === 'GET') {
-    response = await w
-      .get()
-      .onAbort(() => {
-        isError = true;
-      })
-      .json()
-      .catch((err: WretchError) => {
-        isError = true;
-        error = err;
-      });
-  } else if (method === 'POST') {
-    var response = await w
-      .json(body || {})
-      .post()
-      .onAbort(() => {
-        isError = true;
-      })
-      .json()
-      .catch((err: WretchError) => {
-        isError = true;
-        error = err;
-      });
-  } else if (method === 'DELETE') {
-    var response = await w
-      .json(body || {})
-      .delete()
-      .onAbort(() => {
-        isError = true;
-      })
-      .json()
-      .catch((err: WretchError) => {
-        isError = true;
-        error = err;
-      });
-  } else {
-    isError = true;
+  switch (method) {
+    case 'GET':
+      w = w.get();
+      break;
+    case 'POST':
+      w = w.json(body || {}).post();
+      break;
+    case 'DELETE':
+      w = w.json(body || {}).delete();
+      break;
+    default:
+      throw new Error('Invalid method');
   }
+
+  const response = await w
+    .onAbort(() => {
+      isError = true;
+    })
+    .json()
+    .catch((err: WretchError) => {
+      isError = true;
+      error = err;
+    });
 
   if (isError) {
     if (messageEnabled) sendErrorMessage();
