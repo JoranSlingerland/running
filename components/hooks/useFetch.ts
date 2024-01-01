@@ -17,6 +17,12 @@ interface UseFetchOptions<Body, Query, Response> {
     hours: number;
     storageType: StorageType;
   };
+  message?: {
+    enabled: boolean;
+    success: string;
+    error: string;
+    loading: string;
+  };
 }
 
 interface UseFetchResult<Response> {
@@ -38,6 +44,7 @@ function useFetch<Body, Query, Response>({
   overwrite = false,
   initialData,
   cache,
+  message,
 }: UseFetchOptions<Body, Query, Response>): UseFetchResult<Response> {
   // Constants
   const [isLoading, setIsLoading] = useState(true);
@@ -70,6 +77,7 @@ function useFetch<Body, Query, Response>({
           cache && cache.storageType ? cache.storageType : 'sessionStorage',
       },
       controller: abortController,
+      message,
     }).then((data) => {
       if (cacheOnly) return;
 

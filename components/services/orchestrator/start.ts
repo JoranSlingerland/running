@@ -1,14 +1,18 @@
-import { ApiWithMessage } from '../../utils/api';
+import { regularFetch } from '../../utils/api';
 
 interface StartOrchestratorQuery {
   functionName: 'orch_gather_data';
 }
 
 function startOrchestrator({ query }: { query: StartOrchestratorQuery }) {
-  ApiWithMessage({
+  regularFetch({
     url: '/api/orchestrator/start',
-    runningMessage: 'Calling Orchestrator',
-    successMessage: 'Orchestration called, This will take a while',
+    message: {
+      enabled: true,
+      success: 'Orchestration called, This will take a while',
+      error: 'Failed to call orchestrator',
+      loading: 'Calling Orchestrator',
+    },
     method: 'POST',
     query,
   });

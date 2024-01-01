@@ -1,4 +1,4 @@
-import { message } from 'antd';
+import { message as antdMessage } from 'antd';
 import wretch from 'wretch';
 import QueryStringAddon from 'wretch/addons/queryString';
 import AbortAddon from 'wretch/addons/abort';
@@ -81,6 +81,7 @@ async function regularFetch<Query, Body>({
   fallback_data,
   cache,
   controller,
+  message,
 }: {
   url: string;
   fallback_data?: any;
@@ -94,19 +95,70 @@ async function regularFetch<Query, Body>({
     overwrite: boolean;
     storageType: StorageType;
   };
+  message?: {
+    enabled: boolean;
+    success: string;
+    error: string;
+    loading: string;
+  };
 }): Promise<{
   response: any;
   isError: boolean;
   error: WretchError | undefined;
 }> {
+  // Variables
   controller = controller || new AbortController();
   let isError = false;
   let error: WretchError | undefined = undefined;
   const key = newKey(url, method, body, query);
+  const {
+    enabled: messageEnabled,
+    success: successMessage,
+    error: errorMessage,
+    loading: loadingMessage,
+  } = message || { enabled: false };
+  const {
+    enabled: cacheEnabled,
+    hours,
+    overwrite,
+    storageType,
+  } = cache || {
+    enabled: false,
+  };
 
-  if (cache && cache.enabled && !cache.overwrite) {
-    const response = getWithExpiry(key, cache.storageType);
+  // message functions
+  const sendErrorMessage = () => {
+    antdMessage.error({
+      content: errorMessage,
+      key: key,
+    });
+  };
+
+  const sendSuccessMessage = () => {
+    antdMessage.success({
+      content: successMessage,
+      key: key,
+    });
+  };
+
+  const sendLoadingMessage = () => {
+    antdMessage.loading({
+      content: loadingMessage,
+      key: key,
+    });
+  };
+
+  if (messageEnabled) {
+    sendLoadingMessage();
+  }
+
+  // Main logic
+  if (cacheEnabled && !overwrite) {
+    const response = getWithExpiry(key, storageType);
     if (response) {
+      if (messageEnabled) {
+        sendSuccessMessage();
+      }
       return { response, isError, error };
     }
   }
@@ -159,52 +211,26 @@ async function regularFetch<Query, Body>({
     isError = true;
   }
 
-  if (cache && cache.enabled && !isError) {
-    setWithExpiry(
-      key,
-      response,
-      cache.hours * 1000 * 60 * 60,
-      cache.storageType,
-    );
+  if (messageEnabled) {
+    if (isError) {
+      sendErrorMessage();
+    } else {
+      sendSuccessMessage();
+    }
+  }
+
+  if (cacheEnabled && !isError) {
+    setWithExpiry(key, response, hours * 1000 * 60 * 60, storageType);
   }
 
   if (isError && fallback_data) {
-    return { response: fallback_data, isError: isError, error: error };
+    return {
+      response: fallback_data,
+      isError: isError,
+      error: error,
+    };
   }
   return { response, isError, error };
 }
 
-async function ApiWithMessage({
-  url,
-  runningMessage,
-  successMessage,
-  method,
-  body,
-  query,
-}: {
-  url: string;
-  runningMessage: string;
-  successMessage: string;
-  method: 'GET' | 'POST' | 'DELETE';
-  body?: object;
-  query?: object;
-}): Promise<void> {
-  const hide = message.loading(runningMessage, 10);
-
-  const response = await regularFetch({
-    url,
-    method,
-    body,
-    query,
-  });
-
-  if (response.isError) {
-    hide();
-    message.error('Something went wrong :(');
-  } else {
-    hide();
-    message.success(successMessage);
-  }
-}
-
-export { ApiWithMessage, regularFetch };
+export { regularFetch };

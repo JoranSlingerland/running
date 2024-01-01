@@ -1,10 +1,14 @@
-import { ApiWithMessage } from '../../utils/api';
+import { regularFetch } from '../../utils/api';
 
-async function addUserData({ body }: { body: UserSettings }) {
-  return await ApiWithMessage({
+function addUserData({ body }: { body: UserSettings }) {
+  return regularFetch({
     url: '/api/user',
-    runningMessage: 'Saving account settings',
-    successMessage: 'Account settings saved!',
+    message: {
+      enabled: true,
+      success: 'Account settings saved!',
+      error: 'Failed to save account settings',
+      loading: 'Saving account settings',
+    },
     method: 'POST',
     body,
   });

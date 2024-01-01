@@ -1,4 +1,4 @@
-import { ApiWithMessage } from '../../utils/api';
+import { regularFetch } from '../../utils/api';
 
 interface TerminateOrchestratorQuery {
   instanceId: string;
@@ -9,10 +9,14 @@ function terminateOrchestrator({
 }: {
   query: TerminateOrchestratorQuery;
 }) {
-  ApiWithMessage({
+  regularFetch({
     url: '/api/orchestrator/terminate',
-    runningMessage: 'Terminating orchestrator',
-    successMessage: 'Orchestrator terminated',
+    message: {
+      enabled: true,
+      success: 'Orchestrator terminated',
+      error: 'Failed to terminate orchestrator',
+      loading: 'Terminating orchestrator',
+    },
     method: 'POST',
     query,
   });
