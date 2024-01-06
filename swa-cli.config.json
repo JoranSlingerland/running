@@ -1,0 +1,13 @@
+{
+  "$schema": "https://aka.ms/azure/static-web-apps-cli/schema",
+  "configurations": {
+    "running-frontend": {
+      "appLocation": ".",
+      "outputLocation": ".next",
+      "appBuildCommand": "yarn run build",
+      "run": "yarn run dev",
+      "appDevserverUrl": "http://localhost:8080",
+      "apiDevserverUrl": "http://localhost:7071"
+    }
+  }
+}
