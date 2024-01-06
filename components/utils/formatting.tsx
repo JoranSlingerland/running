@@ -2,6 +2,7 @@ import { Typography } from 'antd';
 import {
   convertSecondsToMinutes,
   convertSpeedToPaceInSeconds,
+  convertTime,
 } from './convert';
 
 const { Text } = Typography;
@@ -9,29 +10,56 @@ const { Text } = Typography;
 function formatDistance(distance: number, unit: string, decimals = 2) {
   switch (unit) {
     case 'm':
-      return <Text>{distance.toFixed(decimals)}M</Text>;
+      return <Text>{distance.toFixed(decimals)} M</Text>;
     case 'km':
-      return <Text>{(distance / 1000).toFixed(decimals)}KM</Text>;
+      return <Text>{(distance / 1000).toFixed(decimals)} KM</Text>;
     case 'mi':
-      return <Text>{(distance / 1609).toFixed(decimals)}MI</Text>;
+      return <Text>{(distance / 1609).toFixed(decimals)} MI</Text>;
     case 'ft':
-      return <Text>{(distance / 0.3048).toFixed(decimals)}FT</Text>;
+      return <Text>{(distance / 0.3048).toFixed(decimals)} FT</Text>;
     default:
-      return <Text>{distance.toFixed(decimals)}M</Text>;
+      return <Text>{distance.toFixed(decimals)} M</Text>;
   }
 }
 
-function formatTime(seconds: number) {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const remainingSeconds = seconds % 60;
+function formatTime({
+  seconds,
+  wrapInText = true,
+  addSeconds = true,
+  addMinutes = true,
+  addHours = true,
+}: {
+  seconds: number;
+  wrapInText?: boolean;
+  addSeconds?: boolean;
+  addMinutes?: boolean;
+  addHours?: boolean;
+}) {
+  const [hours, minutes, remainingSeconds] = convertTime(seconds);
 
-  return (
-    <Text>
-      {hours.toString().padStart(2, '0')}:{minutes.toString().padStart(2, '0')}:
-      {remainingSeconds.toString().padStart(2, '0')}
-    </Text>
-  );
+  let formattedTime = '';
+
+  if (addHours) {
+    const paddedHours = hours.toString().padStart(2, '0');
+    formattedTime += `${paddedHours}:`;
+  }
+
+  if (addMinutes) {
+    const paddedMinutes = minutes.toString().padStart(2, '0');
+    formattedTime += `${paddedMinutes}:`;
+  }
+
+  if (addSeconds) {
+    const paddedSeconds = remainingSeconds.toString().padStart(2, '0');
+    formattedTime += `${paddedSeconds}`;
+  }
+
+  // Remove trailing colon if seconds are not included
+  if (!addSeconds) {
+    formattedTime = formattedTime.slice(0, -1);
+  }
+
+  return wrapInText ? <Text>{formattedTime}</Text> : formattedTime;
 }
 
 function formatSpeed(metersPerSecond: number, unit: string, decimals = 2) {

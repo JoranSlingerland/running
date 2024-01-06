@@ -49,6 +49,14 @@ function convertPaceToSpeed(
   }
 }
 
+function convertTime(seconds: number) {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = seconds % 60;
+
+  return [hours, minutes, remainingSeconds];
+}
+
 function convertPaceToSeconds(pace: string): number {
   const [minutes, seconds = '0'] = pace.split(':');
   const paddedSeconds = seconds.padStart(2, '0');
@@ -61,4 +69,5 @@ export {
   convertDistance,
   convertPaceToSpeed,
   convertPaceToSeconds,
+  convertTime,
 };

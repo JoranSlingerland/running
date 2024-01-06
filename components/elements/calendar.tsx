@@ -1,183 +1,221 @@
-import { Calendar, Select, Button, Card, Typography } from 'antd';
-import dayLocaleData from 'dayjs/plugin/localeData';
+import React from 'react';
 import dayjs from 'dayjs';
-import type { Dayjs } from 'dayjs';
+import 'dayjs/locale/en';
 import updateLocale from 'dayjs/plugin/updateLocale';
-import type { Activity } from '../services/data/activities';
-import { formatDistance, formatTime, formatPace } from '../utils/formatting';
-import { CaretRightOutlined, CaretLeftOutlined } from '@ant-design/icons';
-import { CalendarMode } from 'antd/es/calendar/generateCalendar';
+import dayLocaleData from 'dayjs/plugin/localeData';
+import { CaretLeftOutlined, CaretRightOutlined } from '@ant-design/icons';
+import { Card, Select, Button, Typography, Skeleton } from 'antd';
+import {
+  getFirstMondayBeforeMonth,
+  getFirstSundayAfterMonth,
+} from '../utils/dateTimeHelpers';
 
 const { Text } = Typography;
 
 dayjs.extend(dayLocaleData);
 dayjs.extend(updateLocale);
 
-export default function AntdCalendar({
-  data,
-  startOfWeekDay = 1,
+export default function Calendar({
+  currentDay,
+  setCurrentDay,
+  onDateChange,
   isLoading = false,
-  onPanelChange,
-  currentMonth,
+  startOfWeekDay = 1,
+  dateCellRenderer,
+  metaCellRenderer,
+  titleAffix,
+  titlePrefix,
 }: {
-  data: Activity[] | undefined;
-  startOfWeekDay?: number;
+  currentDay: dayjs.Dayjs;
+  setCurrentDay: (month: dayjs.Dayjs) => void;
+  onDateChange: (date: dayjs.Dayjs) => void;
   isLoading?: boolean;
-  onPanelChange?: (value: dayjs.Dayjs, mode: CalendarMode) => void;
-  currentMonth?: dayjs.Dayjs;
+  startOfWeekDay?: number;
+  dateCellRenderer?: (date: dayjs.Dayjs) => JSX.Element;
+  metaCellRenderer?: (date: dayjs.Dayjs) => JSX.Element;
+  titleAffix?: (date: dayjs.Dayjs) => JSX.Element;
+  titlePrefix?: (date: dayjs.Dayjs) => JSX.Element;
 }): JSX.Element {
+  // Dayjs locale
   dayjs.updateLocale('en', {
     weekStart: startOfWeekDay,
   });
 
-  return (
-    <Calendar
-      onPanelChange={onPanelChange}
-      headerRender={({ value, type, onChange, onTypeChange }) => {
-        const start = 0;
-        const end = 12;
-        const monthOptions = [];
+  // Constants
+  const daysOfWeek = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+    'meta',
+  ];
+  const months = Array.from({ length: 12 }, (_, i) => dayjs().month(i));
+  const years = Array.from({ length: 11 }, (_, i) =>
+    currentDay.year(dayjs().year() - 5 + i).format('YYYY'),
+  );
 
-        let current = value.clone();
-        const localeData = value.localeData();
-        const months = [];
-        for (let i = 0; i < 12; i++) {
-          current = current.month(i);
-          months.push(localeData.months(current));
-        }
+  // Functions
+  const handleNextMonth = () => {
+    const newDay = currentDay.add(1, 'month');
+    setCurrentDay(newDay);
+    onDateChange(newDay);
+  };
 
-        for (let i = start; i < end; i++) {
-          monthOptions.push(
-            <Select.Option key={i} value={i}>
-              {months[i]}
-            </Select.Option>,
-          );
-        }
+  const handlePreviousMonth = () => {
+    const newDay = currentDay.subtract(1, 'month');
+    setCurrentDay(newDay);
+    onDateChange(newDay);
+  };
 
-        const year = value.year();
-        const month = value.month();
-        const options = [];
-        for (let i = year - 10; i < year + 10; i += 1) {
-          options.push(
-            <Select.Option key={i} value={i}>
-              {i}
-            </Select.Option>,
-          );
-        }
-        return (
-          <div>
-            <div className="space-x-2">
-              <Select
-                value={year}
-                onChange={(newYear) => {
-                  const now = value.clone().year(newYear);
-                  onChange(now);
-                }}
-              >
-                {options}
-              </Select>
-              <Select
-                value={month}
-                onChange={(newMonth) => {
-                  const now = value.clone().month(newMonth);
-                  onChange(now);
-                }}
-              >
-                {monthOptions}
-              </Select>
-              <Button
-                onClick={() => {
-                  onChange(dayjs());
-                }}
-              >
-                Today
-              </Button>
-              <Button
-                onClick={() => {
-                  const now = value.clone().subtract(1, 'month');
-                  onChange(now);
-                }}
-                icon={<CaretLeftOutlined />}
-              />
-              <Button
-                onClick={() => {
-                  const now = value.clone().add(1, 'month');
-                  onChange(now);
-                }}
-                icon={<CaretRightOutlined />}
-              />
-            </div>
-          </div>
-        );
+  const handleToday = () => {
+    const newDay = dayjs();
+    setCurrentDay(newDay);
+    onDateChange(newDay);
+  };
+
+  const handleSetYear = (year: number) => {
+    const newDay = currentDay.year(year);
+    setCurrentDay(newDay);
+    onDateChange(newDay);
+  };
+
+  const handleSetMonth = (month: number) => {
+    const newDay = currentDay.month(month);
+    setCurrentDay(newDay);
+    onDateChange(newDay);
+  };
+
+  // Days to display
+  const firstDay = getFirstMondayBeforeMonth(currentDay);
+  const lastDay = getFirstSundayAfterMonth(currentDay);
+  const daysInMonth = Array.from(
+    { length: lastDay.diff(firstDay, 'day') + 1 },
+    (_, i) => dayjs(firstDay).add(i, 'day'),
+  );
+
+  // Content
+  const Loading = (
+    <Skeleton
+      paragraph={{
+        rows: 2,
+        width: ['90%', '90%'],
       }}
-      fullCellRender={(value: Dayjs, info) => {
-        const isCurrentMonth = value.month() === currentMonth?.month();
-        const date = value.format('YYYY-MM-DD');
-        const filtered = data
-          ? data.filter((item) => {
-              return item.start_date.includes(date);
-            })
-          : [];
-        return (
-          <Card
-            size="default"
-            title={
-              <div className="flex justify-between">
-                <Text type={isCurrentMonth ? undefined : 'secondary'}>
-                  {value.format('DD')}
-                </Text>
-                <Text type={isCurrentMonth ? undefined : 'secondary'}>
-                  {value.format('DD') === '01' ? value.format('MMMM') : ''}
-                </Text>
-              </div>
-            }
-            bordered={false}
-            loading={isLoading}
-            style={{ height: '100%', minHeight: '200px' }}
-            bodyStyle={{ padding: '0px' }}
-            headStyle={{ padding: '0px', paddingLeft: '8px' }}
-            hoverable
-          >
-            <div>{filtered.map((item) => calendarItem({ item }))}</div>
-          </Card>
-        );
-      }}
+      title={false}
+      active
+      className="mt-2"
     />
   );
-}
 
-function calendarItem({ item }: { item: Activity }) {
-  return (
-    <Card
-      size="small"
-      style={{ height: '100%' }}
-      bodyStyle={{ padding: '0px' }}
-      title={item.type}
-      className="my-2"
-      hoverable
-    >
-      <div className="flex flex-col text-left ml-2">
-        {item.elapsed_time !== null &&
-          item.elapsed_time !== undefined &&
-          item.elapsed_time !== 0 && (
-            <Text>{formatTime(item.elapsed_time)}</Text>
-          )}
-        {item.distance !== null &&
-          item.distance !== undefined &&
-          item.distance !== 0 && (
-            <Text> {formatDistance(item.distance, 'km')}</Text>
-          )}
-        {item.average_heartrate !== null &&
-          item.average_heartrate !== undefined &&
-          item.average_heartrate !== 0 && (
-            <Text>{item.average_heartrate} BPM</Text>
-          )}
-        {item.average_speed !== null &&
-          item.average_speed !== undefined &&
-          item.average_speed !== 0 && (
-            <Text>{formatPace(item.average_speed, 'km')}</Text>
-          )}
+  const Header = (
+    <div>
+      <div className="space-x-2">
+        <Select
+          value={currentDay.year()}
+          onChange={(newYear) => {
+            handleSetYear(Number(newYear));
+          }}
+          options={years.map((year) => ({
+            label: year,
+            value: year,
+          }))}
+        />
+        <Select
+          value={currentDay.format('MMMM')}
+          options={months.map((month) => ({
+            label: month.format('MMMM'),
+            value: month.format('M'),
+          }))}
+          onChange={(newMonth) => {
+            handleSetMonth(Number(newMonth) - 1);
+          }}
+          className="w-32"
+        />
+        <Button
+          onClick={() => {
+            handleToday();
+          }}
+          type="primary"
+        >
+          Today
+        </Button>
+        <Button
+          onClick={() => {
+            handlePreviousMonth();
+          }}
+          icon={<CaretLeftOutlined />}
+        />
+        <Button
+          onClick={() => {
+            handleNextMonth();
+          }}
+          icon={<CaretRightOutlined />}
+        />
       </div>
-    </Card>
+    </div>
+  );
+
+  const CalendarHeader = (
+    <div className="grid grid-cols-8">
+      {daysOfWeek.map((day, index) => (
+        <Text
+          className={`text-center my-2 ${
+            index === daysOfWeek.length - 1 ? 'ml-4' : ''
+          }`}
+          key={index}
+        >
+          {day}
+        </Text>
+      ))}
+    </div>
+  );
+
+  const CalendarDays = (
+    <div className="grid grid-cols-8">
+      {daysInMonth.map((day, index) => (
+        <React.Fragment key={index}>
+          <Card
+            style={{ height: '100%', minHeight: '9rem' }}
+            bodyStyle={{ padding: '2px' }}
+            className="rounded-none"
+          >
+            <div>
+              {titlePrefix && titlePrefix(day)}
+              <Text className="m-2">
+                {day.date() === 1 ? ` ${day.format('MMMM')} ` : ''}
+                {day.format('D')}
+              </Text>
+              {titleAffix && titleAffix(day)}
+            </div>
+            {isLoading && Loading}
+            {dateCellRenderer && dateCellRenderer(day)}
+          </Card>
+          {day.day() === 0 && (
+            <div className="pl-4">
+              <Card
+                style={{ height: '100%', minHeight: '9rem' }}
+                bodyStyle={{ padding: '0px' }}
+                className="rounded-none"
+              >
+                {isLoading && Loading}
+                {metaCellRenderer && metaCellRenderer(day)}
+              </Card>
+            </div>
+          )}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="">
+      {Header}
+      <div>
+        {CalendarHeader}
+        {CalendarDays}
+      </div>
+    </div>
   );
 }
