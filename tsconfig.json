@@ -14,8 +14,9 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "noUnusedLocals": true,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+    "downlevelIteration": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/_app.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/_app.tsx", "tailwind.config.ts"],
   "exclude": ["node_modules"]
 }

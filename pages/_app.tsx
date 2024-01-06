@@ -39,10 +39,8 @@ function MyApp({ Component, pageProps }: AppProps) {
       >
         <div className={`min-h-screen flex flex-col ${className}`}>
           <Navbar />
-          <div className="flex justify-center px-2 xl:px-0">
-            <div className="w-full max-w-7xl">
-              <Component {...pageProps} />
-            </div>
+          <div className="px-2">
+            <Component {...pageProps} />
           </div>
           <Footer />
         </div>
