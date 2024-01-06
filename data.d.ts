@@ -33,6 +33,7 @@ type UserSettings = {
       max: number;
     }[];
   };
+  gender: 'male' | 'female' | undefined;
 };
 
 type StorageType = 'sessionStorage' | 'localStorage';

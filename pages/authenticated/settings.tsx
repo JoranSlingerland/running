@@ -218,6 +218,7 @@ export default function Home() {
               title={<Text strong>Theme</Text>}
               description={
                 <Select
+                  className="w-24"
                   value={userSettings?.data.dark_mode}
                   onChange={(value: any) => {
                     userSettings?.overwriteData({
@@ -229,6 +230,28 @@ export default function Home() {
                     { value: 'system', label: 'System' },
                     { value: 'dark', label: 'Dark' },
                     { value: 'light', label: 'Light' },
+                  ]}
+                  loading={userSettings?.isLoading}
+                />
+              }
+            />
+          </List.Item>
+          <List.Item>
+            <List.Item.Meta
+              title={<Text strong>Gender</Text>}
+              description={
+                <Select
+                  className="w-24"
+                  value={userSettings?.data.gender}
+                  onChange={(value: any) => {
+                    userSettings?.overwriteData({
+                      ...userSettings?.data,
+                      gender: value,
+                    });
+                  }}
+                  options={[
+                    { value: 'male', label: 'Male' },
+                    { value: 'female', label: 'Female' },
                   ]}
                   loading={userSettings?.isLoading}
                 />

@@ -66,6 +66,22 @@ interface Activity {
   perceived_exertion: null | number;
   userId: string;
   full_data: boolean;
+  custom_fields_calculated: boolean;
+  hr_reserve: null | number;
+  pace_reserve: null | number;
+  hr_trimp: null | number;
+  pace_trimp: null | number;
+  hr_max_percentage: null | number;
+  vo2max_estimate: {
+    workout_vo2_max: null | number;
+    vo2_max_percentage: null | number;
+    estimated_vo2_max: null | number;
+  };
+  user_input: {
+    include_in_vo2max_estimate: boolean;
+    tags: string[];
+    notes: string;
+  };
   streams?: null | streams;
 }
 

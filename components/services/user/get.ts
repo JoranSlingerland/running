@@ -25,6 +25,7 @@ const initialData: UserSettings = {
     threshold: 0,
     zones: [],
   },
+  gender: undefined,
 };
 
 function useUserSettings({
