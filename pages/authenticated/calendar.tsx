@@ -4,20 +4,22 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/en';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import dayLocaleData from 'dayjs/plugin/localeData';
-import { useState } from 'react';
+import utc from 'dayjs/plugin/utc';
+import { useState, useEffect } from 'react';
 import {
   getFirstMondayBeforeMonth,
   getFirstSundayAfterMonth,
 } from '../../components/utils/dateTimeHelpers';
 import { GetActivitiesQuery } from '../../components/services/data/activities';
 import { useActivities } from '../../components/services/data/activities';
-import { Card, Typography, Statistic } from 'antd';
+import { Card, Typography, Statistic, Select, Divider } from 'antd';
 import type { Activity } from '../../components/services/data/activities';
 import {
   formatDistance,
   formatTime,
   formatPace,
   formatNumber,
+  sportIcon,
 } from '../../components/utils/formatting';
 import isBetween from 'dayjs/plugin/isBetween';
 import { convertDistance } from '../../components/utils/convert';
@@ -28,6 +30,7 @@ import { useProps } from '../../components/hooks/useProps';
 dayjs.extend(isBetween);
 dayjs.extend(dayLocaleData);
 dayjs.extend(updateLocale);
+dayjs.extend(utc);
 
 const { Text } = Typography;
 
@@ -55,9 +58,19 @@ function CalendarItem({
   return (
     <Card
       size="small"
-      style={{ height: '100%' }}
+      style={{
+        height: '100%',
+        filter: 'brightness(1.2)',
+      }}
       bodyStyle={{ padding: '0px' }}
-      title={item.type}
+      title={
+        <div className="flex items-center space-x-1">
+          {sportIcon(item.type)}{' '}
+          <Text>
+            {item.type} at {dayjs.utc(item.start_date_local).format('HH:mm')}
+          </Text>
+        </div>
+      }
       className="my-2"
       hoverable
       bordered={false}
@@ -97,13 +110,29 @@ function CalendarItem({
 function MetaItem({
   sportsData,
   sportTotals,
+  sports,
+  selectedSport,
+  setSelectedSport,
 }: {
   sportsData: SportData[];
   sportTotals: SportTotals[];
+  sports: string[];
+  selectedSport: string | null;
+  setSelectedSport: (value: string) => void;
 }): JSX.Element {
+  const data = [
+    264, 417, 438, 887, 309, 397, 550, 575, 563, 430, 525, 592, 492, 467, 513,
+    546, 983, 340, 539, 243, 226, 192,
+  ].map((value, index) => ({ value, index }));
+  const config = {
+    data,
+    padding: 8,
+    xField: 'index',
+    yField: 'value',
+  };
   return (
-    <div className="ml-2">
-      <div>
+    <div>
+      <div className="ml-2">
         <Text>Total</Text>
         {sportTotals.map((item) => (
           <>
@@ -126,33 +155,50 @@ function MetaItem({
           </>
         ))}
       </div>
-      <div>
-        {sportsData &&
-          sportsData.length > 0 &&
-          sportsData.map((item) => (
-            <div key={item.sport}>
-              <Text>{item.sport}</Text>
-              {item.distance !== 0 && (
-                <Statistic
-                  value={convertDistance(item.distance, 'km')}
-                  suffix="km"
-                  precision={2}
-                />
-              )}
-              <Statistic
-                value={item.time}
-                formatter={(value) => {
-                  return formatTime({
-                    seconds: value as number,
-                    wrapInText: false,
-                    addSeconds: false,
-                  });
-                }}
-              />
+      {sportsData.length > 1 && <Divider className="m-0 my-2" />}
+      <div className="ml-2">
+        {sportsData.length > 1 && (
+          <>
+            <Select
+              style={{ width: 200 }}
+              onChange={(value: string) => setSelectedSport(value)}
+              placeholder="Select a sport"
+              value={selectedSport}
+              options={sports.map((item) => ({
+                label: item,
+                value: item,
+              }))}
+            />
+            {sportsData.length > 1 &&
+              sportsData
+                .filter(
+                  (item) => !selectedSport || item.sport === selectedSport,
+                )
+                .map((item) => (
+                  <div key={item.sport}>
+                    {item.distance !== 0 && (
+                      <Statistic
+                        value={convertDistance(item.distance, 'km')}
+                        suffix="km"
+                        precision={2}
+                      />
+                    )}
+                    <Statistic
+                      value={item.time}
+                      formatter={(value) => {
+                        return formatTime({
+                          seconds: value as number,
+                          wrapInText: false,
+                          addSeconds: false,
+                        });
+                      }}
+                    />
 
-              <Statistic value={item.tss} suffix="TSS" precision={0} />
-            </div>
-          ))}
+                    <Statistic value={item.tss} suffix="TSS" precision={0} />
+                  </div>
+                ))}
+          </>
+        )}
       </div>
     </div>
   );
@@ -175,6 +221,7 @@ export default function app() {
       query: query,
     });
   const { userSettings } = useProps();
+  const [selectedSport, setSelectedSport] = useState<string | null>(null);
 
   function onDateChange(date: Dayjs) {
     setQuery({
@@ -186,9 +233,15 @@ export default function app() {
   const dateCellRenderer = (value: Dayjs) => {
     const date = value.format('YYYY-MM-DD');
     const filtered = activitiesData
-      ? activitiesData.filter((item) => {
-          return item.start_date.includes(date);
-        })
+      ? activitiesData
+          .filter((item) => {
+            return item.start_date.includes(date);
+          })
+          .sort(
+            (a, b) =>
+              dayjs(a.start_date_local).unix() -
+              dayjs(b.start_date_local).unix(),
+          )
       : [];
     return (
       <>
@@ -231,6 +284,15 @@ export default function app() {
     });
 
     const sports = [...new Set(filtered.map((item) => item.type))];
+
+    useEffect(() => {
+      if (selectedSport === null && sports.length > 0) {
+        const runSport = sports.find((sport) => sport === 'run');
+        setSelectedSport(runSport ? runSport : sports[0]);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     // Get distance and time for each sport
     const sportsData: SportData[] = sports.map((sport) => {
       const sportData = filtered.filter((item) => item.type === sport);
@@ -266,7 +328,13 @@ export default function app() {
     return (
       <>
         {!activitiesIsLoading && (
-          <MetaItem sportsData={sportsData} sportTotals={[totals]} />
+          <MetaItem
+            sportsData={sportsData}
+            sportTotals={[totals]}
+            sports={sports}
+            selectedSport={selectedSport}
+            setSelectedSport={setSelectedSport}
+          />
         )}
       </>
     );

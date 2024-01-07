@@ -9,6 +9,7 @@ import {
   getFirstMondayBeforeMonth,
   getFirstSundayAfterMonth,
 } from '../utils/dateTimeHelpers';
+import { blue } from '@ant-design/colors';
 
 const { Text } = Typography;
 
@@ -110,50 +111,48 @@ export default function Calendar({
   );
 
   const Header = (
-    <div>
-      <div className="space-x-2">
-        <Select
-          value={currentDay.year()}
-          onChange={(newYear) => {
-            handleSetYear(Number(newYear));
-          }}
-          options={years.map((year) => ({
-            label: year,
-            value: year,
-          }))}
-        />
-        <Select
-          value={currentDay.format('MMMM')}
-          options={months.map((month) => ({
-            label: month.format('MMMM'),
-            value: month.format('M'),
-          }))}
-          onChange={(newMonth) => {
-            handleSetMonth(Number(newMonth) - 1);
-          }}
-          className="w-32"
-        />
-        <Button
-          onClick={() => {
-            handleToday();
-          }}
-          type="primary"
-        >
-          Today
-        </Button>
-        <Button
-          onClick={() => {
-            handlePreviousMonth();
-          }}
-          icon={<CaretLeftOutlined />}
-        />
-        <Button
-          onClick={() => {
-            handleNextMonth();
-          }}
-          icon={<CaretRightOutlined />}
-        />
-      </div>
+    <div className="space-x-2 mt-4">
+      <Select
+        value={currentDay.year()}
+        onChange={(newYear) => {
+          handleSetYear(Number(newYear));
+        }}
+        options={years.map((year) => ({
+          label: year,
+          value: year,
+        }))}
+      />
+      <Select
+        value={currentDay.format('MMMM')}
+        options={months.map((month) => ({
+          label: month.format('MMMM'),
+          value: month.format('M'),
+        }))}
+        onChange={(newMonth) => {
+          handleSetMonth(Number(newMonth) - 1);
+        }}
+        className="w-32"
+      />
+      <Button
+        onClick={() => {
+          handleToday();
+        }}
+        type="primary"
+      >
+        Today
+      </Button>
+      <Button
+        onClick={() => {
+          handlePreviousMonth();
+        }}
+        icon={<CaretLeftOutlined />}
+      />
+      <Button
+        onClick={() => {
+          handleNextMonth();
+        }}
+        icon={<CaretRightOutlined />}
+      />
     </div>
   );
 
@@ -171,41 +170,50 @@ export default function Calendar({
       ))}
     </div>
   );
+  console.log(blue);
 
   const CalendarDays = (
     <div className="grid grid-cols-8">
-      {daysInMonth.map((day, index) => (
-        <React.Fragment key={index}>
-          <Card
-            style={{ height: '100%', minHeight: '9rem' }}
-            bodyStyle={{ padding: '2px' }}
-            className="rounded-none"
-          >
-            <div>
-              {titlePrefix && titlePrefix(day)}
-              <Text className="m-2">
-                {day.date() === 1 ? ` ${day.format('MMMM')} ` : ''}
-                {day.format('D')}
-              </Text>
-              {titleAffix && titleAffix(day)}
-            </div>
-            {isLoading && Loading}
-            {dateCellRenderer && dateCellRenderer(day)}
-          </Card>
-          {day.day() === 0 && (
-            <div className="pl-4">
-              <Card
-                style={{ height: '100%', minHeight: '9rem' }}
-                bodyStyle={{ padding: '0px' }}
-                className="rounded-none"
-              >
-                {isLoading && Loading}
-                {metaCellRenderer && metaCellRenderer(day)}
-              </Card>
-            </div>
-          )}
-        </React.Fragment>
-      ))}
+      {daysInMonth.map((day, index) => {
+        const isToday = dayjs().startOf('day').isSame(day.startOf('day'));
+        const inThePast = dayjs().startOf('day').isAfter(day.startOf('day'));
+        return (
+          <React.Fragment key={index}>
+            <Card
+              style={{
+                height: '100%',
+                minHeight: '9rem',
+                filter: inThePast ? 'brightness(0.8)' : '',
+              }}
+              bodyStyle={{ padding: '4px' }}
+              className="rounded-none"
+            >
+              <div className={`rounded-full ${isToday ? `bg-[#40a9ff]` : ''}`}>
+                {titlePrefix && titlePrefix(day)}
+                <Text className="m-2">
+                  {day.date() === 1 ? ` ${day.format('MMMM')} ` : ''}
+                  {day.format('D')}
+                </Text>
+                {titleAffix && titleAffix(day)}
+              </div>
+              {isLoading && Loading}
+              {dateCellRenderer && dateCellRenderer(day)}
+            </Card>
+            {day.day() === 0 && (
+              <div className="pl-4">
+                <Card
+                  style={{ height: '100%', minHeight: '9rem' }}
+                  bodyStyle={{ padding: '0px' }}
+                  className="rounded-none"
+                >
+                  {isLoading && Loading}
+                  {metaCellRenderer && metaCellRenderer(day)}
+                </Card>
+              </div>
+            )}
+          </React.Fragment>
+        );
+      })}
     </div>
   );
 
