@@ -1,4 +1,5 @@
 import { Typography } from 'antd';
+
 import {
   convertSecondsToMinutes,
   convertSpeedToPaceInSeconds,
@@ -120,6 +121,41 @@ function formatNumber({
   return wrapInText ? <Text>{formattedNumber}</Text> : formattedNumber;
 }
 
+function renderIcon(icon: string) {
+  return (
+    <i className={`material-icons text-[#000000E0] dark:text-[#FFFFFFD9]`}>
+      {icon}
+    </i>
+  );
+}
+
+function sportIcon(sport: string) {
+  switch (sport) {
+    case 'Run':
+      return renderIcon('directions_run');
+    case 'Ride':
+      return renderIcon('directions_bike');
+    case 'Swim':
+      return renderIcon('pool');
+    case 'Walk':
+      return renderIcon('directions_walk');
+    case 'Hike':
+      return renderIcon('terrain');
+    case 'Workout':
+      return renderIcon('fitness_center');
+    case 'WeightTraining':
+      return renderIcon('fitness_center');
+    case 'Yoga':
+      return renderIcon('self_improvement');
+    case 'VirtualRide':
+      return renderIcon('directions_bike');
+    case 'VirtualRun':
+      return renderIcon('directions_run');
+    default:
+      return <></>;
+  }
+}
+
 export {
   formatDistance,
   formatTime,
@@ -127,4 +163,6 @@ export {
   formatPace,
   formatHeartRate,
   formatNumber,
+  renderIcon,
+  sportIcon,
 };
