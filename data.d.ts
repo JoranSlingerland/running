@@ -33,6 +33,9 @@ type UserSettings = {
       max: number;
     }[];
   };
+  preferences: {
+    preferred_tss_type: 'hr' | 'pace';
+  };
   gender: 'male' | 'female' | undefined;
 };
 

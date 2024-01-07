@@ -178,7 +178,7 @@ export default function Home() {
     return false;
   }
 
-  // constants
+  // Components
   const buttonRow = (
     title: string,
     description: string,
@@ -190,6 +190,7 @@ export default function Home() {
       <Text>{description}</Text>
     </div>
   );
+
   const items = [
     {
       key: '1',
@@ -424,6 +425,56 @@ export default function Home() {
     },
     {
       key: '2',
+      title: 'Preferences',
+      label: 'Preferences',
+      children: (
+        <List
+          size="large"
+          loading={userSettings?.isLoading}
+          footer={
+            <div className="flex flex-col items-center">
+              <Button
+                type="primary"
+                onClick={() => {
+                  handleSaveAccountSettings();
+                }}
+                disabled={saveButtonDisabled()}
+              >
+                Save
+              </Button>
+            </div>
+          }
+        >
+          <List.Item>
+            <List.Item.Meta
+              title={<Text strong>Preferred TSS type</Text>}
+              description={
+                <Select
+                  className="w-36"
+                  value={userSettings?.data?.preferences?.preferred_tss_type}
+                  onChange={(value: any) => {
+                    userSettings?.overwriteData({
+                      ...userSettings?.data,
+                      preferences: {
+                        ...userSettings?.data.preferences,
+                        preferred_tss_type: value,
+                      },
+                    });
+                  }}
+                  options={[
+                    { value: 'hr', label: 'HeartRate' },
+                    { value: 'pace', label: 'Pace' },
+                  ]}
+                  loading={userSettings?.isLoading}
+                />
+              }
+            />
+          </List.Item>
+        </List>
+      ),
+    },
+    {
+      key: '3',
       title: 'Actions',
       label: 'Actions',
       children: (
@@ -478,7 +529,7 @@ export default function Home() {
       ),
     },
     {
-      key: '3',
+      key: '4',
       title: 'Orchestrations',
       label: 'Orchestrations',
       children: (

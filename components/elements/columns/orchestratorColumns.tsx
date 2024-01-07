@@ -48,6 +48,14 @@ export const orchestratorColumns: ColumnsType<ListOrchestratorData> = [
     },
   },
   {
+    title: 'Activities added',
+    dataIndex: 'output',
+    key: 'output',
+    render: (text: any) => {
+      return <Text>{text.ActivitiesAdded}</Text>;
+    },
+  },
+  {
     title: 'Created Time',
     dataIndex: 'createdTime',
     key: 'createdTime',
