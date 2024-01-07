@@ -26,6 +26,9 @@ const initialData: UserSettings = {
     zones: [],
   },
   gender: undefined,
+  preferences: {
+    preferred_tss_type: 'pace',
+  },
 };
 
 function useUserSettings({

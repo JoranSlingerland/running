@@ -17,9 +17,13 @@ import {
   formatDistance,
   formatTime,
   formatPace,
+  formatNumber,
 } from '../../components/utils/formatting';
 import isBetween from 'dayjs/plugin/isBetween';
 import { convertDistance } from '../../components/utils/convert';
+import { isNotNullOrZero } from '../../components/utils/utils';
+import { getPreferredTss } from '../../components/utils/tssHelpers';
+import { useProps } from '../../components/hooks/useProps';
 
 dayjs.extend(isBetween);
 dayjs.extend(dayLocaleData);
@@ -31,14 +35,23 @@ type SportData = {
   sport: string;
   distance: number;
   time: number;
+  tss: number;
 };
 
 type SportTotals = {
   distance: number;
   time: number;
+  tss: number;
 };
 
-function CalendarItem({ item }: { item: Activity }): JSX.Element {
+function CalendarItem({
+  item,
+  userSettings,
+}: {
+  item: Activity;
+  userSettings: UserSettings | undefined;
+}): JSX.Element {
+  const tss = getPreferredTss(userSettings, item);
   return (
     <Card
       size="small"
@@ -50,32 +63,32 @@ function CalendarItem({ item }: { item: Activity }): JSX.Element {
       bordered={false}
     >
       <div className="flex flex-col text-left ml-2">
-        {item.elapsed_time !== null &&
-          item.elapsed_time !== undefined &&
-          item.elapsed_time !== 0 && (
-            <Text>
-              {formatTime({
-                seconds: item.elapsed_time,
-                wrapInText: false,
-                addSeconds: false,
-              })}
-            </Text>
-          )}
-        {item.distance !== null &&
-          item.distance !== undefined &&
-          item.distance !== 0 && (
-            <Text> {formatDistance(item.distance, 'km')}</Text>
-          )}
-        {item.average_heartrate !== null &&
-          item.average_heartrate !== undefined &&
-          item.average_heartrate !== 0 && (
-            <Text>{item.average_heartrate} BPM</Text>
-          )}
-        {item.average_speed !== null &&
-          item.average_speed !== undefined &&
-          item.average_speed !== 0 && (
-            <Text>{formatPace(item.average_speed, 'km')}</Text>
-          )}
+        {isNotNullOrZero(item.elapsed_time) && (
+          <Text>
+            {formatTime({
+              seconds: item.elapsed_time,
+              wrapInText: false,
+              addSeconds: false,
+            })}
+            {' hours'}
+          </Text>
+        )}
+        {isNotNullOrZero(item.distance) && (
+          <Text> {formatDistance(item.distance, 'km')}</Text>
+        )}
+        {isNotNullOrZero(tss.tss) && (
+          <Text>
+            {formatNumber({ number: tss.tss, wrapInText: false, decimals: 0 })}{' '}
+            TSS
+          </Text>
+        )}
+
+        {isNotNullOrZero(item.average_heartrate) && (
+          <Text>{item.average_heartrate} BPM</Text>
+        )}
+        {isNotNullOrZero(item.average_speed) && (
+          <Text>{formatPace(item.average_speed, 'km')}</Text>
+        )}
       </div>
     </Card>
   );
@@ -92,14 +105,40 @@ function MetaItem({
     <div className="ml-2">
       <div>
         <Text>Total</Text>
-        <div className="flex flex-row space-x-4">
-          {sportTotals.map((item) => (
-            <>
-              <Statistic
-                value={convertDistance(item.distance, 'km')}
-                suffix="km"
-                precision={2}
-              />
+        {sportTotals.map((item) => (
+          <>
+            <Statistic
+              value={convertDistance(item.distance, 'km')}
+              suffix="km"
+              precision={2}
+            />
+            <Statistic
+              value={item.time}
+              formatter={(value) => {
+                return formatTime({
+                  seconds: value as number,
+                  wrapInText: false,
+                  addSeconds: false,
+                });
+              }}
+            />
+            <Statistic value={item.tss} suffix="TSS" precision={0} />
+          </>
+        ))}
+      </div>
+      <div>
+        {sportsData &&
+          sportsData.length > 0 &&
+          sportsData.map((item) => (
+            <div key={item.sport}>
+              <Text>{item.sport}</Text>
+              {item.distance !== 0 && (
+                <Statistic
+                  value={convertDistance(item.distance, 'km')}
+                  suffix="km"
+                  precision={2}
+                />
+              )}
               <Statistic
                 value={item.time}
                 formatter={(value) => {
@@ -110,36 +149,8 @@ function MetaItem({
                   });
                 }}
               />
-            </>
-          ))}
-        </div>
-      </div>
-      <div>
-        {sportsData &&
-          sportsData.length > 0 &&
-          sportsData.map((item) => (
-            <div key={item.sport}>
-              <Text>{item.sport}</Text>
-              <div className="flex flex-row space-x-4">
-                {item.distance !== 0 && (
-                  <Statistic
-                    value={convertDistance(item.distance, 'km')}
-                    suffix="km"
-                    precision={2}
-                  />
-                )}
 
-                <Statistic
-                  value={item.time}
-                  formatter={(value) => {
-                    return formatTime({
-                      seconds: value as number,
-                      wrapInText: false,
-                      addSeconds: false,
-                    });
-                  }}
-                />
-              </div>
+              <Statistic value={item.tss} suffix="TSS" precision={0} />
             </div>
           ))}
       </div>
@@ -163,6 +174,8 @@ export default function app() {
     useActivities({
       query: query,
     });
+  const { userSettings } = useProps();
+
   function onDateChange(date: Dayjs) {
     setQuery({
       startDate: getFirstMondayBeforeMonth(date).format('YYYY-MM-DD'),
@@ -180,25 +193,43 @@ export default function app() {
     return (
       <>
         {filtered.map((item, index) => (
-          <CalendarItem key={index} item={item} />
+          <CalendarItem
+            key={index}
+            item={item}
+            userSettings={userSettings?.data}
+          />
         ))}
       </>
     );
   };
 
   const metaCellRenderer = (value: Dayjs) => {
+    interface ActivityWithTss extends Activity {
+      tss?: number;
+    }
+
     const firstDay = value.startOf('week');
     const lastDay = value.endOf('week');
 
     if (activitiesData === undefined) {
       return <></>;
     }
-    const filtered = activitiesData
+    let filtered: ActivityWithTss[] = activitiesData
       ? activitiesData.filter((item) => {
           const date = dayjs(item.start_date);
           return date.isBetween(firstDay, lastDay);
         })
       : [];
+
+    // Add preferred tss to each activity
+    filtered = filtered.map((item) => {
+      const tss = getPreferredTss(userSettings?.data, item);
+      return {
+        ...item,
+        tss: tss.tss || 0,
+      };
+    });
+
     const sports = [...new Set(filtered.map((item) => item.type))];
     // Get distance and time for each sport
     const sportsData: SportData[] = sports.map((sport) => {
@@ -211,10 +242,12 @@ export default function app() {
         (prev, curr) => prev + curr.elapsed_time,
         0,
       );
+      const tss = sportData.reduce((prev, curr) => prev + (curr.tss || 0), 0);
       return {
         sport: sport,
         distance: distance,
         time: time,
+        tss: tss,
       };
     });
 
@@ -224,9 +257,10 @@ export default function app() {
         return {
           distance: prev.distance + curr.distance,
           time: prev.time + curr.time,
+          tss: prev.tss + curr.tss,
         };
       },
-      { distance: 0, time: 0 },
+      { distance: 0, time: 0, tss: 0 },
     );
 
     return (

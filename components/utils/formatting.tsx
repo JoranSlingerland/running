@@ -104,4 +104,27 @@ function formatHeartRate(heartRate: number) {
   return <Text>{Math.floor(heartRate)} BPM</Text>;
 }
 
-export { formatDistance, formatTime, formatSpeed, formatPace, formatHeartRate };
+function formatNumber({
+  number,
+  decimals = 2,
+  wrapInText = true,
+}: {
+  number: number | undefined;
+  decimals?: number;
+  wrapInText?: boolean;
+}) {
+  if (number === undefined) {
+    return '';
+  }
+  const formattedNumber = number.toFixed(decimals);
+  return wrapInText ? <Text>{formattedNumber}</Text> : formattedNumber;
+}
+
+export {
+  formatDistance,
+  formatTime,
+  formatSpeed,
+  formatPace,
+  formatHeartRate,
+  formatNumber,
+};
