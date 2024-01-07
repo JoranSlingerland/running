@@ -5,17 +5,26 @@ import AbortAddon from 'wretch/addons/abort';
 import hash from 'object-hash';
 import { WretchError } from 'wretch/resolver';
 
+// Types
+type cachedResponse = {
+  value: any;
+  expiry: number;
+  start_end_dates?: [string, string][];
+};
+
 // Helper functions
 function setWithExpiry<T>(
   key: string,
   value: T,
   ttl: number,
   storageType: StorageType,
+  start_end_dates?: [string, string][],
 ) {
   const now = new Date();
   const item = {
     value: value,
     expiry: now.getTime() + ttl,
+    ...(start_end_dates && { start_end_dates: start_end_dates }),
   };
   const storage = window[storageType];
   try {
@@ -31,7 +40,10 @@ function setWithExpiry<T>(
   }
 }
 
-function getWithExpiry(key: string, storageType: StorageType) {
+function getWithExpiry(
+  key: string,
+  storageType: StorageType,
+): null | cachedResponse {
   const storage = window[storageType];
   const itemStr = storage.getItem(key);
   if (!itemStr) {
@@ -43,7 +55,7 @@ function getWithExpiry(key: string, storageType: StorageType) {
     storage.removeItem(key);
     return null;
   }
-  return item.value;
+  return item;
 }
 
 function newKey<Query, Body>(
@@ -72,6 +84,45 @@ function removeExpiredItems(storageType: StorageType) {
   });
 }
 
+function deDupeData<T>(data: T[], deDupeKey: string) {
+  const seen = new Set();
+  return data.filter((item: any) => {
+    const duplicate = seen.has(item[deDupeKey]);
+    seen.add(item[deDupeKey]);
+    return !duplicate;
+  });
+}
+
+function mergeStartEndDates(
+  start_end_dates: [string, string][],
+): [string, string][] {
+  if (start_end_dates.length === 1) {
+    return start_end_dates;
+  } else {
+    const sorted = start_end_dates.sort((a, b) => {
+      return new Date(a[0]).getTime() - new Date(b[0]).getTime();
+    });
+
+    const merged: [string, string][] = [];
+    let current = sorted[0];
+    for (let i = 1; i < sorted.length; i++) {
+      const [current_start, current_end] = current;
+      const [next_start, next_end] = sorted[i];
+      if (new Date(current_end) >= new Date(next_start)) {
+        current = [
+          current_start,
+          new Date(current_end) > new Date(next_end) ? current_end : next_end,
+        ];
+      } else {
+        merged.push(current);
+        current = sorted[i];
+      }
+    }
+    merged.push(current);
+    return merged;
+  }
+}
+
 // main functions
 async function regularFetch<Query, Body>({
   url,
@@ -94,6 +145,9 @@ async function regularFetch<Query, Body>({
     hours: number;
     overwrite: boolean;
     storageType: StorageType;
+    customKey?: string;
+    useStartEndDates?: boolean;
+    deDupeKey?: string;
   };
   message?: {
     enabled: boolean;
@@ -110,7 +164,8 @@ async function regularFetch<Query, Body>({
   controller = controller || new AbortController();
   let isError = false;
   let error: WretchError | undefined = undefined;
-  const key = newKey(url, method, body, query);
+  let cachedResponse: cachedResponse | null = null;
+  const key = cache?.customKey || newKey(url, method, body, query);
   const {
     enabled: messageEnabled,
     success: successMessage,
@@ -154,10 +209,33 @@ async function regularFetch<Query, Body>({
 
   // Main logic
   if (cacheEnabled && !overwrite) {
-    const response = getWithExpiry(key, storageType);
-    if (response) {
+    cachedResponse = getWithExpiry(key, storageType);
+    if (cachedResponse) {
       if (messageEnabled) sendSuccessMessage();
-      return { response, isError, error };
+      if (cache?.useStartEndDates) {
+        const { startDate, endDate } = query as any;
+        var fallsWithin = false;
+
+        if (Array.isArray(cachedResponse.start_end_dates)) {
+          for (const [
+            cache_start_date,
+            cache_end_date,
+          ] of cachedResponse.start_end_dates) {
+            if (
+              new Date(startDate) >= new Date(cache_start_date) &&
+              new Date(endDate) <= new Date(cache_end_date)
+            ) {
+              fallsWithin = true;
+              break;
+            }
+          }
+        }
+        if (fallsWithin) {
+          return { response: cachedResponse.value, isError, error };
+        }
+      } else {
+        return { response: cachedResponse.value, isError, error };
+      }
     }
   }
 
@@ -205,7 +283,31 @@ async function regularFetch<Query, Body>({
   if (messageEnabled) sendSuccessMessage();
 
   if (cacheEnabled) {
-    setWithExpiry(key, response, hours * 1000 * 60 * 60, storageType);
+    if (cache?.useStartEndDates) {
+      const { startDate, endDate } = query as any;
+      const cachedData = cachedResponse?.value || [];
+      const newData = cachedData.concat(response);
+      const deDupedData = deDupeData(newData, cache.deDupeKey || 'id');
+      let start_end_dates: [string, string][] = [];
+      if (!cachedResponse?.start_end_dates) {
+        start_end_dates = [[startDate, endDate]];
+      } else {
+        start_end_dates = cachedResponse.start_end_dates.concat([
+          [startDate, endDate],
+        ]);
+        start_end_dates = mergeStartEndDates(start_end_dates);
+      }
+
+      setWithExpiry(
+        key,
+        deDupedData,
+        hours * 1000 * 60 * 60,
+        storageType,
+        start_end_dates,
+      );
+    } else {
+      setWithExpiry(key, response, hours * 1000 * 60 * 60, storageType);
+    }
   }
 
   return { response, isError, error };

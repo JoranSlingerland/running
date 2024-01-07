@@ -14,8 +14,11 @@ interface UseFetchOptions<Body, Query, Response> {
   initialData?: Response;
   cache?: {
     enabled: boolean;
-    hours: number;
-    storageType: StorageType;
+    hours?: number;
+    storageType?: StorageType;
+    customKey?: string;
+    useStartEndDates?: boolean;
+    deDupeKey?: string;
   };
   message?: {
     enabled: boolean;
@@ -70,11 +73,12 @@ function useFetch<Body, Query, Response>({
       body,
       fallback_data: initialData,
       cache: {
-        enabled: cache && cache.enabled ? cache.enabled : false,
-        hours: 24,
+        enabled: cache?.enabled || false,
+        hours: cache?.hours || 24,
         overwrite: overwrite || refetch,
-        storageType:
-          cache && cache.storageType ? cache.storageType : 'sessionStorage',
+        storageType: cache?.storageType || 'sessionStorage',
+        customKey: cache?.customKey || undefined,
+        useStartEndDates: cache?.useStartEndDates || false,
       },
       controller: abortController,
       message,
@@ -94,6 +98,7 @@ function useFetch<Body, Query, Response>({
     let abortController = new AbortController();
 
     if (enabled) {
+      console.log('useFetch: fetching data');
       setIsError(false);
       setError(undefined);
       setIsLoading(background || refetch ? false : true);

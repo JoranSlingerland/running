@@ -182,8 +182,11 @@ function useActivities({
     background,
     cache: {
       enabled: true,
-      hours: 24,
+      hours: 1,
       storageType: 'sessionStorage',
+      customKey: query ? 'activities' : undefined,
+      useStartEndDates: query ? true : false,
+      deDupeKey: 'id',
     },
   });
 
