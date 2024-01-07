@@ -5,6 +5,8 @@ import AbortAddon from 'wretch/addons/abort';
 import hash from 'object-hash';
 import { WretchError } from 'wretch/resolver';
 
+const MILLISECONDS_IN_HOUR = 1000 * 60 * 60;
+
 // Types
 type cachedResponse = {
   value: any;
@@ -58,18 +60,6 @@ function getWithExpiry(
   return item;
 }
 
-function newKey<Query, Body>(
-  url: string,
-  method: string,
-  body?: Body,
-  query?: Query,
-) {
-  const body_string = body ? JSON.stringify(body) : '';
-  const query_string = query ? JSON.stringify(query) : '';
-
-  return hash(url + body_string + query_string + method);
-}
-
 function removeExpiredItems(storageType: StorageType) {
   const now = new Date().getTime();
   const storage = window[storageType];
@@ -82,6 +72,18 @@ function removeExpiredItems(storageType: StorageType) {
       }
     }
   });
+}
+
+function newKey<Query, Body>(
+  url: string,
+  method: string,
+  body?: Body,
+  query?: Query,
+) {
+  const body_string = body ? JSON.stringify(body) : '';
+  const query_string = query ? JSON.stringify(query) : '';
+
+  return hash(url + body_string + query_string + method);
 }
 
 function deDupeData<T>(data: T[], deDupeKey: string) {
@@ -121,6 +123,129 @@ function mergeStartEndDates(
     merged.push(current);
     return merged;
   }
+}
+
+function handleCacheSet<Query>({
+  cache,
+  cachedResponse,
+  query,
+  key,
+  response,
+  hours,
+  storageType,
+}: {
+  cache?: {
+    useStartEndDates?: boolean;
+    deDupeKey?: string;
+  };
+  cachedResponse: cachedResponse | null;
+  query?: Query;
+  key: string;
+  response: any;
+  hours: number;
+  storageType: StorageType;
+}) {
+  if (cache?.useStartEndDates) {
+    const { startDate, endDate } = query as any;
+    const cachedData = cachedResponse?.value || [];
+    const newData = cachedData.concat(response);
+    const deDupedData = deDupeData(newData, cache.deDupeKey || 'id');
+    let start_end_dates: [string, string][] = [];
+    if (!cachedResponse?.start_end_dates) {
+      start_end_dates = [[startDate, endDate]];
+    } else {
+      start_end_dates = cachedResponse.start_end_dates.concat([
+        [startDate, endDate],
+      ]);
+      start_end_dates = mergeStartEndDates(start_end_dates);
+    }
+
+    setWithExpiry(
+      key,
+      deDupedData,
+      hours * MILLISECONDS_IN_HOUR,
+      storageType,
+      start_end_dates,
+    );
+  } else {
+    setWithExpiry(key, response, hours * MILLISECONDS_IN_HOUR, storageType);
+  }
+}
+
+function createWretchInstance<Query, Body>({
+  url,
+  method,
+  query,
+  body,
+  controller,
+}: {
+  url: string;
+  method: 'GET' | 'POST' | 'DELETE';
+  controller: AbortController;
+  query?: Query;
+  body?: Body;
+}) {
+  let wretchInstance;
+  wretchInstance = wretch()
+    .url(url)
+    .addon(AbortAddon())
+    .addon(QueryStringAddon)
+    .signal(controller)
+    .query(query || {});
+
+  switch (method) {
+    case 'GET':
+      wretchInstance = wretchInstance.get();
+      break;
+    case 'POST':
+      wretchInstance = wretchInstance.json(body || {}).post();
+      break;
+    case 'DELETE':
+      wretchInstance = wretchInstance.json(body || {}).delete();
+      break;
+    default:
+      throw new Error('Invalid method');
+  }
+  return wretchInstance;
+}
+
+function processCachedResponse<Query>(
+  cachedResponse: any,
+  messageEnabled: boolean,
+  sendSuccessMessage: Function,
+  cache: any,
+  query: Query,
+  isError: boolean,
+  error: any,
+) {
+  if (cachedResponse) {
+    if (messageEnabled) sendSuccessMessage();
+    if (cache?.useStartEndDates) {
+      const { startDate, endDate } = query as any;
+      var fallsWithin = false;
+
+      if (Array.isArray(cachedResponse.start_end_dates)) {
+        for (const [
+          cache_start_date,
+          cache_end_date,
+        ] of cachedResponse.start_end_dates) {
+          if (
+            new Date(startDate) >= new Date(cache_start_date) &&
+            new Date(endDate) <= new Date(cache_end_date)
+          ) {
+            fallsWithin = true;
+            break;
+          }
+        }
+      }
+      if (fallsWithin) {
+        return { response: cachedResponse.value, isError, error };
+      }
+    } else {
+      return { response: cachedResponse.value, isError, error };
+    }
+  }
+  return null;
 }
 
 // main functions
@@ -181,7 +306,7 @@ async function regularFetch<Query, Body>({
     enabled: false,
   };
 
-  // message functions
+  // Define message functions
   const sendErrorMessage = () => {
     antdMessage.error({
       content: errorMessage,
@@ -203,65 +328,37 @@ async function regularFetch<Query, Body>({
     });
   };
 
+  // Start main logic
   if (messageEnabled) {
     sendLoadingMessage();
   }
 
-  // Main logic
+  // Check cache
   if (cacheEnabled && !overwrite) {
     cachedResponse = getWithExpiry(key, storageType);
-    if (cachedResponse) {
-      if (messageEnabled) sendSuccessMessage();
-      if (cache?.useStartEndDates) {
-        const { startDate, endDate } = query as any;
-        var fallsWithin = false;
-
-        if (Array.isArray(cachedResponse.start_end_dates)) {
-          for (const [
-            cache_start_date,
-            cache_end_date,
-          ] of cachedResponse.start_end_dates) {
-            if (
-              new Date(startDate) >= new Date(cache_start_date) &&
-              new Date(endDate) <= new Date(cache_end_date)
-            ) {
-              fallsWithin = true;
-              break;
-            }
-          }
-        }
-        if (fallsWithin) {
-          return { response: cachedResponse.value, isError, error };
-        }
-      } else {
-        return { response: cachedResponse.value, isError, error };
-      }
+    const processedResponse = processCachedResponse(
+      cachedResponse,
+      messageEnabled,
+      sendSuccessMessage,
+      cache,
+      query,
+      isError,
+      error,
+    );
+    if (processedResponse) {
+      return processedResponse;
     }
   }
 
-  let w;
-  w = wretch()
-    .url(url)
-    .addon(AbortAddon())
-    .addon(QueryStringAddon)
-    .signal(controller)
-    .query(query || {});
-
-  switch (method) {
-    case 'GET':
-      w = w.get();
-      break;
-    case 'POST':
-      w = w.json(body || {}).post();
-      break;
-    case 'DELETE':
-      w = w.json(body || {}).delete();
-      break;
-    default:
-      throw new Error('Invalid method');
-  }
-
-  const response = await w
+  // Fetch data
+  const wretchInstance = createWretchInstance({
+    url,
+    method,
+    query,
+    body,
+    controller,
+  });
+  const response = await wretchInstance
     .onAbort(() => {
       isError = true;
     })
@@ -271,6 +368,7 @@ async function regularFetch<Query, Body>({
       error = err;
     });
 
+  // Handle errors
   if (isError) {
     if (messageEnabled) sendErrorMessage();
     return {
@@ -280,36 +378,21 @@ async function regularFetch<Query, Body>({
     };
   }
 
-  if (messageEnabled) sendSuccessMessage();
-
+  // Handle cache
   if (cacheEnabled) {
-    if (cache?.useStartEndDates) {
-      const { startDate, endDate } = query as any;
-      const cachedData = cachedResponse?.value || [];
-      const newData = cachedData.concat(response);
-      const deDupedData = deDupeData(newData, cache.deDupeKey || 'id');
-      let start_end_dates: [string, string][] = [];
-      if (!cachedResponse?.start_end_dates) {
-        start_end_dates = [[startDate, endDate]];
-      } else {
-        start_end_dates = cachedResponse.start_end_dates.concat([
-          [startDate, endDate],
-        ]);
-        start_end_dates = mergeStartEndDates(start_end_dates);
-      }
-
-      setWithExpiry(
-        key,
-        deDupedData,
-        hours * 1000 * 60 * 60,
-        storageType,
-        start_end_dates,
-      );
-    } else {
-      setWithExpiry(key, response, hours * 1000 * 60 * 60, storageType);
-    }
+    handleCacheSet({
+      cache,
+      cachedResponse,
+      query,
+      key,
+      response,
+      hours,
+      storageType,
+    });
   }
 
+  // Handle success
+  if (messageEnabled) sendSuccessMessage();
   return { response, isError, error };
 }
 
