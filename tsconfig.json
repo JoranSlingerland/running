@@ -19,12 +19,12 @@
     "baseUrl": ".",
     "paths": {
       "@elements/*": ["components/elements/*"],
-      "@hooks/*": ["components/hooks/*"],
+      "@hooks/*": ["lib/hooks/*"],
       "@lib/*": ["components/lib/*"],
       "@modules/*": ["components/modules/*"],
-      "@services/*": ["components/services/*"],
+      "@services/*": ["lib/services/*"],
       "@ui/*": ["components/ui/*"],
-      "@utils/*": ["components/utils/*"],
+      "@utils/*": ["lib/utils/*"],
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/_app.tsx", "tailwind.config.ts"],

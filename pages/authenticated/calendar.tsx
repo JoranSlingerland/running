@@ -9,7 +9,7 @@ import { useState, useEffect } from 'react';
 import {
   getFirstMondayBeforeMonth,
   getFirstSundayAfterMonth,
-} from '../../components/utils/dateTimeHelpers';
+} from '@utils/dateTimeHelpers';
 import { GetActivitiesQuery } from '@services/data/activities';
 import { useActivities } from '@services/data/activities';
 import { Card, Typography, Statistic, Select, Divider } from 'antd';
@@ -20,7 +20,7 @@ import {
   formatPace,
   formatNumber,
   sportIcon,
-} from '../../components/utils/formatting';
+} from '@utils/formatting';
 import isBetween from 'dayjs/plugin/isBetween';
 import { convertDistance } from '@utils/convert';
 import { isNotNullOrZero } from '@utils/utils';
