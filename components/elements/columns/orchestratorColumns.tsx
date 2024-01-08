@@ -6,9 +6,9 @@ import {
   ExclamationCircleOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
-import { terminateOrchestrator } from '../../services/orchestrator/terminate';
-import { purgeOrchestrator } from '../../services/orchestrator/purge';
-import { ListOrchestratorData } from '../../services/orchestrator/list';
+import { terminateOrchestrator } from '@services/orchestrator/terminate';
+import { purgeOrchestrator } from '@services/orchestrator/purge';
+import { ListOrchestratorData } from '@services/orchestrator/list';
 
 const { Text } = Typography;
 

@@ -8,25 +8,22 @@ import {
   Select,
   Input,
 } from 'antd';
-import AntdTable from '../../components/elements/antdTable';
+import AntdTable from '@elements/antdTable';
 import { useWindowSize } from 'rooks';
-import { startOrchestrator } from '../../components/services/orchestrator/start';
-import { orchestratorColumns } from '../../components/elements/columns/orchestratorColumns';
-import { heartRateZoneColumns } from '../../components/elements/columns/heartRateZoneColumns';
-import { paceZoneColumns } from '../../components/elements/columns/paceZoneColumns';
-import { useListOrchestrator } from '../../components/services/orchestrator/list';
+import { startOrchestrator } from '@services/orchestrator/start';
+import { orchestratorColumns } from '@elements/columns/orchestratorColumns';
+import { heartRateZoneColumns } from '@elements/columns/heartRateZoneColumns';
+import { paceZoneColumns } from '@elements/columns/paceZoneColumns';
+import { useListOrchestrator } from '@services/orchestrator/list';
 import { RedoOutlined } from '@ant-design/icons';
-import { useProps } from '../../components/hooks/useProps';
-import { addUserData } from '../../components/services/user/post';
+import { useProps } from '@hooks/useProps';
+import { addUserData } from '@services/user/post';
 import getConfig from 'next/config';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-import { formatPace } from '../../components/utils/formatting';
-import useSessionStorageState from '../../components/hooks/useSessionStorageState';
-import {
-  convertPaceToSpeed,
-  convertPaceToSeconds,
-} from '../../components/utils/convert';
+import { formatPace } from '@utils/formatting';
+import useSessionStorageState from '@hooks/useSessionStorageState';
+import { convertPaceToSpeed, convertPaceToSeconds } from '@utils/convert';
 
 const { Text, Title } = Typography;
 

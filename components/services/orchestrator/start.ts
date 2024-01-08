@@ -1,4 +1,4 @@
-import { regularFetch } from '../../utils/api';
+import { regularFetch } from '@utils/api';
 
 interface StartOrchestratorQuery {
   functionName: 'orch_gather_data';

@@ -1,4 +1,4 @@
-import Calendar from '../../components/elements/calendar';
+import Calendar from '@elements/calendar';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import 'dayjs/locale/en';
@@ -10,10 +10,10 @@ import {
   getFirstMondayBeforeMonth,
   getFirstSundayAfterMonth,
 } from '../../components/utils/dateTimeHelpers';
-import { GetActivitiesQuery } from '../../components/services/data/activities';
-import { useActivities } from '../../components/services/data/activities';
+import { GetActivitiesQuery } from '@services/data/activities';
+import { useActivities } from '@services/data/activities';
 import { Card, Typography, Statistic, Select, Divider } from 'antd';
-import type { Activity } from '../../components/services/data/activities';
+import type { Activity } from '@services/data/activities';
 import {
   formatDistance,
   formatTime,
@@ -22,10 +22,10 @@ import {
   sportIcon,
 } from '../../components/utils/formatting';
 import isBetween from 'dayjs/plugin/isBetween';
-import { convertDistance } from '../../components/utils/convert';
-import { isNotNullOrZero } from '../../components/utils/utils';
-import { getPreferredTss } from '../../components/utils/tssHelpers';
-import { useProps } from '../../components/hooks/useProps';
+import { convertDistance } from '@utils/convert';
+import { isNotNullOrZero } from '@utils/utils';
+import { getPreferredTss } from '@utils/tssHelpers';
+import { useProps } from '@hooks/useProps';
 
 dayjs.extend(isBetween);
 dayjs.extend(dayLocaleData);

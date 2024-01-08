@@ -1,6 +1,6 @@
 import type { ColumnsType } from 'antd/es/table';
 import { Typography } from 'antd';
-import { formatHeartRate } from '../../utils/formatting';
+import { formatHeartRate } from '@utils/formatting';
 
 const { Text } = Typography;
 

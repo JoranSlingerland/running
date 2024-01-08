@@ -1,13 +1,13 @@
-import Navbar from '../components/modules/navbar';
+import Navbar from '@modules/navbar';
 import '../styles/globals.css';
 import { ConfigProvider } from 'antd';
 import type { AppProps } from 'next/app';
-import Footer from '../components/modules/footer';
+import Footer from '@modules/footer';
 import React from 'react';
-import useTheme from '../components/hooks/useTheme';
-import { useUserInfo } from '../components/services/.auth/me';
-import { PropsContext } from '../components/hooks/useProps';
-import { useUserSettings } from '../components/services/user/get';
+import useTheme from '@hooks/useTheme';
+import { useUserInfo } from '@services/.auth/me';
+import { PropsContext } from '@hooks/useProps';
+import { useUserSettings } from '@services/user/get';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const userSettings = useUserSettings();

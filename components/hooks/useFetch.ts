@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useDeepCompareEffect } from 'rooks';
 import { WretchError } from 'wretch/resolver';
-import { regularFetch } from '../utils/api';
+import { regularFetch } from '@utils/api';
 
 interface UseFetchOptions<Body, Query, Response> {
   body?: Body;

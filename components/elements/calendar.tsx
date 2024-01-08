@@ -8,7 +8,7 @@ import { Card, Select, Button, Typography, Skeleton } from 'antd';
 import {
   getFirstMondayBeforeMonth,
   getFirstSundayAfterMonth,
-} from '../utils/dateTimeHelpers';
+} from '@utils/dateTimeHelpers';
 import { blue } from '@ant-design/colors';
 
 const { Text } = Typography;

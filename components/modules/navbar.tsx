@@ -8,7 +8,7 @@ import { Menu, Typography, Drawer } from 'antd';
 import { useEffect, useState } from 'react';
 import type { MenuProps } from 'antd/es/menu';
 import { MenuOutlined } from '@ant-design/icons';
-import { useProps } from '../hooks/useProps';
+import { useProps } from '@hooks/useProps';
 
 type MenuItem = Required<MenuProps>['items'][number];
 

@@ -1,4 +1,4 @@
-import type { Activity } from '../services/data/activities';
+import type { Activity } from '@services/data/activities';
 
 function getPreferredTss(
   userSettings: UserSettings | undefined,

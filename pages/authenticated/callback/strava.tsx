@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useStravaCallback } from '../../../components/services/callback/strava';
+import { useStravaCallback } from '@services/callback/strava';
 import { Steps } from 'antd';
 import {
   LoadingOutlined,

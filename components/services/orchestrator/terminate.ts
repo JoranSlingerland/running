@@ -1,4 +1,4 @@
-import { regularFetch } from '../../utils/api';
+import { regularFetch } from '@utils/api';
 
 interface TerminateOrchestratorQuery {
   instanceId: string;
