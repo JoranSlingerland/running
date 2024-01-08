@@ -31,13 +31,17 @@ const useTheme = (dark_mode: ThemeType) => {
   const className =
     dark_mode === 'system'
       ? themeType === 'dark'
-        ? 'dark bg-neutral-900'
-        : 'bg-white'
+        ? 'dark'
+        : ''
       : dark_mode === 'dark'
-      ? 'dark bg-neutral-900'
-      : 'bg-white';
+      ? 'dark'
+      : '';
 
-  return { algorithmTheme, className };
+  useEffect(() => {
+    document.documentElement.className = className;
+  }, [className]);
+
+  return { algorithmTheme };
 };
 
 export default useTheme;

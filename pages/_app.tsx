@@ -12,9 +12,7 @@ import { useUserSettings } from '@services/user/get';
 function MyApp({ Component, pageProps }: AppProps) {
   const userSettings = useUserSettings();
   const { data: userInfo } = useUserInfo();
-  const { algorithmTheme, className } = useTheme(
-    userSettings.data?.dark_mode || 'system',
-  );
+  const { algorithmTheme } = useTheme(userSettings.data?.dark_mode || 'system');
 
   return (
     <PropsContext.Provider
@@ -26,7 +24,6 @@ function MyApp({ Component, pageProps }: AppProps) {
       <ConfigProvider
         theme={{
           algorithm: algorithmTheme,
-
           components: {
             List: {
               paddingContentHorizontalLG: 0,
@@ -37,13 +34,11 @@ function MyApp({ Component, pageProps }: AppProps) {
           },
         }}
       >
-        <div className={`min-h-screen flex flex-col ${className}`}>
-          <Navbar />
-          <div className="px-2">
-            <Component {...pageProps} />
-          </div>
-          <Footer />
+        <Navbar />
+        <div className="px-2">
+          <Component {...pageProps} />
         </div>
+        <Footer />
       </ConfigProvider>
     </PropsContext.Provider>
   );
