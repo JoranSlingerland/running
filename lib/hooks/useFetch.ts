@@ -98,7 +98,6 @@ function useFetch<Body, Query, Response>({
     let abortController = new AbortController();
 
     if (enabled) {
-      console.log('useFetch: fetching data');
       setIsError(false);
       setError(undefined);
       setIsLoading(background || refetch ? false : true);
