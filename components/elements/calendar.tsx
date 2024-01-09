@@ -9,7 +9,6 @@ import {
   getFirstMondayBeforeMonth,
   getFirstSundayAfterMonth,
 } from '@utils/dateTimeHelpers';
-import { blue } from '@ant-design/colors';
 
 const { Text } = Typography;
 
@@ -170,7 +169,6 @@ export default function Calendar({
       ))}
     </div>
   );
-  console.log(blue);
 
   const CalendarDays = (
     <div className="grid grid-cols-8">
