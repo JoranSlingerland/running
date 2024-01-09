@@ -8,39 +8,52 @@ import useTheme from '@hooks/useTheme';
 import { useUserInfo } from '@services/.auth/me';
 import { PropsContext } from '@hooks/useProps';
 import { useUserSettings } from '@services/user/get';
+import { Inter as FontSans } from 'next/font/google';
+
+import { cn } from '@utils/shadcn';
+
+export const fontSans = FontSans({
+  subsets: ['latin'],
+  variable: '--font-sans',
+});
 
 function MyApp({ Component, pageProps }: AppProps) {
   const userSettings = useUserSettings();
   const { data: userInfo } = useUserInfo();
   const { algorithmTheme } = useTheme(userSettings.data?.dark_mode || 'system');
 
+  const className = () =>
+    cn('bg-background font-sans antialiased', fontSans.variable || '');
+
   return (
-    <PropsContext.Provider
-      value={{
-        userInfo,
-        userSettings,
-      }}
-    >
-      <ConfigProvider
-        theme={{
-          algorithm: algorithmTheme,
-          components: {
-            List: {
-              paddingContentHorizontalLG: 0,
-            },
-            Form: {
-              marginLG: 8,
-            },
-          },
+    <div className={className()}>
+      <PropsContext.Provider
+        value={{
+          userInfo,
+          userSettings,
         }}
       >
-        <Navbar />
-        <div className="px-2">
-          <Component {...pageProps} />
-        </div>
-        <Footer />
-      </ConfigProvider>
-    </PropsContext.Provider>
+        <ConfigProvider
+          theme={{
+            algorithm: algorithmTheme,
+            components: {
+              List: {
+                paddingContentHorizontalLG: 0,
+              },
+              Form: {
+                marginLG: 8,
+              },
+            },
+          }}
+        >
+          <Navbar />
+          <div className="px-2">
+            <Component {...pageProps} />
+          </div>
+          <Footer />
+        </ConfigProvider>
+      </PropsContext.Provider>
+    </div>
   );
 }
 
