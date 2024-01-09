@@ -1,136 +1,195 @@
-import {
-  LogoutOutlined,
-  SettingOutlined,
-  UserOutlined,
-  CalendarOutlined,
-} from '@ant-design/icons';
-import { Menu, Typography, Drawer } from 'antd';
-import { useEffect, useState } from 'react';
-import type { MenuProps } from 'antd/es/menu';
-import { MenuOutlined } from '@ant-design/icons';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { Icon } from '@elements/icon';
 import { useProps } from '@hooks/useProps';
+import { cn } from '@utils/shadcn';
+import { Avatar, AvatarFallback } from '@ui/avatar';
+import { Button } from '@ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@ui/dropdown-menu';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@ui/sheet';
+import { Separator } from '@ui/separator';
 
-type MenuItem = Required<MenuProps>['items'][number];
+const menuItems = [
+  {
+    key: '/authenticated/calendar/',
+    icon: <Icon icon={'calendar_month'} />,
+    label: 'Calendar',
+  },
+];
 
-const { Link } = Typography;
+const userMenuItems = [
+  {
+    key: '/authenticated/settings/',
+    icon: <Icon icon={'settings'} />,
+    label: 'Settings',
+  },
+];
+
+const logOut = {
+  key: '/.auth/logout?post_logout_redirect_uri=/',
+  icon: <Icon icon={'logout'} />,
+  label: 'Logout',
+  onclick: () => {
+    sessionStorage.clear();
+  },
+};
+
+function getLinkClassName(key: string, current: string) {
+  return `flex items-center text-sm font-medium transition-colors ${
+    key === current
+      ? 'bg-slate-400 rounded-xl bg-opacity-10 p-1 text-primary'
+      : 'hover:bg-slate-400 hover:bg-opacity-10 rounded-xl p-1 hover:text-primary'
+  }`;
+}
+
+function MainNav({
+  className,
+  current,
+  ...props
+}: React.HTMLAttributes<HTMLElement> & { current: string }) {
+  return (
+    <nav className={cn('flex items-center space-x-4', className)} {...props}>
+      {menuItems.map((item) => (
+        <Link
+          key={item.key}
+          href={item.key}
+          className={getLinkClassName(item.key, current)}
+        >
+          {item.icon}
+          {item.label}
+        </Link>
+      ))}
+    </nav>
+  );
+}
+
+function UserNav({
+  userInfo,
+  isAuthenticated,
+}: {
+  userInfo: UserInfo | undefined;
+  isAuthenticated: boolean;
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          className="relative h-8 w-8"
+          disabled={!isAuthenticated}
+        >
+          <Avatar className="h-8 w-8">
+            <AvatarFallback>
+              {(userInfo?.clientPrincipal?.userDetails || '').split(' ')[0][0]}
+            </AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="end" forceMount>
+        <DropdownMenuGroup>
+          {userMenuItems.map((item) => (
+            <Link key={item.key} href={item.key}>
+              <DropdownMenuItem
+                className={'text-sm font-medium transition-colors'}
+              >
+                <div className="flex items-center">
+                  {item.icon}
+                  <span className="ml-2">{item.label}</span>
+                </div>
+              </DropdownMenuItem>
+            </Link>
+          ))}
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <Link href={logOut.key}>
+          <DropdownMenuItem>
+            <div className="text-sm font-medium flex items-center">
+              {logOut.icon}
+              <span className="ml-2">{logOut.label}</span>
+            </div>
+          </DropdownMenuItem>
+        </Link>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+function SheetNav({
+  current,
+  className,
+}: {
+  current: string;
+  className?: string;
+}) {
+  return (
+    <Sheet>
+      <SheetTrigger className={`items-center ${className}`}>
+        <Icon icon="menu" />
+      </SheetTrigger>
+      <SheetContent side={'left'}>
+        <SheetHeader>
+          <SheetTitle>Menu</SheetTitle>
+        </SheetHeader>
+        <nav className="flex flex-col">
+          {menuItems.map((item) => (
+            <Link
+              key={item.key}
+              href={item.key}
+              className={getLinkClassName(item.key, current)}
+            >
+              {item.icon}
+              <span className="ml-2">{item.label}</span>
+            </Link>
+          ))}
+          <Separator />
+          <Link
+            href={logOut.key}
+            className={getLinkClassName(logOut.key, current)}
+          >
+            {logOut.icon}
+            <span className="ml-2">{logOut.label}</span>
+          </Link>
+        </nav>
+      </SheetContent>
+    </Sheet>
+  );
+}
 
 export default function App() {
-  // const setup
   const { userInfo } = useProps();
-  const [current, setCurrent] = useState('settings');
-  const authenticated = () => {
+  const [current, setCurrent] = useState('');
+  const isAuthenticated = () => {
     return (
       userInfo?.clientPrincipal?.userRoles.includes('authenticated') || false
     );
   };
-  const [drawerVisible, setDrawerVisible] = useState(false);
 
-  // useEffect
   useEffect(() => {
     setCurrent(window.location.pathname);
   }, []);
 
-  const navItems: MenuItem[] = [
-    {
-      key: '/authenticated/calendar/',
-      icon: <CalendarOutlined />,
-      label: (
-        <span>
-          <a className="" href="/authenticated/calendar/"></a>
-          <p className="inline-block">calendar</p>
-        </span>
-      ),
-    },
-  ];
-
-  const userMenu: MenuItem[] = [
-    {
-      key: 'SubMenu',
-      icon: <UserOutlined />,
-      label: (
-        <p className="hidden sm:inline-block">
-          {userInfo?.clientPrincipal?.userDetails || ''}
-        </p>
-      ),
-      className: 'float-right hidden sm:inline-block',
-      disabled: !authenticated(),
-      children: [
-        {
-          key: 'settings',
-          icon: <SettingOutlined />,
-          label: <a href="/authenticated/settings/">Settings</a>,
-        },
-        {
-          key: 'logout',
-          icon: <LogoutOutlined />,
-          label: (
-            <a
-              href="/.auth/logout?post_logout_redirect_uri=/"
-              onClick={() => {
-                sessionStorage.clear();
-              }}
-            >
-              Logout
-            </a>
-          ),
-        },
-      ],
-    },
-  ];
-
-  const openMenu: MenuItem[] = [
-    {
-      key: 'openMenu',
-      onClick: () => {
-        setDrawerVisible(true);
-      },
-      icon: <MenuOutlined />,
-    },
-  ];
-
-  // Menu items
-  const topMenuLarge: MenuItem[] = [...userMenu, ...navItems];
-  const topMenuSmall: MenuItem[] = [...userMenu, ...openMenu];
-
   return (
-    <>
-      <Menu
-        selectedKeys={[current]}
-        mode="horizontal"
-        items={topMenuLarge}
-        className="hidden sm:block"
-      />
-      <Menu
-        selectedKeys={[current]}
-        mode="horizontal"
-        items={topMenuSmall}
-        className="sm:hidden block"
-      />
-      <Drawer
-        open={drawerVisible}
-        closable={false}
-        placement="left"
-        onClose={() => {
-          setDrawerVisible(false);
-        }}
-        bodyStyle={{ padding: 0, paddingTop: 0 }}
-        width={200}
-        footer={
-          <div className="text-center">
-            <Link
-              type="secondary"
-              href="/.auth/logout?post_logout_redirect_uri=/"
-              onClick={() => {
-                sessionStorage.clear();
-              }}
-            >
-              Logout
-            </Link>
-          </div>
-        }
-      >
-        <Menu items={navItems} selectedKeys={[current]} className="border-0" />
-      </Drawer>
-    </>
+    <div className="border-b">
+      <div className="mx-4 flex h-12 items-center ">
+        <MainNav className="hidden sm:block" current={current} />
+        <SheetNav className="sm:hidden block" current={current} />
+        <div className="ml-auto flex items-center space-x-4">
+          <UserNav userInfo={userInfo} isAuthenticated={isAuthenticated()} />
+        </div>
+      </div>
+    </div>
   );
 }
