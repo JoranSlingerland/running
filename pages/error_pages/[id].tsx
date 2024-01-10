@@ -1,4 +1,7 @@
-import { Divider } from 'antd';
+import { Separator } from '@ui/separator';
+import Typography from '@ui/typography';
+
+const { Text } = Typography;
 
 export async function getStaticPaths() {
   return {
@@ -17,25 +20,25 @@ export async function getStaticProps(context: { params: { id: string } }) {
 
 export default function DynamicPage(errorcode: { errorcode: string }) {
   return (
-    <div className="flex items-center justify-center w-full h-screen">
-      <div>
-        <div className="text-center text-9xl">{errorcode.errorcode}</div>
-        <Divider />
-        <div className="text-2xl align-middle">{errorText(errorcode)}</div>
-      </div>
+    <div className="flex flex-row items-center justify-center w-full h-screen">
+      <Text size="large" variant="h1">
+        {errorcode.errorcode}
+      </Text>
+      <Separator orientation="vertical" className="h-16 mx-4" />
+      <Text size="large">{errorText(errorcode)}</Text>
     </div>
   );
 }
 
-function errorText(errorcode: { errorcode: string }) {
-  if (errorcode.errorcode === '401') {
-    return 'You are not authorized to view this page';
+function errorText({ errorcode }: { errorcode: string }): string {
+  switch (errorcode) {
+    case '401':
+      return 'You are not authorized to view this page';
+    case '403':
+      return 'You do not have permissions to view this page';
+    case '404':
+      return 'The page you are looking for does not exist';
+    default:
+      return 'An error occurred';
   }
-  if (errorcode.errorcode === '403') {
-    return 'You do not have permissions to view this page';
-  }
-  if (errorcode.errorcode === '404') {
-    return 'The page you are looking for does not exist';
-  }
-  return 'An error occurred';
 }

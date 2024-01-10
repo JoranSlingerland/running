@@ -73,7 +73,7 @@ function CustomText({
       break;
     default:
       Component = 'p';
-      componentClass = 'leading-7 [&:not(:first-child)]:mt-6';
+      componentClass = 'leading-7';
   }
 
   return (
