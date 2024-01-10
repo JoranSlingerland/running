@@ -23,7 +23,10 @@ function MyApp({ Component, pageProps }: AppProps) {
   const { algorithmTheme } = useTheme(userSettings.data?.dark_mode || 'system');
 
   const className = () =>
-    cn('bg-background font-sans antialiased', fontSans.variable || '');
+    cn(
+      'bg-background font-sans antialiased flex flex-col min-h-screen justify-between',
+      fontSans.variable || '',
+    );
 
   return (
     <div className={className()}>
