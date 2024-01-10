@@ -3,7 +3,6 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/en';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import dayLocaleData from 'dayjs/plugin/localeData';
-import { Skeleton } from 'antd';
 import {
   getFirstMondayBeforeMonth,
   getFirstSundayAfterMonth,
@@ -19,6 +18,7 @@ import {
   SelectGroup,
 } from '@ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
+import { Skeleton } from '@ui/skeleton';
 import Typography from '@ui/typography';
 
 const { Text } = Typography;
@@ -30,7 +30,7 @@ export default function Calendar({
   currentDay,
   setCurrentDay,
   onDateChange,
-  isLoading = false,
+  isLoading = true,
   startOfWeekDay = 1,
   dateCellRenderer,
   metaCellRenderer,
@@ -108,17 +108,7 @@ export default function Calendar({
   );
 
   // Content
-  const Loading = (
-    <Skeleton
-      paragraph={{
-        rows: 2,
-        width: ['90%', '90%'],
-      }}
-      title={false}
-      active
-      className="mt-2"
-    />
-  );
+  const Loading = <Skeleton className="h-36" />;
 
   const Header = (
     <div className="space-x-2 mt-4 flex flex-row">
@@ -205,7 +195,7 @@ export default function Calendar({
       ))}
     </div>
   );
-
+  console.log(isLoading);
   const CalendarDays = (
     <div className="grid grid-cols-8">
       {daysInMonth.map((day, index) => {
@@ -214,7 +204,7 @@ export default function Calendar({
         return (
           <React.Fragment key={index}>
             <Card
-              className={`rounded-none hover:bg-gray-100 dark:hover:bg-gray-800 h-full min-h-[9rem] ${
+              className={`rounded-none hover:bg-gray-100 dark:hover:bg-gray-800 h-full ${
                 inThePast ? 'brightness-95 dark:brightness-75' : ''
               }`}
             >
@@ -230,15 +220,15 @@ export default function Calendar({
                   {titleAffix && titleAffix(day)}
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="min-h-[10rem]">
                 {isLoading && Loading}
                 {dateCellRenderer && dateCellRenderer(day)}
               </CardContent>
             </Card>
             {day.day() === 0 && (
               <div className="pl-4">
-                <Card className="rounded-none h-full p-0 min-h-[9rem]">
-                  <CardContent>
+                <Card className="rounded-none h-full pt-2">
+                  <CardContent className="min-h-[10rem]">
                     {isLoading && Loading}
                     {metaCellRenderer && metaCellRenderer(day)}
                   </CardContent>
