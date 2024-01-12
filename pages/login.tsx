@@ -2,15 +2,15 @@ import Typography from '@ui/typography';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center space-y-10">
       <div className="max-w-5xl text-center">
-        <Text className="pt-10" variant="h1">
+        <Title className="py-10" variant="h1">
           Unleash Your Potential with the Running Web App
-        </Text>
+        </Title>
         <Text className="px-5">
           Our app integrates data from third-party services, providing you with
           comprehensive insights and tools for your running training. Analyze

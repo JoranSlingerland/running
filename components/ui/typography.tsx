@@ -1,4 +1,4 @@
-import Link, { LinkProps } from 'next/link';
+import Link from 'next/link';
 
 type Size = 'default' | 'small' | 'large';
 type Type = 'default' | 'code' | 'muted' | 'blockquote';
@@ -9,14 +9,15 @@ interface CustomTextProps extends React.HTMLAttributes<HTMLParagraphElement> {
 }
 
 interface CustomTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
-  variant: 'h1' | 'h2' | 'h3' | 'h4';
+  variant?: 'h1' | 'h2' | 'h3' | 'h4';
 }
 
-interface CustomLinkProps extends LinkProps {
+interface CustomLinkProps
+  extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   size?: Size;
   type?: Type;
-  className?: string;
   children: React.ReactNode;
+  href: string;
 }
 
 function getSizeClass(size: Size): string {
@@ -56,7 +57,7 @@ const CustomText: React.FC<CustomTextProps> = ({
 };
 
 const CustomTitle: React.FC<CustomTitleProps> = ({
-  variant,
+  variant = 'h1',
   className = '',
   ...props
 }) => {
