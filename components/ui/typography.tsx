@@ -1,19 +1,22 @@
-type Variants = 'h1' | 'h2' | 'h3' | 'h4' | 'p';
+import Link, { LinkProps } from 'next/link';
+
 type Size = 'default' | 'small' | 'large';
 type Type = 'default' | 'code' | 'muted' | 'blockquote';
 
-interface CustomTextProps {
-  variant?: Variants;
+interface CustomTextProps extends React.HTMLAttributes<HTMLParagraphElement> {
   size?: Size;
   type?: Type;
-  children: React.ReactNode;
-  className?: string;
 }
 
-interface CustomLinkProps extends React.ComponentPropsWithoutRef<'a'> {
+interface CustomTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
+  variant: 'h1' | 'h2' | 'h3' | 'h4';
+}
+
+interface CustomLinkProps extends LinkProps {
   size?: Size;
   type?: Type;
   className?: string;
+  children: React.ReactNode;
 }
 
 function getSizeClass(size: Size): string {
@@ -40,75 +43,72 @@ function getTypeClass(type: Type): string {
   }
 }
 
-function CustomText({
-  variant = 'p',
+const CustomText: React.FC<CustomTextProps> = ({
   size = 'default',
   type = 'default',
-  children,
   className = '',
-}: CustomTextProps): JSX.Element {
-  let Component: Variants = 'p';
-  let componentClass = '';
+  ...props
+}) => {
   let sizeClass = getSizeClass(size);
   let typeClass = getTypeClass(type);
 
+  return <p className={`${sizeClass} ${typeClass} ${className}`} {...props} />;
+};
+
+const CustomTitle: React.FC<CustomTitleProps> = ({
+  variant,
+  className = '',
+  ...props
+}) => {
+  let componentClass = '';
+
   switch (variant) {
     case 'h1':
-      Component = 'h1';
       componentClass =
         'scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl';
       break;
     case 'h2':
-      Component = 'h2';
       componentClass =
         'scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0';
       break;
     case 'h3':
-      Component = 'h3';
       componentClass = 'scroll-m-20 text-2xl font-semibold tracking-tight';
       break;
     case 'h4':
-      Component = 'h4';
       componentClass = 'scroll-m-20 text-xl font-semibold tracking-tight';
       break;
-    default:
-      Component = 'p';
-      componentClass = 'leading-7';
   }
 
-  return (
-    <Component
-      className={`${sizeClass} ${typeClass} ${className} ${componentClass}`}
-    >
-      {children}
-    </Component>
-  );
-}
+  const Component = variant;
 
-function CustomLink({
+  return <Component className={`${className} ${componentClass}`} {...props} />;
+};
+
+const CustomLink: React.FC<CustomLinkProps> = ({
   children,
   size = 'default',
   type = 'default',
   className = '',
   ...props
-}: CustomLinkProps): JSX.Element {
+}) => {
   const sizeClass = getSizeClass(size);
   const typeClass = getTypeClass(type);
   const linkClass = 'text-primary hover:text-blue-500';
 
   return (
-    <a
+    <Link
       className={`${className} ${sizeClass} ${typeClass} ${linkClass}`}
       {...props}
     >
       {children}
-    </a>
+    </Link>
   );
-}
+};
 
 const Typography = {
   Text: CustomText,
   Link: CustomLink,
+  Title: CustomTitle,
 };
 
 export default Typography;

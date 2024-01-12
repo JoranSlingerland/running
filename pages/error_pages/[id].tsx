@@ -1,7 +1,7 @@
 import { Separator } from '@ui/separator';
 import Typography from '@ui/typography';
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 export async function getStaticPaths() {
   return {
@@ -21,9 +21,7 @@ export async function getStaticProps(context: { params: { id: string } }) {
 export default function DynamicPage(errorcode: { errorcode: string }) {
   return (
     <div className="flex flex-row items-center justify-center w-full h-screen">
-      <Text size="large" variant="h1">
-        {errorcode.errorcode}
-      </Text>
+      <Title variant="h1">{errorcode.errorcode}</Title>
       <Separator orientation="vertical" className="h-16 mx-4" />
       <Text size="large">{errorText(errorcode)}</Text>
     </div>

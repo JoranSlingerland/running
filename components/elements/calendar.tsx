@@ -21,7 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
 import { Skeleton } from '@ui/skeleton';
 import Typography from '@ui/typography';
 
-const { Text } = Typography;
+const { Title } = Typography;
 
 dayjs.extend(dayLocaleData);
 dayjs.extend(updateLocale);
@@ -30,7 +30,7 @@ export default function Calendar({
   currentDay,
   setCurrentDay,
   onDateChange,
-  isLoading = true,
+  isLoading = false,
   startOfWeekDay = 1,
   dateCellRenderer,
   metaCellRenderer,
@@ -182,20 +182,19 @@ export default function Calendar({
   const CalendarHeader = (
     <div className="grid grid-cols-8">
       {daysOfWeek.map((day, index) => (
-        <Text
+        <Title
           className={`text-center my-2 ${
             index === daysOfWeek.length - 1 ? 'ml-4' : ''
           }`}
           key={index}
           variant="h4"
-          size="small"
         >
           {day}
-        </Text>
+        </Title>
       ))}
     </div>
   );
-  console.log(isLoading);
+
   const CalendarDays = (
     <div className="grid grid-cols-8">
       {daysInMonth.map((day, index) => {

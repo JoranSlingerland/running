@@ -1,4 +1,4 @@
-import { Typography } from 'antd';
+import Typography from '@ui/typography';
 import { Icon } from '@elements/icon';
 
 import {
