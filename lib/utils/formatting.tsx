@@ -9,19 +9,40 @@ import {
 
 const { Text } = Typography;
 
-function formatDistance(distance: number, unit: string, decimals = 2) {
+function formatDistance({
+  distance,
+  unit,
+  decimals = 2,
+  wrapInText = true,
+}: {
+  distance: number | undefined;
+  unit: string;
+  decimals?: number;
+  wrapInText?: boolean;
+}) {
+  let value: number;
+  distance = distance || 0;
   switch (unit) {
     case 'm':
-      return <Text>{distance.toFixed(decimals)} M</Text>;
+      value = distance;
+      break;
     case 'km':
-      return <Text>{(distance / 1000).toFixed(decimals)} KM</Text>;
+      value = distance / 1000;
+      break;
     case 'mi':
-      return <Text>{(distance / 1609).toFixed(decimals)} MI</Text>;
+      value = distance / 1609;
+      break;
     case 'ft':
-      return <Text>{(distance / 0.3048).toFixed(decimals)} FT</Text>;
+      value = distance / 0.3048;
+      break;
     default:
-      return <Text>{distance.toFixed(decimals)} M</Text>;
+      value = distance;
+      break;
   }
+
+  const formattedValue = `${value.toFixed(decimals)} ${unit.toUpperCase()}`;
+
+  return wrapInText ? <Text>{formattedValue}</Text> : formattedValue;
 }
 
 function formatTime({
