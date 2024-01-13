@@ -8,14 +8,13 @@ import {
   Select,
   Input,
 } from 'antd';
-import AntdTable from '@elements/antdTable';
+import { DataTable } from '@elements/shadcnTable';
+import { heartRateZoneColumns } from '@elements/columns/heartRateZoneColumns';
 import { useWindowSize } from 'rooks';
 import { startOrchestrator } from '@services/orchestrator/start';
 import { orchestratorColumns } from '@elements/columns/orchestratorColumns';
-import { heartRateZoneColumns } from '@elements/columns/heartRateZoneColumns';
 import { paceZoneColumns } from '@elements/columns/paceZoneColumns';
 import { useListOrchestrator } from '@services/orchestrator/list';
-import { RedoOutlined } from '@ant-design/icons';
 import { useProps } from '@hooks/useProps';
 import { addUserData } from '@services/user/post';
 import getConfig from 'next/config';
@@ -112,7 +111,7 @@ export default function Home() {
     refetchData: orchestratorListRefetch,
   } = useListOrchestrator({
     query: { days: 7 },
-    enabled: tab === '3',
+    enabled: tab === '4',
   });
   const { userSettings } = useProps();
   const router = useRouter();
@@ -340,13 +339,10 @@ export default function Home() {
                     </div>
                   </div>
                   <div>
-                    <AntdTable
+                    <DataTable
                       isLoading={userSettings?.isLoading || false}
                       columns={heartRateZoneColumns}
-                      data={userSettings?.data.heart_rate.zones}
-                      tableProps={{
-                        size: 'small',
-                      }}
+                      data={userSettings?.data.heart_rate.zones || []}
                     />
                   </div>
                 </div>
@@ -404,13 +400,10 @@ export default function Home() {
                     </div>
                   </div>
                   <div>
-                    <AntdTable
+                    <DataTable
                       isLoading={userSettings?.isLoading || false}
                       columns={paceZoneColumns}
-                      data={userSettings?.data.pace.zones}
-                      tableProps={{
-                        size: 'small',
-                      }}
+                      data={userSettings?.data.pace.zones || []}
                     />
                   </div>
                 </div>
@@ -531,30 +524,12 @@ export default function Home() {
       label: 'Orchestrations',
       children: (
         <div>
-          <AntdTable
+          <DataTable
             isLoading={orchestratorListIsLoading}
             columns={orchestratorColumns}
-            data={orchestratorListData}
-            tableProps={{
-              pagination: {
-                pageSize: 10,
-                size: 'small',
-                hideOnSinglePage: true,
-                className: 'm-0',
-              },
-            }}
-            caption={
-              <div className="flex flex-row-reverse">
-                <Button
-                  icon={<RedoOutlined />}
-                  type="text"
-                  shape="circle"
-                  onClick={() => {
-                    orchestratorListRefetch();
-                  }}
-                ></Button>
-              </div>
-            }
+            data={orchestratorListData || []}
+            pagination={true}
+            refetch={orchestratorListRefetch}
           />
         </div>
       ),

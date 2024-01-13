@@ -1,32 +1,25 @@
-import type { ColumnsType } from 'antd/es/table';
-import { Typography } from 'antd';
 import { formatPace } from '@utils/formatting';
+import { ColumnDef } from '@tanstack/react-table';
 
-const { Text } = Typography;
-
-type HeartRateZoneData = {
+type PaceZoneData = {
   name: string;
   min: number;
   max: number;
 };
 
-export const paceZoneColumns: ColumnsType<HeartRateZoneData> = [
+export const paceZoneColumns: ColumnDef<PaceZoneData>[] = [
   {
-    title: 'Zone',
-    dataIndex: 'name',
-    key: 'name',
-    render: (text: string) => <Text>{text}</Text>,
+    accessorKey: 'name',
+    header: 'Zone',
   },
   {
-    title: 'From',
-    dataIndex: 'min',
-    key: 'min',
-    render: (text: number) => formatPace(text, 'km', true, true),
+    accessorKey: 'min',
+    header: 'From',
+    cell: ({ row }) => formatPace(row.getValue('min'), 'km', true, true),
   },
   {
-    title: 'To',
-    dataIndex: 'max',
-    key: 'max',
-    render: (text: number) => formatPace(text, 'km', true, true),
+    accessorKey: 'max',
+    header: 'To',
+    cell: ({ row }) => formatPace(row.getValue('max'), 'km', true, true),
   },
 ];

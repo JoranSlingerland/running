@@ -64,6 +64,11 @@ function formatTime({
   return wrapInText ? <Text>{formattedTime}</Text> : formattedTime;
 }
 
+function formatDateTime(date: string) {
+  const formattedDate = new Date(date).toLocaleString();
+  return <Text>{formattedDate}</Text>;
+}
+
 function formatSpeed(metersPerSecond: number, unit: string, decimals = 2) {
   switch (unit) {
     case 'm':
@@ -157,4 +162,5 @@ export {
   formatHeartRate,
   formatNumber,
   sportIcon,
+  formatDateTime,
 };

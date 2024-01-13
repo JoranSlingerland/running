@@ -1,8 +1,5 @@
-import type { ColumnsType } from 'antd/es/table';
-import { Typography } from 'antd';
+import { ColumnDef } from '@tanstack/react-table';
 import { formatHeartRate } from '@utils/formatting';
-
-const { Text } = Typography;
 
 type HeartRateZoneData = {
   name: string;
@@ -10,23 +7,19 @@ type HeartRateZoneData = {
   max: number;
 };
 
-export const heartRateZoneColumns: ColumnsType<HeartRateZoneData> = [
+export const heartRateZoneColumns: ColumnDef<HeartRateZoneData>[] = [
   {
-    title: 'Zone',
-    dataIndex: 'name',
-    key: 'name',
-    render: (text: string) => <Text>{text}</Text>,
+    accessorKey: 'name',
+    header: 'Zone',
   },
   {
-    title: 'From',
-    dataIndex: 'min',
-    key: 'min',
-    render: (text: number) => formatHeartRate(text),
+    accessorKey: 'min',
+    header: 'From',
+    cell: ({ row }) => formatHeartRate(row.getValue('min')),
   },
   {
-    title: 'To',
-    dataIndex: 'max',
-    key: 'max',
-    render: (text: number) => formatHeartRate(text),
+    accessorKey: 'max',
+    header: 'To',
+    cell: ({ row }) => formatHeartRate(row.getValue('max')),
   },
 ];
