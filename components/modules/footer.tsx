@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Separator } from '@ui/separator';
 import Typography from '@ui/typography';
-import { GitHubLogoIcon } from '@radix-ui/react-icons';
+import { Github } from 'lucide-react';
 
 const { Text, Link } = Typography;
 
@@ -23,7 +23,7 @@ function FooterLinks() {
         type="muted"
       >
         <div className="flex text-xs items-center">
-          <GitHubLogoIcon className="mr-1" /> API
+          <Github className="mr-1 w-5 h-5" /> API
         </div>
       </Link>
       <Separator orientation="vertical" />
@@ -33,7 +33,7 @@ function FooterLinks() {
         type="muted"
       >
         <span className="flex items-center text-xs">
-          <GitHubLogoIcon className="mr-1" />
+          <Github className="mr-1 w-5 h-5" />
           Frontend
         </span>
       </Link>

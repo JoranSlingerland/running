@@ -7,7 +7,7 @@ import {
   getFirstMondayBeforeMonth,
   getFirstSundayAfterMonth,
 } from '@utils/dateTimeHelpers';
-import { CaretLeftIcon, CaretRightIcon } from '@radix-ui/react-icons';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@ui/button';
 import {
   Select,
@@ -164,7 +164,7 @@ export default function Calendar({
         size="icon"
         variant="secondary"
       >
-        <CaretLeftIcon />
+        <ChevronLeft />
       </Button>
 
       <Button
@@ -174,7 +174,7 @@ export default function Calendar({
         size="icon"
         variant="secondary"
       >
-        <CaretRightIcon />
+        <ChevronRight />
       </Button>
     </div>
   );
