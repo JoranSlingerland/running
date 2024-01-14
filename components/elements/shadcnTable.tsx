@@ -95,13 +95,15 @@ export function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow>
-                {columns.map((column, index) => (
-                  <TableCell key={index}>
-                    <Skeleton className="h-12" />
-                  </TableCell>
-                ))}
-              </TableRow>
+              Array.from({ length: 5 }).map((_, i) => (
+                <TableRow key={i}>
+                  {columns.map((column, index) => (
+                    <TableCell key={index}>
+                      <Skeleton className="h-6" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
             ) : hasData ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
