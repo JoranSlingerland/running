@@ -57,8 +57,6 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  console.log(table);
-
   const hasData = table.getRowModel().rows?.length > 0;
 
   return (

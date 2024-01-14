@@ -37,7 +37,7 @@ export default function home() {
           {
             title: 'Redirecting to settings',
             status: isLoading ? 'wait' : isError ? 'error' : 'finish',
-            icon: isLoading ? <></> : <Loader2 className="animate=spin" />,
+            icon: isLoading ? <></> : <Loader2 className="animate-spin" />,
             description: isError ? error?.json.result : data?.result,
           },
         ]}
