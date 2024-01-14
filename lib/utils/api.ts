@@ -60,6 +60,11 @@ function getWithExpiry(
   return item;
 }
 
+function removeItem(key: string, storageType: StorageType) {
+  const storage = window[storageType];
+  storage.removeItem(key);
+}
+
 function removeExpiredItems(storageType: StorageType) {
   const now = new Date().getTime();
   const storage = window[storageType];
@@ -337,6 +342,11 @@ async function regularFetch<Query, Body>({
     if (processedResponse) {
       return processedResponse;
     }
+  }
+
+  // Clear cache
+  if (overwrite && cacheEnabled) {
+    removeItem(key, storageType);
   }
 
   // Fetch data
