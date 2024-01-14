@@ -1,6 +1,5 @@
 import Navbar from '@modules/navbar';
 import '../styles/globals.css';
-import { ConfigProvider } from 'antd';
 import type { AppProps } from 'next/app';
 import Footer from '@modules/footer';
 import React from 'react';
@@ -21,7 +20,7 @@ export const fontSans = FontSans({
 function MyApp({ Component, pageProps }: AppProps) {
   const userSettings = useUserSettings();
   const { data: userInfo } = useUserInfo();
-  const { algorithmTheme } = useTheme(userSettings.data?.dark_mode || 'system');
+  const theme = useTheme(userSettings.data?.dark_mode || 'system');
 
   const className = () =>
     cn(
@@ -35,28 +34,15 @@ function MyApp({ Component, pageProps }: AppProps) {
         value={{
           userInfo,
           userSettings,
+          theme,
         }}
       >
-        <ConfigProvider
-          theme={{
-            algorithm: algorithmTheme,
-            components: {
-              List: {
-                paddingContentHorizontalLG: 0,
-              },
-              Form: {
-                marginLG: 8,
-              },
-            },
-          }}
-        >
-          <Toaster />
-          <Navbar />
-          <div className="px-2">
-            <Component {...pageProps} />
-          </div>
-          <Footer />
-        </ConfigProvider>
+        <Toaster />
+        <Navbar />
+        <div className="px-2">
+          <Component {...pageProps} />
+        </div>
+        <Footer />
       </PropsContext.Provider>
     </div>
   );

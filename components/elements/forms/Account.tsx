@@ -28,11 +28,6 @@ import { Separator } from '@ui/separator';
 const paceRegex = /^(\d{1,3}):(\d{1,2})$/;
 
 const formSchema = z.object({
-  dark_mode: z.union([
-    z.literal('light'),
-    z.literal('dark'),
-    z.literal('system'),
-  ]),
   gender: z.union([z.literal('male'), z.literal('female')]),
   hr_max: z.number().min(0).max(300),
   hr_rest: z.number().min(0).max(300),
@@ -114,7 +109,6 @@ export function AccountForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      dark_mode: userSettings?.data?.dark_mode,
       gender: userSettings?.data?.gender,
       hr_max: userSettings?.data?.heart_rate?.max,
       hr_rest: userSettings?.data?.heart_rate?.resting,
@@ -130,7 +124,6 @@ export function AccountForm() {
   useDeepCompareEffect(() => {
     if (userSettings?.data) {
       form.reset({
-        dark_mode: userSettings.data.dark_mode,
         gender: userSettings.data.gender,
         hr_max: userSettings.data.heart_rate?.max,
         hr_rest: userSettings.data.heart_rate?.resting,
@@ -147,7 +140,6 @@ export function AccountForm() {
 
     const newSettings = {
       ...userSettings?.data,
-      dark_mode: values.dark_mode,
       gender: values.gender,
       heart_rate: {
         max: values.hr_max,
@@ -176,27 +168,6 @@ export function AccountForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="dark_mode"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Theme</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger className="w-24">
-                    <SelectValue placeholder="Theme" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="system">System</SelectItem>
-                  <SelectItem value="dark">Dark</SelectItem>
-                  <SelectItem value="light">Light</SelectItem>
-                </SelectContent>
-              </Select>
-            </FormItem>
-          )}
-        />
         <FormField
           control={form.control}
           name="gender"
