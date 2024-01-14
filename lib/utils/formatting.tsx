@@ -1,13 +1,10 @@
-import Typography from '@ui/typography';
+import { Text } from '@ui/typography';
 import { Icon } from '@elements/icon';
-
 import {
   convertSecondsToMinutes,
   convertSpeedToPaceInSeconds,
   convertTime,
 } from './convert';
-
-const { Text } = Typography;
 
 function formatDistance({
   distance,

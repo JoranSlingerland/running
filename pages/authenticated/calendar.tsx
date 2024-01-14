@@ -12,7 +12,7 @@ import {
 } from '@utils/dateTimeHelpers';
 import { GetActivitiesQuery } from '@services/data/activities';
 import { useActivities } from '@services/data/activities';
-import Typography from '@ui/typography';
+import { Text } from '@ui/typography';
 import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
 import type { Activity } from '@services/data/activities';
 import {
@@ -39,8 +39,6 @@ dayjs.extend(isBetween);
 dayjs.extend(dayLocaleData);
 dayjs.extend(updateLocale);
 dayjs.extend(utc);
-
-const { Text } = Typography;
 
 type SportData = {
   sport: string;

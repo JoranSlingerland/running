@@ -1,8 +1,6 @@
-import Typography from '@ui/typography';
+import { Text, Title } from '@ui/typography';
 import Image from 'next/image';
 import Link from 'next/link';
-
-const { Text, Title } = Typography;
 
 export default function Home() {
   return (

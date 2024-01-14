@@ -1,6 +1,4 @@
-import Typography from '@ui/typography';
-
-const { Title } = Typography;
+import { Title } from '@ui/typography';
 
 export default function Home() {
   return (

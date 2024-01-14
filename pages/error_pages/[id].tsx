@@ -1,7 +1,5 @@
 import { Separator } from '@ui/separator';
-import Typography from '@ui/typography';
-
-const { Text, Title } = Typography;
+import { Text, Title } from '@ui/typography';
 
 export async function getStaticPaths() {
   return {

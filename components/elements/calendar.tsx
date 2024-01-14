@@ -19,9 +19,7 @@ import {
 } from '@ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
 import { Skeleton } from '@ui/skeleton';
-import Typography from '@ui/typography';
-
-const { Title } = Typography;
+import { Title } from '@ui/typography';
 
 dayjs.extend(dayLocaleData);
 dayjs.extend(updateLocale);

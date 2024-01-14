@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import NextLink from 'next/link';
 
 type Size = 'default' | 'small' | 'large';
 type Type = 'default' | 'code' | 'muted' | 'blockquote';
@@ -44,7 +44,7 @@ function getTypeClass(type: Type): string {
   }
 }
 
-const CustomText: React.FC<CustomTextProps> = ({
+const Text: React.FC<CustomTextProps> = ({
   size = 'default',
   type = 'default',
   className = '',
@@ -56,7 +56,7 @@ const CustomText: React.FC<CustomTextProps> = ({
   return <p className={`${sizeClass} ${typeClass} ${className}`} {...props} />;
 };
 
-const CustomTitle: React.FC<CustomTitleProps> = ({
+const Title: React.FC<CustomTitleProps> = ({
   variant = 'h1',
   className = '',
   ...props
@@ -85,7 +85,7 @@ const CustomTitle: React.FC<CustomTitleProps> = ({
   return <Component className={`${className} ${componentClass}`} {...props} />;
 };
 
-const CustomLink: React.FC<CustomLinkProps> = ({
+const Link: React.FC<CustomLinkProps> = ({
   children,
   size = 'default',
   type = 'default',
@@ -97,19 +97,13 @@ const CustomLink: React.FC<CustomLinkProps> = ({
   const linkClass = 'text-primary hover:text-blue-500';
 
   return (
-    <Link
+    <NextLink
       className={`${className} ${sizeClass} ${typeClass} ${linkClass}`}
       {...props}
     >
       {children}
-    </Link>
+    </NextLink>
   );
 };
 
-const Typography = {
-  Text: CustomText,
-  Link: CustomLink,
-  Title: CustomTitle,
-};
-
-export default Typography;
+export { Text, Link, Title };

@@ -1,7 +1,5 @@
 import { Separator } from '@ui/separator';
-import Typography from '@ui/typography';
-
-const { Text } = Typography;
+import { Text } from '@ui/typography';
 
 // Props
 interface Steps {

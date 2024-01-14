@@ -7,12 +7,10 @@ import { useRouter } from 'next/router';
 import useSessionStorageState from '@hooks/useSessionStorageState';
 import { PreferencesForm } from '@elements/forms/preferences';
 import { AccountForm } from '@elements/forms/Account';
-import Typography from '@ui/typography';
+import { Text, Title } from '@ui/typography';
 import { Button } from '@ui/button';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/tabs';
-
-const { Text, Title } = Typography;
 
 // handle click functions
 function handleSessionStorageClearClick() {
