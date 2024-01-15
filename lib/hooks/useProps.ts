@@ -13,6 +13,7 @@ export const PropsContext = createContext<Props>({
   theme: {
     themeType: 'system',
     setThemeType: () => {},
+    theme: 'dark',
   },
 });
 

@@ -1,8 +1,11 @@
 import { Text, Title } from '@ui/typography';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useProps } from '@hooks/useProps';
 
 export default function Home() {
+  const { theme } = useProps();
+
   return (
     <div className="flex flex-col items-center justify-center space-y-10">
       <div className="max-w-5xl text-center">
@@ -26,7 +29,7 @@ export default function Home() {
         }
       >
         <Image
-          src="/images/ms-symbollockup_signin_light.png"
+          src={`/images/ms_sign_in_${theme.theme}.png`}
           alt="Microsoft"
           width={215}
           height={41}

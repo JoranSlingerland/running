@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 
-const useTheme = (initialTheme: ThemeType) => {
+const useTheme = (initialTheme: ThemeType): Theme => {
   const [themeType, setThemeType] = useState<ThemeType>(initialTheme);
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
   useEffect(() => {
     const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
@@ -15,6 +16,8 @@ const useTheme = (initialTheme: ThemeType) => {
           : '';
       documentClassList.remove('dark');
       if (className) documentClassList.add(className);
+      if (className) setTheme('dark');
+      else setTheme('light');
     };
 
     mediaQueryList.addEventListener('change', updateTheme);
@@ -25,7 +28,7 @@ const useTheme = (initialTheme: ThemeType) => {
     };
   }, [themeType]);
 
-  return { themeType, setThemeType };
+  return { themeType, setThemeType, theme };
 };
 
 export default useTheme;
