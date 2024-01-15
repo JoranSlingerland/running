@@ -1,4 +1,4 @@
-import { message as antdMessage } from 'antd';
+import { toast } from 'sonner';
 import wretch from 'wretch';
 import QueryStringAddon from 'wretch/addons/queryString';
 import AbortAddon from 'wretch/addons/abort';
@@ -58,6 +58,11 @@ function getWithExpiry(
     return null;
   }
   return item;
+}
+
+function removeItem(key: string, storageType: StorageType) {
+  const storage = window[storageType];
+  storage.removeItem(key);
 }
 
 function removeExpiredItems(storageType: StorageType) {
@@ -308,29 +313,18 @@ async function regularFetch<Query, Body>({
 
   // Define message functions
   const sendErrorMessage = () => {
-    antdMessage.error({
-      content: errorMessage,
-      key: key,
-    });
+    toast.dismiss();
+    toast.error(errorMessage);
   };
 
   const sendSuccessMessage = () => {
-    antdMessage.success({
-      content: successMessage,
-      key: key,
-    });
-  };
-
-  const sendLoadingMessage = () => {
-    antdMessage.loading({
-      content: loadingMessage,
-      key: key,
-    });
+    toast.dismiss();
+    toast.success(successMessage);
   };
 
   // Start main logic
   if (messageEnabled) {
-    sendLoadingMessage();
+    toast.loading(loadingMessage);
   }
 
   // Check cache
@@ -348,6 +342,11 @@ async function regularFetch<Query, Body>({
     if (processedResponse) {
       return processedResponse;
     }
+  }
+
+  // Clear cache
+  if (overwrite && cacheEnabled) {
+    removeItem(key, storageType);
   }
 
   // Fetch data

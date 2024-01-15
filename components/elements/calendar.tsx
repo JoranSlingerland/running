@@ -3,15 +3,23 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/en';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import dayLocaleData from 'dayjs/plugin/localeData';
-import { CaretLeftOutlined, CaretRightOutlined } from '@ant-design/icons';
-import { Card, Select, Button, Typography, Skeleton } from 'antd';
 import {
   getFirstMondayBeforeMonth,
   getFirstSundayAfterMonth,
 } from '@utils/dateTimeHelpers';
-import { blue } from '@ant-design/colors';
-
-const { Text } = Typography;
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '@ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectGroup,
+} from '@ui/select';
+import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
+import { Skeleton } from '@ui/skeleton';
+import { Title } from '@ui/typography';
 
 dayjs.extend(dayLocaleData);
 dayjs.extend(updateLocale);
@@ -51,7 +59,7 @@ export default function Calendar({
     'Friday',
     'Saturday',
     'Sunday',
-    'meta',
+    'Statistics',
   ];
   const months = Array.from({ length: 12 }, (_, i) => dayjs().month(i));
   const years = Array.from({ length: 11 }, (_, i) =>
@@ -98,46 +106,52 @@ export default function Calendar({
   );
 
   // Content
-  const Loading = (
-    <Skeleton
-      paragraph={{
-        rows: 2,
-        width: ['90%', '90%'],
-      }}
-      title={false}
-      active
-      className="mt-2"
-    />
-  );
+  const Loading = <Skeleton className="h-36" />;
 
   const Header = (
-    <div className="space-x-2 mt-4">
+    <div className="space-x-2 mt-4 flex flex-row">
       <Select
-        value={currentDay.year()}
-        onChange={(newYear) => {
+        value={currentDay.year().toString()}
+        onValueChange={(newYear) => {
           handleSetYear(Number(newYear));
         }}
-        options={years.map((year) => ({
-          label: year,
-          value: year,
-        }))}
-      />
+      >
+        <SelectTrigger className="w-32">
+          <SelectValue>{currentDay.year().toString()}</SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            {years.map((year) => (
+              <SelectItem key={year} value={year}>
+                {year}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
       <Select
         value={currentDay.format('MMMM')}
-        options={months.map((month) => ({
-          label: month.format('MMMM'),
-          value: month.format('M'),
-        }))}
-        onChange={(newMonth) => {
-          handleSetMonth(Number(newMonth) - 1);
+        onValueChange={(value) => {
+          handleSetMonth(Number(value) - 1);
         }}
-        className="w-32"
-      />
+      >
+        <SelectTrigger className="w-32">
+          <SelectValue>{currentDay.format('MMMM')}</SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            {months.map((month) => (
+              <SelectItem key={month.format('M')} value={month.format('M')}>
+                {month.format('MMMM')}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
       <Button
         onClick={() => {
           handleToday();
         }}
-        type="primary"
       >
         Today
       </Button>
@@ -145,32 +159,39 @@ export default function Calendar({
         onClick={() => {
           handlePreviousMonth();
         }}
-        icon={<CaretLeftOutlined />}
-      />
+        size="icon"
+        variant="secondary"
+      >
+        <ChevronLeft />
+      </Button>
+
       <Button
         onClick={() => {
           handleNextMonth();
         }}
-        icon={<CaretRightOutlined />}
-      />
+        size="icon"
+        variant="secondary"
+      >
+        <ChevronRight />
+      </Button>
     </div>
   );
 
   const CalendarHeader = (
     <div className="grid grid-cols-8">
       {daysOfWeek.map((day, index) => (
-        <Text
+        <Title
           className={`text-center my-2 ${
             index === daysOfWeek.length - 1 ? 'ml-4' : ''
           }`}
           key={index}
+          variant="h4"
         >
           {day}
-        </Text>
+        </Title>
       ))}
     </div>
   );
-  console.log(blue);
 
   const CalendarDays = (
     <div className="grid grid-cols-8">
@@ -180,34 +201,34 @@ export default function Calendar({
         return (
           <React.Fragment key={index}>
             <Card
-              style={{
-                height: '100%',
-                minHeight: '9rem',
-                filter: inThePast ? 'brightness(0.8)' : '',
-              }}
-              bodyStyle={{ padding: '4px' }}
-              className="rounded-none"
+              className={`rounded-none hover:bg-gray-100 dark:hover:bg-gray-800 h-full ${
+                inThePast ? 'brightness-95 dark:brightness-75' : ''
+              }`}
             >
-              <div className={`rounded-full ${isToday ? `bg-[#40a9ff]` : ''}`}>
-                {titlePrefix && titlePrefix(day)}
-                <Text className="m-2">
+              <CardHeader>
+                <CardTitle
+                  className={`rounded-full p-1 ${
+                    isToday ? 'font-bold border-2 ' : ''
+                  }`}
+                >
+                  {titlePrefix && titlePrefix(day)}
                   {day.date() === 1 ? ` ${day.format('MMMM')} ` : ''}
                   {day.format('D')}
-                </Text>
-                {titleAffix && titleAffix(day)}
-              </div>
-              {isLoading && Loading}
-              {dateCellRenderer && dateCellRenderer(day)}
+                  {titleAffix && titleAffix(day)}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="min-h-[10rem]">
+                {isLoading && Loading}
+                {dateCellRenderer && dateCellRenderer(day)}
+              </CardContent>
             </Card>
             {day.day() === 0 && (
               <div className="pl-4">
-                <Card
-                  style={{ height: '100%', minHeight: '9rem' }}
-                  bodyStyle={{ padding: '0px' }}
-                  className="rounded-none"
-                >
-                  {isLoading && Loading}
-                  {metaCellRenderer && metaCellRenderer(day)}
+                <Card className="rounded-none h-full pt-2">
+                  <CardContent className="min-h-[10rem]">
+                    {isLoading && Loading}
+                    {metaCellRenderer && metaCellRenderer(day)}
+                  </CardContent>
                 </Card>
               </div>
             )}

@@ -3,7 +3,6 @@ require('dotenv').config();
 module.exports = {
   trailingSlash: true,
   images: {
-    loader: 'custom',
     domains: [],
     unoptimized: true,
   },

@@ -1,26 +1,45 @@
-import { Typography } from 'antd';
-
+import { Text } from '@ui/typography';
+import { Icon } from '@elements/icon';
 import {
   convertSecondsToMinutes,
   convertSpeedToPaceInSeconds,
   convertTime,
 } from './convert';
 
-const { Text } = Typography;
-
-function formatDistance(distance: number, unit: string, decimals = 2) {
+function formatDistance({
+  distance,
+  unit,
+  decimals = 2,
+  wrapInText = true,
+}: {
+  distance: number | undefined;
+  unit: string;
+  decimals?: number;
+  wrapInText?: boolean;
+}) {
+  let value: number;
+  distance = distance || 0;
   switch (unit) {
     case 'm':
-      return <Text>{distance.toFixed(decimals)} M</Text>;
+      value = distance;
+      break;
     case 'km':
-      return <Text>{(distance / 1000).toFixed(decimals)} KM</Text>;
+      value = distance / 1000;
+      break;
     case 'mi':
-      return <Text>{(distance / 1609).toFixed(decimals)} MI</Text>;
+      value = distance / 1609;
+      break;
     case 'ft':
-      return <Text>{(distance / 0.3048).toFixed(decimals)} FT</Text>;
+      value = distance / 0.3048;
+      break;
     default:
-      return <Text>{distance.toFixed(decimals)} M</Text>;
+      value = distance;
+      break;
   }
+
+  const formattedValue = `${value.toFixed(decimals)} ${unit.toUpperCase()}`;
+
+  return wrapInText ? <Text>{formattedValue}</Text> : formattedValue;
 }
 
 function formatTime({
@@ -61,6 +80,11 @@ function formatTime({
   }
 
   return wrapInText ? <Text>{formattedTime}</Text> : formattedTime;
+}
+
+function formatDateTime(date: string) {
+  const formattedDate = new Date(date).toLocaleString();
+  return <Text>{formattedDate}</Text>;
 }
 
 function formatSpeed(metersPerSecond: number, unit: string, decimals = 2) {
@@ -121,40 +145,32 @@ function formatNumber({
   return wrapInText ? <Text>{formattedNumber}</Text> : formattedNumber;
 }
 
-function renderIcon(icon: string) {
-  return (
-    <i className={`material-icons text-[#000000E0] dark:text-[#FFFFFFD9]`}>
-      {icon}
-    </i>
-  );
-}
-
-function sportIcon(sport: string) {
+const sportIcon = (sport: string): JSX.Element => {
   switch (sport) {
     case 'Run':
-      return renderIcon('directions_run');
+      return <Icon icon="directions_run" />;
     case 'Ride':
-      return renderIcon('directions_bike');
+      return <Icon icon="directions_bike" />;
     case 'Swim':
-      return renderIcon('pool');
+      return <Icon icon="pool" />;
     case 'Walk':
-      return renderIcon('directions_walk');
+      return <Icon icon="directions_walk" />;
     case 'Hike':
-      return renderIcon('terrain');
+      return <Icon icon="terrain" />;
     case 'Workout':
-      return renderIcon('fitness_center');
+      return <Icon icon="fitness_center" />;
     case 'WeightTraining':
-      return renderIcon('fitness_center');
+      return <Icon icon="fitness_center" />;
     case 'Yoga':
-      return renderIcon('self_improvement');
+      return <Icon icon="self_improvement" />;
     case 'VirtualRide':
-      return renderIcon('directions_bike');
+      return <Icon icon="directions_bike" />;
     case 'VirtualRun':
-      return renderIcon('directions_run');
+      return <Icon icon="directions_run" />;
     default:
       return <></>;
   }
-}
+};
 
 export {
   formatDistance,
@@ -163,6 +179,6 @@ export {
   formatPace,
   formatHeartRate,
   formatNumber,
-  renderIcon,
   sportIcon,
+  formatDateTime,
 };

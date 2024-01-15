@@ -12,7 +12,8 @@ import {
 } from '@utils/dateTimeHelpers';
 import { GetActivitiesQuery } from '@services/data/activities';
 import { useActivities } from '@services/data/activities';
-import { Card, Typography, Statistic, Select, Divider } from 'antd';
+import { Text } from '@ui/typography';
+import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
 import type { Activity } from '@services/data/activities';
 import {
   formatDistance,
@@ -22,17 +23,22 @@ import {
   sportIcon,
 } from '@utils/formatting';
 import isBetween from 'dayjs/plugin/isBetween';
-import { convertDistance } from '@utils/convert';
 import { isNotNullOrZero } from '@utils/utils';
 import { getPreferredTss } from '@utils/tssHelpers';
 import { useProps } from '@hooks/useProps';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectGroup,
+} from '@ui/select';
 
 dayjs.extend(isBetween);
 dayjs.extend(dayLocaleData);
 dayjs.extend(updateLocale);
 dayjs.extend(utc);
-
-const { Text } = Typography;
 
 type SportData = {
   sport: string;
@@ -56,26 +62,18 @@ function CalendarItem({
 }): JSX.Element {
   const tss = getPreferredTss(userSettings, item);
   return (
-    <Card
-      size="small"
-      style={{
-        height: '100%',
-        filter: 'brightness(1.2)',
-      }}
-      bodyStyle={{ padding: '0px' }}
-      title={
-        <div className="flex items-center space-x-1">
-          {sportIcon(item.type)}{' '}
-          <Text>
-            {item.type} at {dayjs.utc(item.start_date_local).format('HH:mm')}
-          </Text>
-        </div>
-      }
-      className="my-2"
-      hoverable
-      bordered={false}
-    >
-      <div className="flex flex-col text-left ml-2">
+    <Card className="my-2 h-full brightness-125 transform hover:scale-105 transition-transform duration-200">
+      <CardHeader>
+        <CardTitle>
+          <div className="flex items-center space-x-1">
+            {sportIcon(item.type)}
+            {`${item.type} at ${dayjs
+              .utc(item.start_date_local)
+              .format('HH:mm')}`}
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col text-left ml-2">
         {isNotNullOrZero(item.elapsed_time) && (
           <Text>
             {formatTime({
@@ -87,11 +85,21 @@ function CalendarItem({
           </Text>
         )}
         {isNotNullOrZero(item.distance) && (
-          <Text> {formatDistance(item.distance, 'km')}</Text>
+          <Text>
+            {formatDistance({
+              distance: item.distance,
+              unit: 'km',
+              wrapInText: false,
+            })}
+          </Text>
         )}
         {isNotNullOrZero(tss.tss) && (
           <Text>
-            {formatNumber({ number: tss.tss, wrapInText: false, decimals: 0 })}{' '}
+            {formatNumber({
+              number: tss.tss,
+              wrapInText: false,
+              decimals: 0,
+            })}{' '}
             TSS
           </Text>
         )}
@@ -102,7 +110,7 @@ function CalendarItem({
         {isNotNullOrZero(item.average_speed) && (
           <Text>{formatPace(item.average_speed, 'km')}</Text>
         )}
-      </div>
+      </CardContent>
     </Card>
   );
 }
@@ -126,65 +134,82 @@ function MetaItem({
         <Text>Total</Text>
         {sportTotals.map((item) => (
           <>
-            <Statistic
-              value={convertDistance(item.distance, 'km')}
-              suffix="km"
-              precision={2}
-            />
-            <Statistic
-              value={item.time}
-              formatter={(value) => {
-                return formatTime({
-                  seconds: value as number,
-                  wrapInText: false,
-                  addSeconds: false,
-                });
-              }}
-            />
-            <Statistic value={item.tss} suffix="TSS" precision={0} />
+            <Text size="large">
+              {formatDistance({
+                distance: item.distance,
+                unit: 'km',
+                wrapInText: false,
+              })}
+            </Text>
+            <Text size="large">
+              {formatTime({
+                seconds: item.time,
+                wrapInText: false,
+                addSeconds: false,
+              })}
+            </Text>
+            <Text size="large">
+              {`${formatNumber({
+                number: item.tss,
+                wrapInText: false,
+                decimals: 0,
+              })} TSS`}
+            </Text>
           </>
         ))}
       </div>
-      {sportsData.length > 1 && <Divider className="m-0 my-2" />}
-      <div className="ml-2">
+      <div>
         {sportsData.length > 1 && (
           <>
             <Select
-              style={{ width: 200 }}
-              onChange={(value: string) => setSelectedSport(value)}
-              placeholder="Select a sport"
-              value={selectedSport}
-              options={sports.map((item) => ({
-                label: item,
-                value: item,
-              }))}
-            />
+              value={selectedSport || ''}
+              onValueChange={(value) => {
+                setSelectedSport(value);
+              }}
+            >
+              <SelectTrigger className="my-2">
+                <SelectValue>{selectedSport}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {sports.map((item) => (
+                    <SelectItem key={item} value={item}>
+                      {item}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
             {sportsData.length > 1 &&
               sportsData
                 .filter(
                   (item) => !selectedSport || item.sport === selectedSport,
                 )
                 .map((item) => (
-                  <div key={item.sport}>
+                  <div className="ml-2" key={item.sport}>
                     {item.distance !== 0 && (
-                      <Statistic
-                        value={convertDistance(item.distance, 'km')}
-                        suffix="km"
-                        precision={2}
-                      />
-                    )}
-                    <Statistic
-                      value={item.time}
-                      formatter={(value) => {
-                        return formatTime({
-                          seconds: value as number,
+                      <Text>
+                        {formatDistance({
+                          distance: item.distance,
+                          unit: 'km',
                           wrapInText: false,
-                          addSeconds: false,
-                        });
-                      }}
-                    />
-
-                    <Statistic value={item.tss} suffix="TSS" precision={0} />
+                        })}
+                      </Text>
+                    )}
+                    <Text>
+                      {formatTime({
+                        seconds: item.time,
+                        wrapInText: false,
+                        addSeconds: false,
+                      })}
+                    </Text>
+                    <Text>
+                      {`${formatNumber({
+                        number: item.tss,
+                        wrapInText: false,
+                        decimals: 0,
+                      })} TSS`}
+                    </Text>
                   </div>
                 ))}
           </>

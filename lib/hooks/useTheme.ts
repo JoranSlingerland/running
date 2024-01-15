@@ -1,43 +1,34 @@
 import { useState, useEffect } from 'react';
-import { theme as antdTheme } from 'antd';
-const { darkAlgorithm, defaultAlgorithm } = antdTheme;
 
-type ThemeType = 'light' | 'dark' | 'system';
-
-const useTheme = (dark_mode: ThemeType) => {
-  const [themeType, setThemeType] = useState<ThemeType>('system');
+const useTheme = (initialTheme: ThemeType): Theme => {
+  const [themeType, setThemeType] = useState<ThemeType>(initialTheme);
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    setThemeType(mediaQuery.matches ? 'dark' : 'light');
-    const listener = (event: MediaQueryListEvent) => {
-      setThemeType(event.matches ? 'dark' : 'light');
+    const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
+    const documentClassList = document.documentElement.classList;
+
+    const updateTheme = () => {
+      const systemPrefersDark = mediaQueryList.matches;
+      const className =
+        themeType === 'dark' || (themeType === 'system' && systemPrefersDark)
+          ? 'dark'
+          : '';
+      documentClassList.remove('dark');
+      if (className) documentClassList.add(className);
+      if (className) setTheme('dark');
+      else setTheme('light');
     };
-    mediaQuery.addEventListener('change', listener);
+
+    mediaQueryList.addEventListener('change', updateTheme);
+    updateTheme();
+
     return () => {
-      mediaQuery.removeEventListener('change', listener);
+      mediaQueryList.removeEventListener('change', updateTheme);
     };
-  }, []);
+  }, [themeType]);
 
-  const algorithmTheme =
-    dark_mode === 'system'
-      ? themeType === 'dark'
-        ? darkAlgorithm
-        : defaultAlgorithm
-      : dark_mode === 'dark'
-      ? darkAlgorithm
-      : defaultAlgorithm;
-
-  const className =
-    dark_mode === 'system'
-      ? themeType === 'dark'
-        ? 'dark bg-neutral-900'
-        : 'bg-white'
-      : dark_mode === 'dark'
-      ? 'dark bg-neutral-900'
-      : 'bg-white';
-
-  return { algorithmTheme, className };
+  return { themeType, setThemeType, theme };
 };
 
 export default useTheme;

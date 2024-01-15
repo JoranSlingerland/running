@@ -63,6 +63,13 @@ function convertPaceToSeconds(pace: string): number {
   return parseInt(minutes, 10) * 60 + parseInt(paddedSeconds, 10);
 }
 
+function convertMStoMinPerKM(metersPerSecond: number | undefined): string {
+  const paceInSeconds = convertSpeedToPaceInSeconds(metersPerSecond);
+  const [minutes, seconds] = convertSecondsToMinutes(paceInSeconds);
+  const paddedSeconds = seconds.toString().padStart(2, '0');
+  return `${minutes}:${paddedSeconds}`;
+}
+
 export {
   convertSpeedToPaceInSeconds,
   convertSecondsToMinutes,
@@ -70,4 +77,5 @@ export {
   convertPaceToSpeed,
   convertPaceToSeconds,
   convertTime,
+  convertMStoMinPerKM,
 };

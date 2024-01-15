@@ -1,11 +1,7 @@
 import { useRouter } from 'next/router';
 import { useStravaCallback } from '@services/callback/strava';
-import { Steps } from 'antd';
-import {
-  LoadingOutlined,
-  CloseOutlined,
-  CheckOutlined,
-} from '@ant-design/icons';
+import Steps from '@elements/steps';
+import { Loader2, XCircle, CheckCircle2 } from 'lucide-react';
 
 export default function home() {
   const router = useRouter();
@@ -26,23 +22,22 @@ export default function home() {
   return (
     <div className="flex justify-center">
       <Steps
-        direction="vertical"
-        items={[
+        steps={[
           {
             title: 'Processing Strava Authentication',
             status: isLoading ? 'process' : isError ? 'error' : 'finish',
             icon: isLoading ? (
-              <LoadingOutlined />
+              <Loader2 className="animate-spin" />
             ) : isError ? (
-              <CloseOutlined />
+              <XCircle />
             ) : (
-              <CheckOutlined />
+              <CheckCircle2 />
             ),
           },
           {
             title: 'Redirecting to settings',
             status: isLoading ? 'wait' : isError ? 'error' : 'finish',
-            icon: isLoading ? <></> : <LoadingOutlined />,
+            icon: isLoading ? <></> : <Loader2 className="animate-spin" />,
             description: isError ? error?.json.result : data?.result,
           },
         ]}

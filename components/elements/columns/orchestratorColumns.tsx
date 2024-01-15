@@ -1,122 +1,129 @@
-import type { ColumnsType } from 'antd/es/table';
-import { Typography, Button, Popconfirm, Tag } from 'antd';
-import {
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  ExclamationCircleOutlined,
-  SyncOutlined,
-} from '@ant-design/icons';
 import { terminateOrchestrator } from '@services/orchestrator/terminate';
 import { purgeOrchestrator } from '@services/orchestrator/purge';
 import { ListOrchestratorData } from '@services/orchestrator/list';
+import { ColumnDef } from '@tanstack/react-table';
+import { Badge } from '@ui/badge';
+import { formatDateTime } from '@utils/formatting';
+import { MoreHorizontal } from 'lucide-react';
+import { Button } from '@ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@ui/dropdown-menu';
+import { toast } from 'sonner';
+import { Loader2, XCircle, CheckCircle2 } from 'lucide-react';
 
-const { Text } = Typography;
-
-export const orchestratorColumns: ColumnsType<ListOrchestratorData> = [
+export const orchestratorColumns: ColumnDef<ListOrchestratorData>[] = [
   {
-    title: 'Status',
-    dataIndex: 'runtimeStatus',
-    key: 'runtimeStatus',
-    render: (text: string) => {
-      if (text === 'Completed') {
-        return (
-          <Tag icon={<CheckCircleOutlined />} color="success">
-            {text}
-          </Tag>
-        );
-      } else if (text === 'Failed') {
-        return (
-          <Tag icon={<CloseCircleOutlined />} color="error">
-            {text}
-          </Tag>
-        );
-      } else if (text === 'Suspended' || text === 'Terminated') {
-        return (
-          <Tag icon={<ExclamationCircleOutlined />} color="warning">
-            {text}
-          </Tag>
-        );
-      } else if (text === 'Running' || text === 'Pending') {
-        return (
-          <Tag icon={<SyncOutlined spin />} color="processing">
-            {text}
-          </Tag>
-        );
-      } else {
-        return <Tag color="default">{text}</Tag>;
+    accessorKey: 'runtimeStatus',
+    header: 'Status',
+    cell({ row }) {
+      const value = row.getValue('runtimeStatus');
+      switch (value) {
+        case 'Completed':
+          return (
+            <Badge variant="success" className="text-xs">
+              <CheckCircle2 className="h-4 w-4 mr-1" />
+              {value}
+            </Badge>
+          );
+        case 'Failed':
+          return (
+            <Badge variant="error" className="text-xs">
+              <XCircle className="h-4 w-4 mr-1" />
+              {value}
+            </Badge>
+          );
+        case 'Suspended':
+        case 'Terminated':
+          return (
+            <Badge variant="warning" className="text-xs">
+              <XCircle className="h-4 w-4 mr-1" />
+              {value}
+            </Badge>
+          );
+        case 'Running':
+        case 'Pending':
+          return (
+            <Badge variant="processing" className="text-xs">
+              <Loader2 className="h-4 w-4 animate-spin mr-1" />
+              {value}
+            </Badge>
+          );
       }
     },
   },
   {
-    title: 'Activities added',
-    dataIndex: 'output',
-    key: 'output',
-    render: (text: any) => {
-      return <Text>{text.ActivitiesAdded}</Text>;
-    },
+    accessorKey: 'output.ActivitiesAdded',
+    header: 'Activities added',
   },
   {
-    title: 'Created Time',
-    dataIndex: 'createdTime',
-    key: 'createdTime',
+    accessorKey: 'createdTime',
+    header: 'Created Time',
+    cell: ({ row }) => formatDateTime(row.getValue('createdTime') as string),
   },
   {
-    title: 'Last Updated Time',
-    dataIndex: 'lastUpdatedTime',
-    key: 'lastUpdatedTime',
+    header: 'Last Updated Time',
+    accessorKey: 'lastUpdatedTime',
+    cell: ({ row }) =>
+      formatDateTime(row.getValue('lastUpdatedTime') as string),
   },
   {
-    title: 'Instance ID',
-    dataIndex: 'instanceId',
-    key: 'instanceId',
-    render: (text: string) => <Text copyable>{text}</Text>,
+    header: 'Instance ID',
+    accessorKey: 'instanceId',
   },
   {
-    title: 'Actions',
-    dataIndex: 'actions',
-    key: 'actions',
-    render: (text, record) => (
-      <>
-        <Popconfirm
-          title="Are you sure you want to terminate this orchestrator?"
-          onConfirm={() => {
-            terminateOrchestrator({
-              query: {
-                instanceId: record.instanceId,
-              },
-            });
-          }}
-          okText="Yes"
-          cancelText="No"
-          arrow={false}
-          icon={false}
-        >
-          {record.runtimeStatus === 'Running' ||
-          record.runtimeStatus === 'Pending' ? (
-            <Button danger className="mb-1 mr-1" size="small">
-              Terminate
+    id: 'actions',
+    cell: ({ row }) => {
+      const data = row.original;
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
             </Button>
-          ) : null}
-        </Popconfirm>
-        <Popconfirm
-          title="Are you sure you want to purge this orchestrator?"
-          onConfirm={() => {
-            purgeOrchestrator({
-              query: {
-                instanceId: record.instanceId,
-              },
-            });
-          }}
-          okText="Yes"
-          cancelText="No"
-          arrow={false}
-          icon={false}
-        >
-          <Button size="small" danger>
-            Purge
-          </Button>
-        </Popconfirm>
-      </>
-    ),
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={async () => {
+                await navigator.clipboard.writeText(data.instanceId);
+                toast('Instance ID copied to clipboard');
+              }}
+            >
+              Copy instance ID
+            </DropdownMenuItem>
+            {(data.runtimeStatus === 'Running' ||
+              data.runtimeStatus === 'Pending') && (
+              <DropdownMenuItem
+                onClick={async () => {
+                  await terminateOrchestrator({
+                    query: {
+                      instanceId: data.instanceId,
+                    },
+                  });
+                }}
+              >
+                Terminate instance
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuItem
+              onClick={async () => {
+                await purgeOrchestrator({
+                  query: {
+                    instanceId: data.instanceId,
+                  },
+                });
+              }}
+            >
+              Purge instance
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
   },
 ];

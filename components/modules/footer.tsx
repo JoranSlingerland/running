@@ -1,50 +1,53 @@
 import React, { memo } from 'react';
-import { Divider, Typography } from 'antd';
-import { GithubOutlined } from '@ant-design/icons';
-
-const { Text, Link } = Typography;
+import { Separator } from '@ui/separator';
+import { Text, Link } from '@ui/typography';
+import { Github } from 'lucide-react';
 
 function FooterLinks() {
   return (
-    <>
+    <div className="flex justify-center items-center h-5">
       <Link
         target="_blank"
         href="https://github.com/JoranSlingerland/running-backend/blob/main/LICENSE"
-        type="secondary"
+        type="muted"
+        className="text-xs"
       >
         License
       </Link>
-      <Divider type="vertical" />
+      <Separator orientation="vertical" />
       <Link
         href="https://github.com/JoranSlingerland/running-backend"
         target="_blank"
-        type="secondary"
+        type="muted"
       >
-        <GithubOutlined /> API
+        <div className="flex text-xs items-center">
+          <Github className="mr-1 w-5 h-5" /> API
+        </div>
       </Link>
-      <Divider type="vertical" />
+      <Separator orientation="vertical" />
       <Link
         href="https://github.com/JoranSlingerland/running-frontend"
         target="_blank"
-        type="secondary"
+        type="muted"
       >
-        <GithubOutlined /> Frontend
+        <span className="flex items-center text-xs">
+          <Github className="mr-1 w-5 h-5" />
+          Frontend
+        </span>
       </Link>
-    </>
+    </div>
   );
 }
 
 function Footer({}: {}): JSX.Element {
   return (
     <div className="mt-auto">
-      <Divider />
+      <Separator />
       <div className="flex justify-center mb-4">
-        <div className="w-full flex flex-col space-y-2 text-center justify-center max-w-7xl">
-          <div>
-            <Text type="secondary" className="w-1/3">
-              Running by Joran Slingerland
-            </Text>
-          </div>
+        <div className="w-full flex flex-col space-y-2 items-center  justify-center max-w-7xl">
+          <Text className="text-xs" type="muted">
+            Running by Joran Slingerland
+          </Text>
           <div>
             <FooterLinks />
           </div>
