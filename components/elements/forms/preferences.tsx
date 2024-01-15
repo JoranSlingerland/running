@@ -3,6 +3,8 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { useProps } from '@hooks/useProps';
 import { addUserData } from '@services/user/post';
+import { Loader2 } from 'lucide-react';
+import { useDeepCompareEffect } from 'rooks';
 
 import { Button } from '@ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@ui/form';
@@ -28,13 +30,21 @@ export function PreferencesForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      dark_mode: userSettings?.data?.dark_mode,
+      dark_mode: undefined,
       preferred_tss_type:
         userSettings?.data?.preferences?.preferred_tss_type ?? 'pace',
     },
   });
 
-  // Instantly update the theme when the user changes the theme use theme.setTheme
+  useDeepCompareEffect(() => {
+    if (userSettings?.data) {
+      form.reset({
+        dark_mode: userSettings.data.dark_mode,
+        preferred_tss_type: userSettings.data.preferences.preferred_tss_type,
+      });
+    }
+  }, [userSettings?.data, form]);
+
   theme.setThemeType(form.watch('dark_mode'));
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -66,9 +76,12 @@ export function PreferencesForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Theme</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
-                  <SelectTrigger className="w-36">
+                  <SelectTrigger
+                    disabled={userSettings?.isLoading}
+                    className="w-36"
+                  >
                     <SelectValue placeholder="Theme" />
                   </SelectTrigger>
                 </FormControl>
@@ -87,9 +100,12 @@ export function PreferencesForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Preferred TSS type</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
-                  <SelectTrigger className="w-36">
+                  <SelectTrigger
+                    disabled={userSettings?.isLoading}
+                    className="w-36"
+                  >
                     <SelectValue placeholder="TSS Type" />
                   </SelectTrigger>
                 </FormControl>
@@ -102,7 +118,12 @@ export function PreferencesForm() {
           )}
         />
         <div className="flex flex-col items-center">
-          <Button type="submit">Save</Button>
+          <Button disabled={userSettings?.isLoading} type="submit">
+            Save
+            {userSettings?.isLoading && (
+              <Loader2 className="animate-spin ml-2" size={16} />
+            )}
+          </Button>
         </div>
       </form>
     </Form>

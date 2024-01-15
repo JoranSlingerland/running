@@ -23,6 +23,7 @@ import {
 } from '@ui/select';
 import { Input } from '@ui/input';
 import { Separator } from '@ui/separator';
+import { Loader2 } from 'lucide-react';
 
 // Constants
 const paceRegex = /^(\d{1,3}):(\d{1,2})$/;
@@ -174,10 +175,13 @@ export function AccountForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Gender</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
-                  <SelectTrigger className="w-24">
-                    <SelectValue placeholder="Theme" />
+                  <SelectTrigger
+                    disabled={userSettings?.isLoading}
+                    className="w-24"
+                  >
+                    <SelectValue placeholder="Gender" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -199,6 +203,7 @@ export function AccountForm() {
                   <FormControl>
                     <div className="flex items-center">
                       <Input
+                        disabled={userSettings?.isLoading}
                         className="w-32"
                         type="number"
                         placeholder="Max"
@@ -219,6 +224,7 @@ export function AccountForm() {
                   <FormControl>
                     <div className="flex items-center">
                       <Input
+                        disabled={userSettings?.isLoading}
                         className="w-24"
                         type="number"
                         placeholder="Resting"
@@ -239,6 +245,7 @@ export function AccountForm() {
                   <FormControl>
                     <div className="flex items-center">
                       <Input
+                        disabled={userSettings?.isLoading}
                         className="w-24"
                         type="number"
                         placeholder="Threshold"
@@ -266,7 +273,12 @@ export function AccountForm() {
               <FormItem>
                 <FormLabel>Threshold Pace</FormLabel>
                 <FormControl>
-                  <Input className="w-32" placeholder="Threshold" {...field} />
+                  <Input
+                    disabled={userSettings?.isLoading}
+                    className="w-32"
+                    placeholder="Threshold"
+                    {...field}
+                  />
                 </FormControl>
               </FormItem>
             )}
@@ -279,7 +291,12 @@ export function AccountForm() {
         </div>
         <Separator />
         <div className="flex flex-col items-center">
-          <Button type="submit">Save</Button>
+          <Button disabled={userSettings?.isLoading} type="submit">
+            Save
+            {userSettings?.isLoading && (
+              <Loader2 className="animate-spin ml-2" size={16} />
+            )}
+          </Button>
         </div>
       </form>
     </Form>
