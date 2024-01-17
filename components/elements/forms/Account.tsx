@@ -3,11 +3,7 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { useProps } from '@hooks/useProps';
 import { addUserData } from '@services/user/post';
-import {
-  convertMStoMinPerKM,
-  convertPaceToSeconds,
-  convertPaceToSpeed,
-} from '@utils/convert';
+import { convertPaceToSeconds, convertPaceToSpeed } from '@utils/convert';
 import { useDeepCompareEffect } from 'rooks';
 import { paceZoneColumns } from '@elements/columns/paceZoneColumns';
 import { heartRateZoneColumns } from '@elements/columns/heartRateZoneColumns';
@@ -24,6 +20,7 @@ import {
 import { Input } from '@ui/input';
 import { Separator } from '@ui/separator';
 import { Loader2 } from 'lucide-react';
+import { formatPace } from '@utils/formatting';
 
 // Constants
 const paceRegex = /^(\d{1,3}):(\d{1,2})$/;
@@ -50,8 +47,9 @@ function calculatePaceZones(threshold: string) {
     'Zone 5B: Aerobic Capacity': [1.04, 1.11],
     'Zone 5C: Anaerobic Capacity': [1.11, 2],
   };
+  console.log(threshold);
   const speed = convertPaceToSpeed(convertPaceToSeconds(threshold), 'm/s');
-
+  console.log(speed);
   const zones = Object.keys(zonePercentages);
 
   const zonesWithValues = zones.map((name) => {
@@ -69,6 +67,7 @@ function calculatePaceZones(threshold: string) {
       max,
     };
   });
+  console.log(zonesWithValues);
   return zonesWithValues;
 }
 
@@ -114,7 +113,11 @@ export function AccountForm() {
       hr_max: userSettings?.data?.heart_rate?.max,
       hr_rest: userSettings?.data?.heart_rate?.resting,
       hr_threshold: userSettings?.data?.heart_rate?.threshold,
-      pace_threshold: convertMStoMinPerKM(userSettings?.data?.pace?.threshold),
+      pace_threshold: formatPace({
+        metersPerSecond: userSettings?.data?.pace?.threshold,
+        units: 'metric',
+        addUnit: false,
+      }),
     },
   });
   let paceZones = calculatePaceZones(form.watch('pace_threshold'));
@@ -129,16 +132,17 @@ export function AccountForm() {
         hr_max: userSettings.data.heart_rate?.max,
         hr_rest: userSettings.data.heart_rate?.resting,
         hr_threshold: userSettings.data.heart_rate?.threshold,
-        pace_threshold: convertMStoMinPerKM(userSettings.data.pace?.threshold),
+        pace_threshold: formatPace({
+          metersPerSecond: userSettings?.data?.pace?.threshold,
+          units: 'metric',
+          addUnit: false,
+        }),
       });
     }
   }, [userSettings, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-
     if (!userSettings?.data) return;
-
     const newSettings = {
       ...userSettings?.data,
       gender: values.gender,

@@ -1,56 +1,61 @@
-import { Text } from '@ui/typography';
 import { Icon } from '@elements/icon';
 import {
   convertSecondsToMinutes,
   convertSpeedToPaceInSeconds,
   convertTime,
+  convertDistance,
 } from './convert';
 
-function formatDistance({
-  distance,
-  unit,
-  decimals = 2,
-  wrapInText = true,
-}: {
-  distance: number | undefined;
-  unit: string;
-  decimals?: number;
-  wrapInText?: boolean;
-}) {
-  let value: number;
-  distance = distance || 0;
-  switch (unit) {
-    case 'm':
-      value = distance;
+// Helper functions
+function unitMapper(units: Units, type: 'distance' | 'speed' | 'pace') {
+  let result;
+
+  switch (type) {
+    case 'distance':
+      result = units === 'metric' ? 'km' : 'mi';
       break;
-    case 'km':
-      value = distance / 1000;
+    case 'speed':
+      result = units === 'metric' ? 'km/h' : 'mph';
       break;
-    case 'mi':
-      value = distance / 1609;
-      break;
-    case 'ft':
-      value = distance / 0.3048;
-      break;
-    default:
-      value = distance;
+    case 'pace':
+      result = units === 'metric' ? 'min/km' : 'min/mi';
       break;
   }
 
-  const formattedValue = `${value.toFixed(decimals)} ${unit.toUpperCase()}`;
-
-  return wrapInText ? <Text>{formattedValue}</Text> : formattedValue;
+  return result;
 }
 
+// Distance functions
+function formatDistance({
+  meters,
+  units,
+  decimals = 2,
+  addUnits = true,
+}: {
+  meters: number | undefined;
+  units: Units;
+  decimals?: number;
+  addUnits?: boolean;
+}) {
+  meters = meters || 0;
+  const value = convertDistance(meters, units);
+
+  let formattedValue = value.toFixed(decimals);
+  if (addUnits) {
+    formattedValue += ` ${unitMapper(units, 'distance')}`;
+  }
+
+  return formattedValue;
+}
+
+// Time functions
 function formatTime({
   seconds,
-  wrapInText = true,
   addSeconds = true,
   addMinutes = true,
   addHours = true,
 }: {
   seconds: number;
-  wrapInText?: boolean;
   addSeconds?: boolean;
   addMinutes?: boolean;
   addHours?: boolean;
@@ -79,70 +84,63 @@ function formatTime({
     formattedTime = formattedTime.slice(0, -1);
   }
 
-  return wrapInText ? <Text>{formattedTime}</Text> : formattedTime;
+  return formattedTime;
 }
 
 function formatDateTime(date: string) {
-  const formattedDate = new Date(date).toLocaleString();
-  return <Text>{formattedDate}</Text>;
+  return new Date(date).toLocaleString();
 }
 
-function formatSpeed(metersPerSecond: number, unit: string, decimals = 2) {
-  switch (unit) {
-    case 'm':
-      return <Text>{(metersPerSecond * 3.6).toFixed(decimals)}KM/H</Text>;
-    case 'km':
-      return <Text>{(metersPerSecond * 3.6).toFixed(decimals)}KM/H</Text>;
-    case 'mi':
-      return <Text>{(metersPerSecond * 2.237).toFixed(decimals)}MPH</Text>;
-    case 'ft':
-      return <Text>{(metersPerSecond * 3.281).toFixed(decimals)}FT/S</Text>;
-  }
-}
-
-function formatPace(
-  metersPerSecond: number | undefined,
-  unit: 'km' | 'mi' = 'km',
-  addUnit = true,
-  wrapInText = true,
-) {
-  const minutes = formatMinute(
-    convertSpeedToPaceInSeconds(metersPerSecond, unit),
-    addUnit,
-    false,
-  );
-  return wrapInText ? <Text>{minutes}</Text> : minutes;
-}
-
-function formatMinute(seconds: number, addUnit = true, wrapInText = true) {
+function formatMinute(seconds: number) {
   const [minutes, remainingSeconds] = convertSecondsToMinutes(seconds);
   const formattedTime = `${minutes
     .toString()
-    .padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}${
-    addUnit ? ' MIN/KM' : ''
-  }`;
+    .padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
 
-  return wrapInText ? <Text>{formattedTime}</Text> : formattedTime;
+  return formattedTime;
 }
 
-function formatHeartRate(heartRate: number) {
-  return <Text>{Math.floor(heartRate)} BPM</Text>;
+// Pace and speed functions
+function formatPace({
+  metersPerSecond,
+  units,
+  addUnit = true,
+}: {
+  metersPerSecond: number | undefined;
+  units: Units;
+  addUnit?: boolean;
+}) {
+  let formattedValue = '';
+
+  formattedValue = formatMinute(
+    convertSpeedToPaceInSeconds(metersPerSecond, units),
+  );
+  if (addUnit) {
+    formattedValue += `${formattedValue} ${unitMapper(units, 'pace')}`;
+  }
+
+  return formattedValue;
+}
+
+// Misc functions
+function formatHeartRate(heartRate: number, addUnit = true) {
+  const value = heartRate.toFixed(0);
+  const formattedValue = addUnit ? `${value} bpm` : value;
+  return formattedValue;
 }
 
 function formatNumber({
   number,
   decimals = 2,
-  wrapInText = true,
 }: {
   number: number | undefined;
   decimals?: number;
-  wrapInText?: boolean;
 }) {
   if (number === undefined) {
     return '';
   }
   const formattedNumber = number.toFixed(decimals);
-  return wrapInText ? <Text>{formattedNumber}</Text> : formattedNumber;
+  return formattedNumber;
 }
 
 const sportIcon = (sport: string): JSX.Element => {
@@ -175,7 +173,6 @@ const sportIcon = (sport: string): JSX.Element => {
 export {
   formatDistance,
   formatTime,
-  formatSpeed,
   formatPace,
   formatHeartRate,
   formatNumber,

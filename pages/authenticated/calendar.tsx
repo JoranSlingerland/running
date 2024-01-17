@@ -78,7 +78,6 @@ function CalendarItem({
           <Text>
             {formatTime({
               seconds: item.elapsed_time,
-              wrapInText: false,
               addSeconds: false,
             })}
             {' hours'}
@@ -87,9 +86,8 @@ function CalendarItem({
         {isNotNullOrZero(item.distance) && (
           <Text>
             {formatDistance({
-              distance: item.distance,
-              unit: 'km',
-              wrapInText: false,
+              meters: item.distance,
+              units: 'metric',
             })}
           </Text>
         )}
@@ -97,7 +95,6 @@ function CalendarItem({
           <Text>
             {formatNumber({
               number: tss.tss,
-              wrapInText: false,
               decimals: 0,
             })}{' '}
             TSS
@@ -108,7 +105,12 @@ function CalendarItem({
           <Text>{item.average_heartrate} BPM</Text>
         )}
         {isNotNullOrZero(item.average_speed) && (
-          <Text>{formatPace(item.average_speed, 'km')}</Text>
+          <Text>
+            {formatPace({
+              metersPerSecond: item.average_speed,
+              units: 'metric',
+            })}
+          </Text>
         )}
       </CardContent>
     </Card>
@@ -136,22 +138,19 @@ function MetaItem({
           <>
             <Text size="large">
               {formatDistance({
-                distance: item.distance,
-                unit: 'km',
-                wrapInText: false,
+                meters: item.distance,
+                units: 'metric',
               })}
             </Text>
             <Text size="large">
               {formatTime({
                 seconds: item.time,
-                wrapInText: false,
                 addSeconds: false,
               })}
             </Text>
             <Text size="large">
               {`${formatNumber({
                 number: item.tss,
-                wrapInText: false,
                 decimals: 0,
               })} TSS`}
             </Text>
@@ -190,23 +189,20 @@ function MetaItem({
                     {item.distance !== 0 && (
                       <Text>
                         {formatDistance({
-                          distance: item.distance,
-                          unit: 'km',
-                          wrapInText: false,
+                          meters: item.distance,
+                          units: 'metric',
                         })}
                       </Text>
                     )}
                     <Text>
                       {formatTime({
                         seconds: item.time,
-                        wrapInText: false,
                         addSeconds: false,
                       })}
                     </Text>
                     <Text>
                       {`${formatNumber({
                         number: item.tss,
-                        wrapInText: false,
                         decimals: 0,
                       })} TSS`}
                     </Text>

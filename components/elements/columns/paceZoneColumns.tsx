@@ -15,11 +15,13 @@ export const paceZoneColumns: ColumnDef<PaceZoneData>[] = [
   {
     accessorKey: 'min',
     header: 'From',
-    cell: ({ row }) => formatPace(row.getValue('min'), 'km', true, true),
+    cell: ({ row }) =>
+      formatPace({ metersPerSecond: row.getValue('min'), units: 'metric' }),
   },
   {
     accessorKey: 'max',
     header: 'To',
-    cell: ({ row }) => formatPace(row.getValue('max'), 'km', true, true),
+    cell: ({ row }) =>
+      formatPace({ metersPerSecond: row.getValue('max'), units: 'metric' }),
   },
 ];
