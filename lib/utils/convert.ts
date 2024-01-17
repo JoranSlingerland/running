@@ -43,7 +43,7 @@ function convertDistance(meters: number, units: Units): number {
 }
 
 // Time functions
-function convertTime(seconds: number) {
+function convertSecondsToTimeComponents(seconds: number) {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const remainingSeconds = seconds % 60;
@@ -51,7 +51,9 @@ function convertTime(seconds: number) {
   return [hours, minutes, remainingSeconds];
 }
 
-function convertSecondsToMinutes(seconds: number): [number, number] {
+function convertSecondsToMinutesAndRemainder(
+  seconds: number,
+): [number, number] {
   const minutes = Math.floor(seconds / 60);
   const remainder = Math.floor(seconds % 60);
   return [minutes, remainder];
@@ -60,9 +62,9 @@ function convertSecondsToMinutes(seconds: number): [number, number] {
 // Export
 export {
   convertSpeedToPaceInSeconds,
-  convertSecondsToMinutes,
+  convertSecondsToMinutesAndRemainder,
   convertDistance,
   convertPaceToSpeed,
   convertPaceToSeconds,
-  convertTime,
+  convertSecondsToTimeComponents,
 };

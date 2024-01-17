@@ -1,8 +1,8 @@
 import { Icon } from '@elements/icon';
 import {
-  convertSecondsToMinutes,
+  convertSecondsToMinutesAndRemainder,
   convertSpeedToPaceInSeconds,
-  convertTime,
+  convertSecondsToTimeComponents,
   convertDistance,
 } from './convert';
 
@@ -60,7 +60,8 @@ function formatTime({
   addMinutes?: boolean;
   addHours?: boolean;
 }) {
-  const [hours, minutes, remainingSeconds] = convertTime(seconds);
+  const [hours, minutes, remainingSeconds] =
+    convertSecondsToTimeComponents(seconds);
 
   let formattedTime = '';
 
@@ -92,7 +93,8 @@ function formatDateTime(date: string) {
 }
 
 function formatMinute(seconds: number) {
-  const [minutes, remainingSeconds] = convertSecondsToMinutes(seconds);
+  const [minutes, remainingSeconds] =
+    convertSecondsToMinutesAndRemainder(seconds);
   const formattedTime = `${minutes
     .toString()
     .padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
@@ -178,4 +180,5 @@ export {
   formatNumber,
   sportIcon,
   formatDateTime,
+  unitMapper,
 };
