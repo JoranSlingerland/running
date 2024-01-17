@@ -1,10 +1,11 @@
-import { terminateOrchestrator } from '@services/orchestrator/terminate';
-import { purgeOrchestrator } from '@services/orchestrator/purge';
+import { CheckCircle2, Loader2, MoreHorizontal, XCircle } from 'lucide-react';
+import { toast } from 'sonner';
+
 import { ListOrchestratorData } from '@services/orchestrator/list';
+import { purgeOrchestrator } from '@services/orchestrator/purge';
+import { terminateOrchestrator } from '@services/orchestrator/terminate';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@ui/badge';
-import { formatDateTime } from '@utils/formatting';
-import { MoreHorizontal } from 'lucide-react';
 import { Button } from '@ui/button';
 import {
   DropdownMenu,
@@ -12,8 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@ui/dropdown-menu';
-import { toast } from 'sonner';
-import { Loader2, XCircle, CheckCircle2 } from 'lucide-react';
+import { formatDateTime } from '@utils/formatting';
 
 export const orchestratorColumns: ColumnDef<ListOrchestratorData>[] = [
   {

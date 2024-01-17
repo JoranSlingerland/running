@@ -1,11 +1,11 @@
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { useDeepCompareEffect } from 'rooks';
 import * as z from 'zod';
+
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useProps } from '@hooks/useProps';
 import { addUserData } from '@services/user/post';
-import { Loader2 } from 'lucide-react';
-import { useDeepCompareEffect } from 'rooks';
-
 import { Button } from '@ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@ui/form';
 import {

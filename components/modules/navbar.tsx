@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+
 import { Icon } from '@elements/icon';
 import { useProps } from '@hooks/useProps';
-import { cn } from '@utils/shadcn';
 import { Avatar, AvatarFallback } from '@ui/avatar';
 import { Button } from '@ui/button';
 import {
@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@ui/dropdown-menu';
+import { Separator } from '@ui/separator';
 import {
   Sheet,
   SheetContent,
@@ -20,7 +21,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@ui/sheet';
-import { Separator } from '@ui/separator';
+import { cn } from '@utils/shadcn';
 
 const menuItems = [
   {

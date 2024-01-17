@@ -1,9 +1,10 @@
 import { Icon } from '@elements/icon';
+
 import {
-  convertSecondsToMinutesAndRemainder,
-  convertSpeedToPaceInSeconds,
-  convertSecondsToTimeComponents,
   convertDistance,
+  convertSecondsToMinutesAndRemainder,
+  convertSecondsToTimeComponents,
+  convertSpeedToPaceInSeconds,
 } from './convert';
 
 // Helper functions

@@ -1,7 +1,8 @@
+import { CheckCircle2, Loader2, XCircle } from 'lucide-react';
 import { useRouter } from 'next/router';
-import { useStravaCallback } from '@services/callback/strava';
+
 import Steps from '@elements/steps';
-import { Loader2, XCircle, CheckCircle2 } from 'lucide-react';
+import { useStravaCallback } from '@services/callback/strava';
 
 export default function home() {
   const router = useRouter();

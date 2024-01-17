@@ -1,40 +1,41 @@
-import Calendar from '@elements/calendar';
-import type { Dayjs } from 'dayjs';
-import dayjs from 'dayjs';
 import 'dayjs/locale/en';
-import updateLocale from 'dayjs/plugin/updateLocale';
+
+import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
 import dayLocaleData from 'dayjs/plugin/localeData';
+import updateLocale from 'dayjs/plugin/updateLocale';
 import utc from 'dayjs/plugin/utc';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+
+import Calendar from '@elements/calendar';
+import { useProps } from '@hooks/useProps';
+import { GetActivitiesQuery, useActivities } from '@services/data/activities';
+import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@ui/select';
+import { Text } from '@ui/typography';
 import {
   getFirstMondayBeforeMonth,
   getFirstSundayAfterMonth,
 } from '@utils/dateTimeHelpers';
-import { GetActivitiesQuery } from '@services/data/activities';
-import { useActivities } from '@services/data/activities';
-import { Text } from '@ui/typography';
-import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
-import type { Activity } from '@services/data/activities';
 import {
   formatDistance,
-  formatTime,
-  formatPace,
   formatNumber,
+  formatPace,
+  formatTime,
   sportIcon,
 } from '@utils/formatting';
-import isBetween from 'dayjs/plugin/isBetween';
-import { isNotNullOrZero } from '@utils/utils';
 import { getPreferredTss } from '@utils/tssHelpers';
-import { useProps } from '@hooks/useProps';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-} from '@ui/select';
+import { isNotNullOrZero } from '@utils/utils';
 
+import type { Dayjs } from 'dayjs';
+import type { Activity } from '@services/data/activities';
 dayjs.extend(isBetween);
 dayjs.extend(dayLocaleData);
 dayjs.extend(updateLocale);

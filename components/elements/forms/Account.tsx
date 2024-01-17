@@ -1,18 +1,17 @@
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { useDeepCompareEffect } from 'rooks';
 import * as z from 'zod';
+
+import { heartRateZoneColumns } from '@elements/columns/heartRateZoneColumns';
+import { paceZoneColumns } from '@elements/columns/paceZoneColumns';
+import { DataTable } from '@elements/shadcnTable';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useProps } from '@hooks/useProps';
 import { addUserData } from '@services/user/post';
-import {
-  convertPaceToSeconds,
-  convertPaceToMetersPerSecond,
-} from '@utils/convert';
-import { useDeepCompareEffect } from 'rooks';
-import { paceZoneColumns } from '@elements/columns/paceZoneColumns';
-import { heartRateZoneColumns } from '@elements/columns/heartRateZoneColumns';
-import { DataTable } from '@elements/shadcnTable';
 import { Button } from '@ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@ui/form';
+import { Input } from '@ui/input';
 import {
   Select,
   SelectContent,
@@ -20,9 +19,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@ui/select';
-import { Input } from '@ui/input';
 import { Separator } from '@ui/separator';
-import { Loader2 } from 'lucide-react';
+import {
+  convertPaceToMetersPerSecond,
+  convertPaceToSeconds,
+} from '@utils/convert';
 import { formatPace } from '@utils/formatting';
 
 // Constants
