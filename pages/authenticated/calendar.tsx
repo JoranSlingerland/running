@@ -87,7 +87,7 @@ function CalendarItem({
           <Text>
             {formatDistance({
               meters: item.distance,
-              units: 'metric',
+              units: userSettings?.preferences.units || 'metric',
             })}
           </Text>
         )}
@@ -108,7 +108,7 @@ function CalendarItem({
           <Text>
             {formatPace({
               metersPerSecond: item.average_speed,
-              units: 'metric',
+              units: userSettings?.preferences.units || 'metric',
             })}
           </Text>
         )}
@@ -123,12 +123,14 @@ function MetaItem({
   sports,
   selectedSport,
   setSelectedSport,
+  units,
 }: {
   sportsData: SportData[];
   sportTotals: SportTotals[];
   sports: string[];
   selectedSport: string | null;
   setSelectedSport: (value: string) => void;
+  units: Units;
 }): JSX.Element {
   return (
     <div>
@@ -139,7 +141,7 @@ function MetaItem({
             <Text size="large">
               {formatDistance({
                 meters: item.distance,
-                units: 'metric',
+                units,
               })}
             </Text>
             <Text size="large">
@@ -190,7 +192,7 @@ function MetaItem({
                       <Text>
                         {formatDistance({
                           meters: item.distance,
-                          units: 'metric',
+                          units,
                         })}
                       </Text>
                     )}
@@ -345,6 +347,7 @@ export default function app() {
             sports={sports}
             selectedSport={selectedSport}
             setSelectedSport={setSelectedSport}
+            units={userSettings?.data.preferences.units || 'metric'}
           />
         )}
       </>

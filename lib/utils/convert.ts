@@ -10,20 +10,13 @@ function convertSpeedToPaceInSeconds(
     : (1 / metersPerSecond) * 1609.34;
 }
 
-function convertPaceToSpeed(
+function convertPaceToMetersPerSecond(
   paceInSeconds: number,
-  units: Units | 'm/s',
+  units: Units,
 ): number {
-  // Takes pace in seconds and returns speed in m/s, km/h, or mph. Assumes pace is in the same units
+  // Takes pace in seconds per km or mile and returns speed in m/s
   if (!paceInSeconds) return 0;
-  switch (units) {
-    case 'metric':
-      return 3600 / paceInSeconds;
-    case 'imperial':
-      return 3600 / paceInSeconds;
-    case 'm/s':
-      return (1 / paceInSeconds) * 1000;
-  }
+  return units === 'metric' ? 1000 / paceInSeconds : 1609.34 / paceInSeconds;
 }
 
 function convertPaceToSeconds(pace: string): number {
@@ -64,7 +57,7 @@ export {
   convertSpeedToPaceInSeconds,
   convertSecondsToMinutesAndRemainder,
   convertDistance,
-  convertPaceToSpeed,
   convertPaceToSeconds,
   convertSecondsToTimeComponents,
+  convertPaceToMetersPerSecond,
 };

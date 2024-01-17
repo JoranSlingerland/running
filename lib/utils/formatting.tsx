@@ -112,14 +112,12 @@ function formatPace({
   units: Units;
   addUnit?: boolean;
 }) {
-  let formattedValue = '';
-
-  formattedValue = formatMinute(
+  const value = formatMinute(
     convertSpeedToPaceInSeconds(metersPerSecond, units),
   );
-  if (addUnit) {
-    formattedValue += `${formattedValue} ${unitMapper(units, 'pace')}`;
-  }
+  const formattedValue = addUnit
+    ? `${value} ${unitMapper(units, 'pace')}`
+    : value;
 
   return formattedValue;
 }
