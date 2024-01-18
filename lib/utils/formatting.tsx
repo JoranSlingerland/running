@@ -1,3 +1,7 @@
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
+
 import { Icon } from '@elements/icon';
 
 import {
@@ -6,6 +10,9 @@ import {
   convertSecondsToTimeComponents,
   convertSpeedToPaceInSeconds,
 } from './convert';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 // Helper functions
 function unitMapper(units: Units, type: 'distance' | 'speed' | 'pace') {
@@ -90,7 +97,8 @@ function formatTime({
 }
 
 function formatDateTime(date: string) {
-  return new Date(date).toLocaleString();
+  const userTimezone = dayjs.tz.guess() || 'UTC';
+  return dayjs.utc(date).tz(userTimezone).format('MM/DD/YYYY HH:mm:ss');
 }
 
 function formatMinute(seconds: number) {

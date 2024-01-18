@@ -68,9 +68,7 @@ function CalendarItem({
         <CardTitle>
           <div className="flex items-center space-x-1">
             {sportIcon(item.type)}
-            {`${item.type} at ${dayjs
-              .utc(item.start_date_local)
-              .format('HH:mm')}`}
+            {`${item.type} at ${dayjs(item.start_date).format('HH:mm')}`}
           </div>
         </CardTitle>
       </CardHeader>
@@ -249,14 +247,17 @@ export default function app() {
     const filtered = activitiesData
       ? activitiesData
           .filter((item) => {
-            return item.start_date.includes(date);
+            const itemStartDate = dayjs
+              .utc(item.start_date)
+              .utcOffset(value.utcOffset())
+              .format('YYYY-MM-DD');
+            return itemStartDate.includes(date);
           })
           .sort(
-            (a, b) =>
-              dayjs(a.start_date_local).unix() -
-              dayjs(b.start_date_local).unix(),
+            (a, b) => dayjs(a.start_date).unix() - dayjs(b.start_date).unix(),
           )
       : [];
+
     return (
       <>
         {filtered.map((item, index) => (
@@ -281,10 +282,13 @@ export default function app() {
     if (activitiesData === undefined) {
       return <></>;
     }
+
     let filtered: ActivityWithTss[] = activitiesData
       ? activitiesData.filter((item) => {
-          const date = dayjs(item.start_date);
-          return date.isBetween(firstDay, lastDay);
+          const itemStartDate = dayjs
+            .utc(item.start_date)
+            .utcOffset(value.utcOffset());
+          return itemStartDate.isBetween(firstDay, lastDay, undefined, '[]');
         })
       : [];
 
