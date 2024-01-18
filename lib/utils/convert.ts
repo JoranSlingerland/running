@@ -1,55 +1,42 @@
+// Speed and pace functions
 function convertSpeedToPaceInSeconds(
   metersPerSecond: number | undefined,
-  unit: 'km' | 'mi' = 'km',
+  units: Units,
 ): number {
+  // Takes speed in m/s and returns pace the seconds it takes to run 1 km or 1 mile
   if (!metersPerSecond) return 0;
-  return unit === 'km'
+  return units === 'metric'
     ? (1 / metersPerSecond) * 1000
     : (1 / metersPerSecond) * 1609.34;
 }
 
-function convertSecondsToMinutes(seconds: number): [number, number] {
-  const minutes = Math.floor(seconds / 60);
-  const remainder = Math.floor(seconds % 60);
-  return [minutes, remainder];
-}
-
-function convertDistance(
-  meters: number,
-  unit: 'm' | 'km' | 'mi' | 'ft' = 'km',
-): number {
-  switch (unit) {
-    case 'm':
-      return meters;
-    case 'km':
-      return meters / 1000;
-    case 'mi':
-      return meters / 1609.34;
-    case 'ft':
-      return meters / 0.3048;
-    default:
-      return meters;
-  }
-}
-
-function convertPaceToSpeed(
+function convertPaceToMetersPerSecond(
   paceInSeconds: number,
-  unit: 'km/h' | 'mi/h' | 'm/s' = 'km/h',
+  units: Units,
 ): number {
+  // Takes pace in seconds per km or mile and returns speed in m/s
   if (!paceInSeconds) return 0;
-  switch (unit) {
-    case 'km/h':
-      return 3600 / paceInSeconds;
-    case 'mi/h':
-      return 3600 / paceInSeconds / 1.60934;
-    case 'm/s':
-      return (1 / paceInSeconds) * 1000;
-    default:
-      return (1 / paceInSeconds) * 1000;
+  return units === 'metric' ? 1000 / paceInSeconds : 1609.34 / paceInSeconds;
+}
+
+function convertPaceToSeconds(pace: string): number {
+  // Takes pace in format 'mm:ss' and returns seconds
+  const [minutes, seconds = '0'] = pace.split(':');
+  const paddedSeconds = seconds.padStart(2, '0');
+  return parseInt(minutes, 10) * 60 + parseInt(paddedSeconds, 10);
+}
+
+// Distance functions
+function convertDistance(meters: number, units: Units): number {
+  if (units === 'metric') {
+    return meters / 1000;
+  } else {
+    return meters / 1609.34;
   }
 }
 
-function convertTime(seconds: number) {
+// Time functions
+function convertSecondsToTimeComponents(seconds: number) {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const remainingSeconds = seconds % 60;
@@ -57,25 +44,20 @@ function convertTime(seconds: number) {
   return [hours, minutes, remainingSeconds];
 }
 
-function convertPaceToSeconds(pace: string): number {
-  const [minutes, seconds = '0'] = pace.split(':');
-  const paddedSeconds = seconds.padStart(2, '0');
-  return parseInt(minutes, 10) * 60 + parseInt(paddedSeconds, 10);
+function convertSecondsToMinutesAndRemainder(
+  seconds: number,
+): [number, number] {
+  const minutes = Math.floor(seconds / 60);
+  const remainder = Math.floor(seconds % 60);
+  return [minutes, remainder];
 }
 
-function convertMStoMinPerKM(metersPerSecond: number | undefined): string {
-  const paceInSeconds = convertSpeedToPaceInSeconds(metersPerSecond);
-  const [minutes, seconds] = convertSecondsToMinutes(paceInSeconds);
-  const paddedSeconds = seconds.toString().padStart(2, '0');
-  return `${minutes}:${paddedSeconds}`;
-}
-
+// Export
 export {
   convertSpeedToPaceInSeconds,
-  convertSecondsToMinutes,
+  convertSecondsToMinutesAndRemainder,
   convertDistance,
-  convertPaceToSpeed,
   convertPaceToSeconds,
-  convertTime,
-  convertMStoMinPerKM,
+  convertSecondsToTimeComponents,
+  convertPaceToMetersPerSecond,
 };

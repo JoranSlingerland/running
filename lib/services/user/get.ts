@@ -28,6 +28,7 @@ const initialData: UserSettings = {
   gender: undefined,
   preferences: {
     preferred_tss_type: 'pace',
+    units: 'metric',
   },
 };
 

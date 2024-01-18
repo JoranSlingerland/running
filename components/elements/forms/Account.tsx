@@ -1,19 +1,17 @@
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { useDeepCompareEffect } from 'rooks';
 import * as z from 'zod';
+
+import { heartRateZoneColumns } from '@elements/columns/heartRateZoneColumns';
+import { paceZoneColumns } from '@elements/columns/paceZoneColumns';
+import { DataTable } from '@elements/shadcnTable';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useProps } from '@hooks/useProps';
 import { addUserData } from '@services/user/post';
-import {
-  convertMStoMinPerKM,
-  convertPaceToSeconds,
-  convertPaceToSpeed,
-} from '@utils/convert';
-import { useDeepCompareEffect } from 'rooks';
-import { paceZoneColumns } from '@elements/columns/paceZoneColumns';
-import { heartRateZoneColumns } from '@elements/columns/heartRateZoneColumns';
-import { DataTable } from '@elements/shadcnTable';
 import { Button } from '@ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@ui/form';
+import { Input } from '@ui/input';
 import {
   Select,
   SelectContent,
@@ -21,9 +19,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@ui/select';
-import { Input } from '@ui/input';
 import { Separator } from '@ui/separator';
-import { Loader2 } from 'lucide-react';
+import {
+  convertPaceToMetersPerSecond,
+  convertPaceToSeconds,
+} from '@utils/convert';
+import { formatPace } from '@utils/formatting';
 
 // Constants
 const paceRegex = /^(\d{1,3}):(\d{1,2})$/;
@@ -40,7 +41,7 @@ const formSchema = z.object({
 });
 
 // Helper functions
-function calculatePaceZones(threshold: string) {
+function calculatePaceZones(threshold: string, units: Units) {
   const zonePercentages = {
     'Zone 1: Recovery': [0.78, 0],
     'Zone 2: Aerobic': [0.78, 0.88],
@@ -50,26 +51,45 @@ function calculatePaceZones(threshold: string) {
     'Zone 5B: Aerobic Capacity': [1.04, 1.11],
     'Zone 5C: Anaerobic Capacity': [1.11, 2],
   };
-  const speed = convertPaceToSpeed(convertPaceToSeconds(threshold), 'm/s');
-
+  const speed = convertPaceToMetersPerSecond(
+    convertPaceToSeconds(threshold),
+    units,
+  );
   const zones = Object.keys(zonePercentages);
-
-  const zonesWithValues = zones.map((name) => {
+  let result = {
+    speedInMetersPerSeconds: [] as { name: string; min: number; max: number }[],
+    pace: [] as { name: string; min: string; max: string }[],
+  };
+  zones.map((name) => {
     const percentage = zonePercentages[name as keyof typeof zonePercentages];
-    let min: number = speed * percentage[0];
-    let max: number = speed * percentage[1];
+    let minSpeed: number = speed * percentage[0];
+    let maxSpeed: number = speed * percentage[1];
 
     if (name === 'Zone 5C: Anaerobic Capacity') {
-      max = 27.5;
+      maxSpeed = 27.5;
     }
 
-    return {
+    let minPace = formatPace({
+      metersPerSecond: minSpeed,
+      units: units,
+    });
+    let maxPace = formatPace({
+      metersPerSecond: maxSpeed,
+      units: units,
+    });
+
+    result.speedInMetersPerSeconds.push({
       name,
-      min,
-      max,
-    };
+      min: minSpeed,
+      max: maxSpeed,
+    });
+    result.pace.push({
+      name,
+      min: minPace,
+      max: maxPace,
+    });
   });
-  return zonesWithValues;
+  return result;
 }
 
 function calculateHeartRateZones({ threshold }: { threshold: number }) {
@@ -114,10 +134,17 @@ export function AccountForm() {
       hr_max: userSettings?.data?.heart_rate?.max,
       hr_rest: userSettings?.data?.heart_rate?.resting,
       hr_threshold: userSettings?.data?.heart_rate?.threshold,
-      pace_threshold: convertMStoMinPerKM(userSettings?.data?.pace?.threshold),
+      pace_threshold: formatPace({
+        metersPerSecond: userSettings?.data?.pace?.threshold,
+        units: userSettings?.data?.preferences.units || 'metric',
+        addUnit: false,
+      }),
     },
   });
-  let paceZones = calculatePaceZones(form.watch('pace_threshold'));
+  let paceZones = calculatePaceZones(
+    form.watch('pace_threshold'),
+    userSettings?.data?.preferences.units || 'metric',
+  );
   let heartRateZones = calculateHeartRateZones({
     threshold: form.watch('hr_threshold'),
   });
@@ -129,16 +156,17 @@ export function AccountForm() {
         hr_max: userSettings.data.heart_rate?.max,
         hr_rest: userSettings.data.heart_rate?.resting,
         hr_threshold: userSettings.data.heart_rate?.threshold,
-        pace_threshold: convertMStoMinPerKM(userSettings.data.pace?.threshold),
+        pace_threshold: formatPace({
+          metersPerSecond: userSettings?.data?.pace?.threshold,
+          units: userSettings?.data?.preferences.units || 'metric',
+          addUnit: false,
+        }),
       });
     }
   }, [userSettings, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-
     if (!userSettings?.data) return;
-
     const newSettings = {
       ...userSettings?.data,
       gender: values.gender,
@@ -149,11 +177,11 @@ export function AccountForm() {
         zones: heartRateZones,
       },
       pace: {
-        threshold: convertPaceToSpeed(
+        threshold: convertPaceToMetersPerSecond(
           convertPaceToSeconds(values.pace_threshold),
-          'm/s',
+          userSettings?.data?.preferences.units || 'metric',
         ),
-        zones: paceZones,
+        zones: paceZones.speedInMetersPerSeconds,
       },
     };
 
@@ -286,7 +314,7 @@ export function AccountForm() {
           <DataTable
             isLoading={userSettings?.isLoading || false}
             columns={paceZoneColumns}
-            data={paceZones || []}
+            data={paceZones.pace || []}
           />
         </div>
         <Separator />

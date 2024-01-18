@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const useTheme = (initialTheme: ThemeType): Theme => {
   const [themeType, setThemeType] = useState<ThemeType>(initialTheme);

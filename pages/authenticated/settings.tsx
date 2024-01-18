@@ -1,16 +1,17 @@
-import { DataTable } from '@elements/shadcnTable';
-import { startOrchestrator } from '@services/orchestrator/start';
-import { orchestratorColumns } from '@elements/columns/orchestratorColumns';
-import { useListOrchestrator } from '@services/orchestrator/list';
 import getConfig from 'next/config';
 import { useRouter } from 'next/router';
-import useSessionStorageState from '@hooks/useSessionStorageState';
-import { PreferencesForm } from '@elements/forms/preferences';
-import { AccountForm } from '@elements/forms/Account';
-import { Text, Title } from '@ui/typography';
-import { Button } from '@ui/button';
 import { toast } from 'sonner';
+
+import { orchestratorColumns } from '@elements/columns/orchestratorColumns';
+import { AccountForm } from '@elements/forms/Account';
+import { PreferencesForm } from '@elements/forms/preferences';
+import { DataTable } from '@elements/shadcnTable';
+import useSessionStorageState from '@hooks/useSessionStorageState';
+import { useListOrchestrator } from '@services/orchestrator/list';
+import { startOrchestrator } from '@services/orchestrator/start';
+import { Button } from '@ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/tabs';
+import { Text, Title } from '@ui/typography';
 
 // handle click functions
 function handleSessionStorageClearClick() {

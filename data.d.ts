@@ -35,6 +35,7 @@ type UserSettings = {
   };
   preferences: {
     preferred_tss_type: 'hr' | 'pace';
+    units: Units;
   };
   gender: 'male' | 'female' | undefined;
 };
@@ -48,3 +49,5 @@ type Theme = {
 };
 
 type StorageType = 'sessionStorage' | 'localStorage';
+
+type Units = 'metric' | 'imperial';

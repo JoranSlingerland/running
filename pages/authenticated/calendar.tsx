@@ -1,40 +1,41 @@
-import Calendar from '@elements/calendar';
-import type { Dayjs } from 'dayjs';
-import dayjs from 'dayjs';
 import 'dayjs/locale/en';
-import updateLocale from 'dayjs/plugin/updateLocale';
+
+import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
 import dayLocaleData from 'dayjs/plugin/localeData';
+import updateLocale from 'dayjs/plugin/updateLocale';
 import utc from 'dayjs/plugin/utc';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+
+import Calendar from '@elements/calendar';
+import { useProps } from '@hooks/useProps';
+import { GetActivitiesQuery, useActivities } from '@services/data/activities';
+import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@ui/select';
+import { Text } from '@ui/typography';
 import {
   getFirstMondayBeforeMonth,
   getFirstSundayAfterMonth,
 } from '@utils/dateTimeHelpers';
-import { GetActivitiesQuery } from '@services/data/activities';
-import { useActivities } from '@services/data/activities';
-import { Text } from '@ui/typography';
-import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
-import type { Activity } from '@services/data/activities';
 import {
   formatDistance,
-  formatTime,
-  formatPace,
   formatNumber,
+  formatPace,
+  formatTime,
   sportIcon,
 } from '@utils/formatting';
-import isBetween from 'dayjs/plugin/isBetween';
-import { isNotNullOrZero } from '@utils/utils';
 import { getPreferredTss } from '@utils/tssHelpers';
-import { useProps } from '@hooks/useProps';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-} from '@ui/select';
+import { isNotNullOrZero } from '@utils/utils';
 
+import type { Dayjs } from 'dayjs';
+import type { Activity } from '@services/data/activities';
 dayjs.extend(isBetween);
 dayjs.extend(dayLocaleData);
 dayjs.extend(updateLocale);
@@ -67,9 +68,7 @@ function CalendarItem({
         <CardTitle>
           <div className="flex items-center space-x-1">
             {sportIcon(item.type)}
-            {`${item.type} at ${dayjs
-              .utc(item.start_date_local)
-              .format('HH:mm')}`}
+            {`${item.type} at ${dayjs(item.start_date).format('HH:mm')}`}
           </div>
         </CardTitle>
       </CardHeader>
@@ -78,7 +77,6 @@ function CalendarItem({
           <Text>
             {formatTime({
               seconds: item.elapsed_time,
-              wrapInText: false,
               addSeconds: false,
             })}
             {' hours'}
@@ -87,9 +85,8 @@ function CalendarItem({
         {isNotNullOrZero(item.distance) && (
           <Text>
             {formatDistance({
-              distance: item.distance,
-              unit: 'km',
-              wrapInText: false,
+              meters: item.distance,
+              units: userSettings?.preferences.units || 'metric',
             })}
           </Text>
         )}
@@ -97,7 +94,6 @@ function CalendarItem({
           <Text>
             {formatNumber({
               number: tss.tss,
-              wrapInText: false,
               decimals: 0,
             })}{' '}
             TSS
@@ -108,7 +104,12 @@ function CalendarItem({
           <Text>{item.average_heartrate} BPM</Text>
         )}
         {isNotNullOrZero(item.average_speed) && (
-          <Text>{formatPace(item.average_speed, 'km')}</Text>
+          <Text>
+            {formatPace({
+              metersPerSecond: item.average_speed,
+              units: userSettings?.preferences.units || 'metric',
+            })}
+          </Text>
         )}
       </CardContent>
     </Card>
@@ -121,12 +122,14 @@ function MetaItem({
   sports,
   selectedSport,
   setSelectedSport,
+  units,
 }: {
   sportsData: SportData[];
   sportTotals: SportTotals[];
   sports: string[];
   selectedSport: string | null;
   setSelectedSport: (value: string) => void;
+  units: Units;
 }): JSX.Element {
   return (
     <div>
@@ -136,22 +139,19 @@ function MetaItem({
           <>
             <Text size="large">
               {formatDistance({
-                distance: item.distance,
-                unit: 'km',
-                wrapInText: false,
+                meters: item.distance,
+                units,
               })}
             </Text>
             <Text size="large">
               {formatTime({
                 seconds: item.time,
-                wrapInText: false,
                 addSeconds: false,
               })}
             </Text>
             <Text size="large">
               {`${formatNumber({
                 number: item.tss,
-                wrapInText: false,
                 decimals: 0,
               })} TSS`}
             </Text>
@@ -190,23 +190,20 @@ function MetaItem({
                     {item.distance !== 0 && (
                       <Text>
                         {formatDistance({
-                          distance: item.distance,
-                          unit: 'km',
-                          wrapInText: false,
+                          meters: item.distance,
+                          units,
                         })}
                       </Text>
                     )}
                     <Text>
                       {formatTime({
                         seconds: item.time,
-                        wrapInText: false,
                         addSeconds: false,
                       })}
                     </Text>
                     <Text>
                       {`${formatNumber({
                         number: item.tss,
-                        wrapInText: false,
                         decimals: 0,
                       })} TSS`}
                     </Text>
@@ -250,14 +247,17 @@ export default function app() {
     const filtered = activitiesData
       ? activitiesData
           .filter((item) => {
-            return item.start_date.includes(date);
+            const itemStartDate = dayjs
+              .utc(item.start_date)
+              .utcOffset(value.utcOffset())
+              .format('YYYY-MM-DD');
+            return itemStartDate.includes(date);
           })
           .sort(
-            (a, b) =>
-              dayjs(a.start_date_local).unix() -
-              dayjs(b.start_date_local).unix(),
+            (a, b) => dayjs(a.start_date).unix() - dayjs(b.start_date).unix(),
           )
       : [];
+
     return (
       <>
         {filtered.map((item, index) => (
@@ -282,10 +282,13 @@ export default function app() {
     if (activitiesData === undefined) {
       return <></>;
     }
+
     let filtered: ActivityWithTss[] = activitiesData
       ? activitiesData.filter((item) => {
-          const date = dayjs(item.start_date);
-          return date.isBetween(firstDay, lastDay);
+          const itemStartDate = dayjs
+            .utc(item.start_date)
+            .utcOffset(value.utcOffset());
+          return itemStartDate.isBetween(firstDay, lastDay, undefined, '[]');
         })
       : [];
 
@@ -349,6 +352,7 @@ export default function app() {
             sports={sports}
             selectedSport={selectedSport}
             setSelectedSport={setSelectedSport}
+            units={userSettings?.data.preferences.units || 'metric'}
           />
         )}
       </>

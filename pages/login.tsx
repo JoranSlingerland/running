@@ -1,7 +1,8 @@
-import { Text, Title } from '@ui/typography';
 import Image from 'next/image';
 import Link from 'next/link';
+
 import { useProps } from '@hooks/useProps';
+import { Text, Title } from '@ui/typography';
 
 export default function Home() {
   const { theme } = useProps();

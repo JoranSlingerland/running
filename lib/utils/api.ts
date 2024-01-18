@@ -1,8 +1,8 @@
+import hash from 'object-hash';
 import { toast } from 'sonner';
 import wretch from 'wretch';
-import QueryStringAddon from 'wretch/addons/queryString';
 import AbortAddon from 'wretch/addons/abort';
-import hash from 'object-hash';
+import QueryStringAddon from 'wretch/addons/queryString';
 import { WretchError } from 'wretch/resolver';
 
 const MILLISECONDS_IN_HOUR = 1000 * 60 * 60;

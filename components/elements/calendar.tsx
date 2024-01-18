@@ -1,25 +1,27 @@
-import React from 'react';
-import dayjs from 'dayjs';
 import 'dayjs/locale/en';
-import updateLocale from 'dayjs/plugin/updateLocale';
+
+import dayjs from 'dayjs';
 import dayLocaleData from 'dayjs/plugin/localeData';
+import updateLocale from 'dayjs/plugin/updateLocale';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React from 'react';
+
+import { Button } from '@ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@ui/select';
+import { Skeleton } from '@ui/skeleton';
+import { Title } from '@ui/typography';
 import {
   getFirstMondayBeforeMonth,
   getFirstSundayAfterMonth,
 } from '@utils/dateTimeHelpers';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-} from '@ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
-import { Skeleton } from '@ui/skeleton';
-import { Title } from '@ui/typography';
 
 dayjs.extend(dayLocaleData);
 dayjs.extend(updateLocale);
@@ -239,7 +241,7 @@ export default function Calendar({
   );
 
   return (
-    <div className="">
+    <div>
       {Header}
       <div>
         {CalendarHeader}

@@ -1,7 +1,8 @@
-import React, { memo } from 'react';
-import { Separator } from '@ui/separator';
-import { Text, Link } from '@ui/typography';
 import { Github } from 'lucide-react';
+import React, { memo } from 'react';
+
+import { Separator } from '@ui/separator';
+import { Link, Text } from '@ui/typography';
 
 function FooterLinks() {
   return (

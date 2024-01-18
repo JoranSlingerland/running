@@ -1,11 +1,11 @@
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { useDeepCompareEffect } from 'rooks';
 import * as z from 'zod';
+
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useProps } from '@hooks/useProps';
 import { addUserData } from '@services/user/post';
-import { Loader2 } from 'lucide-react';
-import { useDeepCompareEffect } from 'rooks';
-
 import { Button } from '@ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@ui/form';
 import {
@@ -23,6 +23,7 @@ const formSchema = z.object({
     z.literal('system'),
   ]),
   preferred_tss_type: z.union([z.literal('pace'), z.literal('hr')]),
+  units: z.union([z.literal('metric'), z.literal('imperial')]),
 });
 
 export function PreferencesForm() {
@@ -33,6 +34,7 @@ export function PreferencesForm() {
       dark_mode: undefined,
       preferred_tss_type:
         userSettings?.data?.preferences?.preferred_tss_type ?? 'pace',
+      units: userSettings?.data?.preferences?.units ?? 'metric',
     },
   });
 
@@ -41,6 +43,7 @@ export function PreferencesForm() {
       form.reset({
         dark_mode: userSettings.data.dark_mode,
         preferred_tss_type: userSettings.data.preferences.preferred_tss_type,
+        units: userSettings.data.preferences.units,
       });
     }
   }, [userSettings?.data, form]);
@@ -55,6 +58,8 @@ export function PreferencesForm() {
       dark_mode: values.dark_mode,
       preferences: {
         ...userSettings.data.preferences,
+        preferred_tss_type: values.preferred_tss_type,
+        units: values.units,
       },
     };
 
@@ -112,6 +117,29 @@ export function PreferencesForm() {
                 <SelectContent>
                   <SelectItem value="pace">Pace</SelectItem>
                   <SelectItem value="hr">Heart Rate</SelectItem>
+                </SelectContent>
+              </Select>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="units"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Units</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger
+                    disabled={userSettings?.isLoading}
+                    className="w-36"
+                  >
+                    <SelectValue placeholder="Units" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="metric">Metric</SelectItem>
+                  <SelectItem value="imperial">Imperial</SelectItem>
                 </SelectContent>
               </Select>
             </FormItem>

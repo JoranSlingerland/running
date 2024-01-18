@@ -1,10 +1,28 @@
 import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  RefreshCcw,
+} from 'lucide-react';
+
+import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
+  Table as TanStackTable,
   useReactTable,
 } from '@tanstack/react-table';
+import { Button } from '@ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@ui/select';
+import { Skeleton } from '@ui/skeleton';
 import {
   Table,
   TableBody,
@@ -13,23 +31,6 @@ import {
   TableHeader,
   TableRow,
 } from '@ui/table';
-import { Skeleton } from '@ui/skeleton';
-import { Button } from '@ui/button';
-import {
-  ChevronRight,
-  ChevronLeft,
-  ChevronsLeft,
-  ChevronsRight,
-  RefreshCcw,
-} from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@ui/select';
-import { Table as TanStackTable } from '@tanstack/react-table';
 
 interface DataTablePaginationProps<TData> {
   table: TanStackTable<TData>;
