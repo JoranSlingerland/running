@@ -35,7 +35,7 @@ type UserSettings = {
   };
   preferences: {
     preferred_tss_type: 'hr' | 'pace';
-    units: 'metric' | 'imperial';
+    units: Units;
   };
   gender: 'male' | 'female' | undefined;
 };
