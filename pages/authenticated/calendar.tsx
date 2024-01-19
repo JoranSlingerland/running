@@ -6,10 +6,12 @@ import dayLocaleData from 'dayjs/plugin/localeData';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import utc from 'dayjs/plugin/utc';
 import { useEffect, useState } from 'react';
+import useSessionStorageState from '@hooks/useSessionStorageState';
 
 import Calendar from '@elements/calendar';
 import { useProps } from '@hooks/useProps';
 import { GetActivitiesQuery, useActivities } from '@services/data/activities';
+import { SparkBarChart } from '@tremor/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
 import {
   Select,
@@ -19,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/tabs';
 import { Text } from '@ui/typography';
 import {
   getFirstMondayBeforeMonth,
@@ -53,6 +56,22 @@ type SportTotals = {
   time: number;
   tss: number;
 };
+
+interface ActivityWithTss extends Activity {
+  tss?: number;
+}
+
+interface ChartTotals {
+  start_date: string;
+  distance: number;
+  moving_time: number;
+  tss: number;
+}
+
+interface ChartData {
+  totals: ChartTotals[];
+  [key: string]: ChartTotals[];
+}
 
 function CalendarItem({
   item,
@@ -122,6 +141,9 @@ function MetaItem({
   sports,
   selectedSport,
   setSelectedSport,
+  chartData,
+  chartTab,
+  setChartTab,
   units,
 }: {
   sportsData: SportData[];
@@ -129,11 +151,26 @@ function MetaItem({
   sports: string[];
   selectedSport: string | null;
   setSelectedSport: (value: string) => void;
+  chartData: ChartData;
+  chartTab?: 'tss' | 'distance' | 'moving_time';
+  setChartTab: (value: 'tss' | 'distance' | 'moving_time') => void;
   units: Units;
 }): JSX.Element {
+  const tabValues = {
+    tss: 'TSS',
+    distance: 'Distance',
+    moving_time: 'Time',
+  };
+
+  const chartHasData = Object.values(chartData).some((array) =>
+    array.some((obj) =>
+      Object.values(obj).some((val) => typeof val === 'number' && val > 0),
+    ),
+  );
+
   return (
     <div>
-      <div className="ml-2">
+      <div>
         <Text>Total</Text>
         {sportTotals.map((item) => (
           <>
@@ -157,6 +194,37 @@ function MetaItem({
             </Text>
           </>
         ))}
+
+        {chartHasData && (
+          <Tabs
+            onValueChange={(value) =>
+              setChartTab(value as 'tss' | 'distance' | 'moving_time')
+            }
+            value={chartTab}
+          >
+            <TabsList className="my-2 w-full flex">
+              {Object.keys(tabValues).map((value) => (
+                <TabsTrigger
+                  key={value}
+                  value={value}
+                  className="text-xs w-full truncate"
+                >
+                  {tabValues[value as keyof typeof tabValues]}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            {Object.keys(tabValues).map((value) => (
+              <TabsContent key={value} value={value}>
+                <SparkBarChart
+                  data={chartData.totals}
+                  categories={[value]}
+                  index={'start_date'}
+                  className="w-full h-8"
+                />
+              </TabsContent>
+            ))}
+          </Tabs>
+        )}
       </div>
       <div>
         {sportsData.length > 1 && (
@@ -186,28 +254,48 @@ function MetaItem({
                   (item) => !selectedSport || item.sport === selectedSport,
                 )
                 .map((item) => (
-                  <div className="ml-2" key={item.sport}>
-                    {item.distance !== 0 && (
+                  <>
+                    <div key={item.sport}>
+                      {item.distance !== 0 && (
+                        <Text>
+                          {formatDistance({
+                            meters: item.distance,
+                            units,
+                          })}
+                        </Text>
+                      )}
                       <Text>
-                        {formatDistance({
-                          meters: item.distance,
-                          units,
+                        {formatTime({
+                          seconds: item.time,
+                          addSeconds: false,
                         })}
                       </Text>
-                    )}
-                    <Text>
-                      {formatTime({
-                        seconds: item.time,
-                        addSeconds: false,
-                      })}
-                    </Text>
-                    <Text>
-                      {`${formatNumber({
-                        number: item.tss,
-                        decimals: 0,
-                      })} TSS`}
-                    </Text>
-                  </div>
+                      <Text>
+                        {`${formatNumber({
+                          number: item.tss,
+                          decimals: 0,
+                        })} TSS`}
+                      </Text>
+                    </div>
+
+                    <Tabs
+                      onValueChange={(value) =>
+                        setChartTab(value as 'tss' | 'distance' | 'moving_time')
+                      }
+                      value={chartTab}
+                    >
+                      {Object.keys(tabValues).map((value) => (
+                        <TabsContent key={value} value={value}>
+                          <SparkBarChart
+                            data={chartData[item.sport]}
+                            categories={[value]}
+                            index={'start_date'}
+                            className="w-full h-8"
+                          />
+                        </TabsContent>
+                      ))}
+                    </Tabs>
+                  </>
                 ))}
           </>
         )}
@@ -233,7 +321,12 @@ export default function app() {
       query: query,
     });
   const { userSettings } = useProps();
-  const [selectedSport, setSelectedSport] = useState<string | null>(null);
+  const [selectedSport, setSelectedSport] = useSessionStorageState<
+    string | null
+  >('calendarSelectedSport', null);
+  const [chartTab, setChartTab] = useSessionStorageState<
+    'tss' | 'distance' | 'moving_time'
+  >('calendarChartTab', 'tss');
 
   function onDateChange(date: Dayjs) {
     setQuery({
@@ -272,10 +365,6 @@ export default function app() {
   };
 
   const metaCellRenderer = (value: Dayjs) => {
-    interface ActivityWithTss extends Activity {
-      tss?: number;
-    }
-
     const firstDay = value.startOf('week');
     const lastDay = value.endOf('week');
 
@@ -343,6 +432,65 @@ export default function app() {
       { distance: 0, time: 0, tss: 0 },
     );
 
+    // Get chart data
+    let chartData: ChartData = {
+      totals: [],
+    };
+    sports.forEach((sport) => {
+      chartData[sport] = [];
+    });
+
+    for (
+      let date = firstDay;
+      date.isBefore(lastDay) || date.isSame(lastDay);
+      date = date.add(1, 'day')
+    ) {
+      const activitiesForDay = filtered.filter((item) =>
+        dayjs(item.start_date).isSame(date, 'day'),
+      );
+      const totalsForDay = activitiesForDay.reduce(
+        (prev, curr) => {
+          return {
+            distance: prev.distance + curr.distance,
+            time: prev.time + curr.elapsed_time,
+            tss: prev.tss + (curr.tss || 0),
+          };
+        },
+        { distance: 0, time: 0, tss: 0 },
+      );
+
+      chartData.totals.push({
+        start_date: date.format('YYYY-MM-DD'),
+        distance: totalsForDay.distance,
+        moving_time: totalsForDay.time,
+        tss: totalsForDay.tss,
+      });
+
+      sports.forEach((sport) => {
+        const activitiesForSport = activitiesForDay.filter(
+          (item) => item.type === sport,
+        );
+
+        const totalsForSport = activitiesForSport.reduce(
+          (prev, curr) => {
+            return {
+              distance: prev.distance + curr.distance,
+              time: prev.time + curr.elapsed_time,
+              tss: prev.tss + (curr.tss || 0),
+            };
+          },
+          { distance: 0, time: 0, tss: 0 },
+        );
+
+        chartData[sport].push({
+          start_date: date.format('YYYY-MM-DD'),
+          distance: totalsForSport.distance,
+          moving_time: totalsForSport.time,
+          tss: totalsForSport.tss,
+        });
+      });
+    }
+
     return (
       <>
         {!activitiesIsLoading && (
@@ -352,6 +500,9 @@ export default function app() {
             sports={sports}
             selectedSport={selectedSport}
             setSelectedSport={setSelectedSport}
+            chartData={chartData}
+            chartTab={chartTab}
+            setChartTab={setChartTab}
             units={userSettings?.data.preferences.units || 'metric'}
           />
         )}

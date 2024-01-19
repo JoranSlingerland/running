@@ -241,7 +241,7 @@ export default function Calendar({
   );
 
   return (
-    <div>
+    <div className="min-w-[1280px]">
       {Header}
       <div>
         {CalendarHeader}
