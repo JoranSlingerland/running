@@ -7,6 +7,7 @@ import { PropsContext } from '@hooks/useProps';
 import useTheme from '@hooks/useTheme';
 import Footer from '@modules/footer';
 import Navbar from '@modules/navbar';
+import FullScreenLoader from '@modules/loading';
 import { useUserInfo } from '@services/.auth/me';
 import { useUserSettings } from '@services/user/get';
 import { Toaster } from '@ui/sonner';
@@ -20,7 +21,7 @@ export const fontSans = FontSans({
 
 function MyApp({ Component, pageProps }: AppProps) {
   const userSettings = useUserSettings();
-  const { data: userInfo } = useUserInfo();
+  const userInfo = useUserInfo();
   const theme = useTheme(userSettings.data?.dark_mode || 'system');
 
   const className = () =>
@@ -28,6 +29,14 @@ function MyApp({ Component, pageProps }: AppProps) {
       'bg-background font-sans antialiased flex flex-col min-h-screen justify-between',
       fontSans.variable || '',
     );
+
+  if (userInfo.isLoading || userSettings.isLoading || !theme) {
+    return (
+      <div className={className()}>
+        <FullScreenLoader />
+      </div>
+    );
+  }
 
   return (
     <div className={className()}>

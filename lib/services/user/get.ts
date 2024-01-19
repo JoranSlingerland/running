@@ -1,13 +1,5 @@
 import { useFetch } from '@hooks/useFetch';
 
-interface UseUserSettings {
-  data: UserSettings;
-  isLoading: boolean;
-  isError: boolean;
-  refetchData: (params?: { cacheOnly?: boolean }) => void;
-  overwriteData: (data: UserSettings) => void;
-}
-
 const initialData: UserSettings = {
   dark_mode: 'system',
   strava_authentication: {
@@ -32,9 +24,7 @@ const initialData: UserSettings = {
   },
 };
 
-function useUserSettings({
-  enabled = true,
-}: { enabled?: boolean } = {}): UseUserSettings {
+function useUserSettings({ enabled = true }: { enabled?: boolean } = {}) {
   const fetchResult = useFetch<undefined, undefined, UserSettings>({
     url: '/api/user',
     method: 'GET',
@@ -47,9 +37,7 @@ function useUserSettings({
       storageType: 'sessionStorage',
     },
   });
-  return fetchResult as UseUserSettings;
+  return fetchResult;
 }
 
 export { useUserSettings };
-
-export type { UseUserSettings };

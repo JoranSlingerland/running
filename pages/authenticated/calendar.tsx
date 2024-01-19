@@ -503,7 +503,7 @@ export default function app() {
             chartData={chartData}
             chartTab={chartTab}
             setChartTab={setChartTab}
-            units={userSettings?.data.preferences.units || 'metric'}
+            units={userSettings?.data?.preferences.units || 'metric'}
           />
         )}
       </>

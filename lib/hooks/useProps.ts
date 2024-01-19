@@ -1,10 +1,10 @@
 import { createContext, useContext } from 'react';
 
-import { UseUserSettings } from '@services/user/get';
+import { UseFetchResult } from '@hooks/useFetch';
 
 interface Props {
-  userInfo: UserInfo | undefined;
-  userSettings: UseUserSettings | undefined;
+  userInfo: UseFetchResult<UserInfo, undefined> | undefined;
+  userSettings: UseFetchResult<UserSettings, undefined> | undefined;
   theme: Theme;
 }
 
