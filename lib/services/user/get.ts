@@ -35,6 +35,7 @@ function useUserSettings({ enabled = true }: { enabled?: boolean } = {}) {
       enabled: true,
       hours: 24,
       storageType: 'sessionStorage',
+      customKey: 'userSettings',
     },
   });
   return fetchResult;

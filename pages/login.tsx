@@ -1,11 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { useProps } from '@hooks/useProps';
+import { useTheme } from 'next-themes';
 import { Text, Title } from '@ui/typography';
 
 export default function Home() {
-  const { theme } = useProps();
+  const { resolvedTheme } = useTheme();
 
   return (
     <div className="flex flex-col items-center justify-center space-y-10">
@@ -30,7 +30,7 @@ export default function Home() {
         }
       >
         <Image
-          src={`/images/ms_sign_in_${theme.theme}.png`}
+          src={`/images/ms_sign_in_${resolvedTheme}.png`}
           alt="Microsoft"
           width={215}
           height={41}

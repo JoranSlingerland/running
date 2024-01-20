@@ -57,18 +57,17 @@ function AppContent({ Component, pageProps }: AppContentProps) {
           userSettings,
         }}
       >
-        {/* Utilities */}
         <Toaster />
-        <FullScreenLoader
-          active={userInfo.isLoading || userSettings.isLoading}
-        />
 
-        {/* Main content */}
         <Navbar />
         <div className="px-2">
           <Component {...pageProps} />
         </div>
         <Footer />
+
+        <FullScreenLoader
+          active={userInfo.isLoading || userSettings.isLoading}
+        />
       </PropsContext.Provider>
     </div>
   );
