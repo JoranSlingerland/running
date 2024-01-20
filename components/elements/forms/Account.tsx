@@ -189,7 +189,7 @@ export function AccountForm() {
       body: newSettings,
     }).then(() => {
       userSettings?.refetchData({
-        cacheOnly: true,
+        overwrite: true,
       });
     });
   }

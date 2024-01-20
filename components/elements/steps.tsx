@@ -5,7 +5,7 @@ import { Text } from '@ui/typography';
 interface Steps {
   title: string;
   status: string;
-  icon: any;
+  icon: JSX.Element;
   description?: string;
 }
 

@@ -2,6 +2,7 @@ import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useDeepCompareEffect } from 'rooks';
 import * as z from 'zod';
+import { useTheme } from 'next-themes';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useProps } from '@hooks/useProps';
@@ -27,7 +28,8 @@ const formSchema = z.object({
 });
 
 export function PreferencesForm() {
-  const { userSettings, theme } = useProps();
+  const { userSettings } = useProps();
+  const { setTheme } = useTheme();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -41,25 +43,25 @@ export function PreferencesForm() {
   useDeepCompareEffect(() => {
     if (userSettings?.data) {
       form.reset({
-        dark_mode: userSettings.data.dark_mode,
+        dark_mode: userSettings.data.preferences.dark_mode,
         preferred_tss_type: userSettings.data.preferences.preferred_tss_type,
         units: userSettings.data.preferences.units,
       });
     }
   }, [userSettings?.data, form]);
 
-  theme.setThemeType(form.watch('dark_mode'));
+  setTheme(form.watch('dark_mode'));
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!userSettings?.data) return;
 
-    const newSettings = {
+    const newSettings: UserSettings = {
       ...userSettings.data,
-      dark_mode: values.dark_mode,
       preferences: {
         ...userSettings.data.preferences,
         preferred_tss_type: values.preferred_tss_type,
         units: values.units,
+        dark_mode: values.dark_mode,
       },
     };
 
@@ -67,7 +69,7 @@ export function PreferencesForm() {
       body: newSettings,
     }).then(() => {
       userSettings?.refetchData({
-        cacheOnly: true,
+        overwrite: true,
       });
     });
   }

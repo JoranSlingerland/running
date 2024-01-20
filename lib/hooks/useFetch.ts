@@ -29,12 +29,16 @@ interface UseFetchOptions<Body, Query, Response> {
   };
 }
 
-interface UseFetchResult<Response> {
+interface UseFetchResult<Response, Query> {
   data: Response | undefined;
   isLoading: boolean;
   isError: boolean;
   error: WretchError | undefined;
-  refetchData: (params?: { cacheOnly?: boolean }) => void;
+  refetchData: (params?: {
+    query?: Query;
+    setLoading?: boolean;
+    overwrite?: boolean;
+  }) => void;
   overwriteData: (data: Response) => void;
 }
 
@@ -42,32 +46,48 @@ function useFetch<Body, Query, Response>({
   url,
   method,
   body,
-  query,
+  query: initialQuery,
   enabled = true,
   background = false,
-  overwrite = false,
+  overwrite: initialOverwrite = false,
   initialData,
   cache,
   message,
-}: UseFetchOptions<Body, Query, Response>): UseFetchResult<Response> {
+}: UseFetchOptions<Body, Query, Response>): UseFetchResult<Response, Query> {
   // Constants
-  const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [refetch, setRefetch] = useState(false);
   const [data, setData] = useState<Response | undefined>(initialData);
-  const [cacheOnly, setCacheOnly] = useState(false);
   const [error, setError] = useState<WretchError | undefined>(undefined);
+  const [query, setQuery] = useState<Query | undefined>(initialQuery);
+  const [overwrite, setOverwrite] = useState(initialOverwrite);
+  const [isLoading, setIsLoading] = useState(
+    background || overwrite ? false : true,
+  );
 
   // Functions
-  const refetchData = ({ cacheOnly = false }: { cacheOnly?: boolean } = {}) => {
+  const refetchData = ({
+    query,
+    setLoading = false,
+    overwrite = false,
+  }: {
+    query?: Query;
+    setLoading?: boolean;
+    overwrite?: boolean;
+  } = {}) => {
     setRefetch(true);
-    setCacheOnly(cacheOnly);
+    setIsLoading(setLoading);
+    setOverwrite(overwrite);
+    if (query) {
+      setQuery(query);
+    }
   };
   const overwriteData = (data: Response) => {
     setData(data);
   };
+
   const fetchDataAsync = async (abortController: AbortController) => {
-    await regularFetch({
+    await regularFetch<Query, Body, Response>({
       url,
       method,
       query,
@@ -76,7 +96,7 @@ function useFetch<Body, Query, Response>({
       cache: {
         enabled: cache?.enabled || false,
         hours: cache?.hours || 24,
-        overwrite: overwrite || refetch,
+        overwrite: overwrite,
         storageType: cache?.storageType || 'sessionStorage',
         customKey: cache?.customKey || undefined,
         useStartEndDates: cache?.useStartEndDates || false,
@@ -84,8 +104,6 @@ function useFetch<Body, Query, Response>({
       controller: abortController,
       message,
     }).then((data) => {
-      if (cacheOnly) return;
-
       setData(data.response);
       setIsError(data.isError);
       setIsLoading(false);
@@ -101,7 +119,6 @@ function useFetch<Body, Query, Response>({
     if (enabled) {
       setIsError(false);
       setError(undefined);
-      setIsLoading(background || refetch ? false : true);
       fetchDataAsync(abortController);
     }
 

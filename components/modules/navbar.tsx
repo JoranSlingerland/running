@@ -174,7 +174,8 @@ export default function App() {
   const [current, setCurrent] = useState('');
   const isAuthenticated = () => {
     return (
-      userInfo?.clientPrincipal?.userRoles.includes('authenticated') || false
+      userInfo?.data?.clientPrincipal?.userRoles.includes('authenticated') ||
+      false
     );
   };
 
@@ -188,7 +189,10 @@ export default function App() {
         <MainNav className="hidden sm:block" current={current} />
         <SheetNav className="sm:hidden block" current={current} />
         <div className="ml-auto flex items-center space-x-4">
-          <UserNav userInfo={userInfo} isAuthenticated={isAuthenticated()} />
+          <UserNav
+            userInfo={userInfo?.data}
+            isAuthenticated={isAuthenticated()}
+          />
         </div>
       </div>
     </div>
