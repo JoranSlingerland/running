@@ -2,12 +2,9 @@ import type { Activity } from '@services/data/activities';
 import { Dayjs } from 'dayjs';
 
 function getPreferredTss(
-  userSettings: UserSettings | undefined,
+  preferredTss: 'hr' | 'pace' | undefined,
   activity: Activity,
 ): { tss: number | undefined; type: 'hr' | 'pace' | undefined } {
-  const preferredTss = userSettings
-    ? userSettings.preferences.preferred_tss_type
-    : undefined;
   const hr_tss = activity.hr_trimp;
   const pace_tss = activity.pace_trimp;
 
@@ -42,7 +39,7 @@ function calculateDailyTss(
   startDate: Dayjs,
   endDate: Dayjs,
   activities: Activity[],
-  userSettings: UserSettings | undefined,
+  preferredTss: 'hr' | 'pace' | undefined,
 ): { date: string; tss: number }[] {
   const tssByDate: { [key: string]: number } = {};
   const days = endDate.diff(startDate, 'day') + 2;
@@ -53,7 +50,7 @@ function calculateDailyTss(
   }
 
   activities.forEach((activity) => {
-    const { tss } = getPreferredTss(userSettings, activity);
+    const { tss } = getPreferredTss(preferredTss, activity);
     if (tss) {
       const date = activity.start_date.split('T')[0];
       if (tssByDate.hasOwnProperty(date)) {

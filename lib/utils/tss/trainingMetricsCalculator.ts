@@ -68,12 +68,12 @@ function calculateMetricsForAllDays(dailyTss: { date: string; tss: number }[]) {
 
 function calculateTrainingMetrics({
   activities,
-  userSettings,
+  preferredTss,
   startDate,
   endDate,
 }: {
   activities: Activity[] | undefined;
-  userSettings: UserSettings | undefined;
+  preferredTss: 'hr' | 'pace' | undefined;
   startDate?: Dayjs;
   endDate?: Dayjs;
 }): { date: Dayjs; atl: number; ctl: number; tsb: number }[] {
@@ -103,7 +103,7 @@ function calculateTrainingMetrics({
     startDate,
     endDate,
     activities,
-    userSettings,
+    preferredTss,
   );
 
   // Calculate ATL, CTL, and TSB for each day
