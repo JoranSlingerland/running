@@ -87,7 +87,7 @@ function useFetch<Body, Query, Response>({
   };
 
   const fetchDataAsync = async (abortController: AbortController) => {
-    await regularFetch({
+    await regularFetch<Query, Body, Response>({
       url,
       method,
       query,

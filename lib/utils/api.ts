@@ -8,10 +8,20 @@ import { WretchError } from 'wretch/resolver';
 const MILLISECONDS_IN_HOUR = 1000 * 60 * 60;
 
 // Types
-type cachedResponse = {
-  value: any;
+type cachedResponse<Response> = {
+  value: Response;
   expiry: number;
   start_end_dates?: [string, string][];
+};
+
+type CacheSettings = {
+  enabled: boolean;
+  hours: number;
+  overwrite: boolean;
+  storageType: StorageType;
+  customKey?: string;
+  useStartEndDates?: boolean;
+  deDupeKey?: string;
 };
 
 // Helper functions
@@ -42,10 +52,10 @@ function setWithExpiry<T>(
   }
 }
 
-function getWithExpiry(
+function getWithExpiry<Response>(
   key: string,
   storageType: StorageType,
-): null | cachedResponse {
+): null | cachedResponse<Response> {
   const storage = window[storageType];
   const itemStr = storage.getItem(key);
   if (!itemStr) {
@@ -130,7 +140,7 @@ function mergeStartEndDates(
   }
 }
 
-function handleCacheSet<Query>({
+function handleCacheSet<Query, Response>({
   cache,
   cachedResponse,
   query,
@@ -139,21 +149,18 @@ function handleCacheSet<Query>({
   hours,
   storageType,
 }: {
-  cache?: {
-    useStartEndDates?: boolean;
-    deDupeKey?: string;
-  };
-  cachedResponse: cachedResponse | null;
+  cache?: CacheSettings;
+  cachedResponse: cachedResponse<Response> | null;
   query?: Query;
   key: string;
-  response: any;
+  response: Response;
   hours: number;
   storageType: StorageType;
 }) {
   if (cache?.useStartEndDates) {
     const { startDate, endDate } = query as any;
     const cachedData = cachedResponse?.value || [];
-    const newData = cachedData.concat(response);
+    const newData = (cachedData as Response[]).concat(response);
     const deDupedData = deDupeData(newData, cache.deDupeKey || 'id');
     let start_end_dates: [string, string][] = [];
     if (!cachedResponse?.start_end_dates) {
@@ -218,43 +225,44 @@ function processCachedResponse<Query>(
   cachedResponse: any,
   messageEnabled: boolean,
   sendSuccessMessage: Function,
-  cache: any,
+  cache: CacheSettings | undefined,
   query: Query,
   isError: boolean,
-  error: any,
+  error: WretchError | undefined,
 ) {
-  if (cachedResponse) {
-    if (messageEnabled) sendSuccessMessage();
-    if (cache?.useStartEndDates) {
-      const { startDate, endDate } = query as any;
-      var fallsWithin = false;
+  if (!cachedResponse) {
+    return null;
+  }
 
-      if (Array.isArray(cachedResponse.start_end_dates)) {
-        for (const [
-          cache_start_date,
-          cache_end_date,
-        ] of cachedResponse.start_end_dates) {
-          if (
-            new Date(startDate) >= new Date(cache_start_date) &&
-            new Date(endDate) <= new Date(cache_end_date)
-          ) {
-            fallsWithin = true;
-            break;
-          }
+  if (messageEnabled) sendSuccessMessage();
+  if (cache?.useStartEndDates) {
+    const { startDate, endDate } = query as any;
+    var fallsWithin = false;
+
+    if (Array.isArray(cachedResponse.start_end_dates)) {
+      for (const [
+        cache_start_date,
+        cache_end_date,
+      ] of cachedResponse.start_end_dates) {
+        if (
+          new Date(startDate) >= new Date(cache_start_date) &&
+          new Date(endDate) <= new Date(cache_end_date)
+        ) {
+          fallsWithin = true;
+          break;
         }
       }
-      if (fallsWithin) {
-        return { response: cachedResponse.value, isError, error };
-      }
-    } else {
+    }
+    if (fallsWithin) {
       return { response: cachedResponse.value, isError, error };
     }
+  } else {
+    return { response: cachedResponse.value, isError, error };
   }
-  return null;
 }
 
 // main functions
-async function regularFetch<Query, Body>({
+async function regularFetch<Query, Body, Response>({
   url,
   method,
   query,
@@ -265,20 +273,12 @@ async function regularFetch<Query, Body>({
   message,
 }: {
   url: string;
-  fallback_data?: any;
+  fallback_data?: Response;
   method: 'GET' | 'POST' | 'DELETE';
   query?: Query;
   body?: Body;
   controller?: AbortController;
-  cache?: {
-    enabled: boolean;
-    hours: number;
-    overwrite: boolean;
-    storageType: StorageType;
-    customKey?: string;
-    useStartEndDates?: boolean;
-    deDupeKey?: string;
-  };
+  cache?: CacheSettings;
   message?: {
     enabled: boolean;
     success: string;
@@ -286,7 +286,7 @@ async function regularFetch<Query, Body>({
     loading: string;
   };
 }): Promise<{
-  response: any;
+  response: Response;
   isError: boolean;
   error: WretchError | undefined;
 }> {
@@ -294,7 +294,7 @@ async function regularFetch<Query, Body>({
   controller = controller || new AbortController();
   let isError = false;
   let error: WretchError | undefined = undefined;
-  let cachedResponse: cachedResponse | null = null;
+  let cachedResponse: cachedResponse<Response> | null = null;
   const key = cache?.customKey || newKey(url, method, body, query);
   const {
     enabled: messageEnabled,
@@ -357,7 +357,7 @@ async function regularFetch<Query, Body>({
     body,
     controller,
   });
-  const response = await wretchInstance
+  const response = (await wretchInstance
     .onAbort(() => {
       isError = true;
     })
@@ -365,7 +365,7 @@ async function regularFetch<Query, Body>({
     .catch((err: WretchError) => {
       isError = true;
       error = err;
-    });
+    })) as Response;
 
   // Handle errors
   if (isError) {
