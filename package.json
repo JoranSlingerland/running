@@ -6,7 +6,7 @@
     "build": "next build && next export",
     "dev": "next dev -p 8080",
     "fix": "next lint --fix",
-    "lint": "next lint",
+    "lint": "next lint && tsc --noEmit --incremental false",
     "start": "next start",
     "test": "playwright test"
   },
