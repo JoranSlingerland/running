@@ -1,7 +1,6 @@
 import { useFetch } from '@hooks/useFetch';
 
 const initialData: UserSettings = {
-  dark_mode: 'system',
   strava_authentication: {
     access_token: '',
     refresh_token: '',
@@ -21,6 +20,7 @@ const initialData: UserSettings = {
   preferences: {
     preferred_tss_type: 'pace',
     units: 'metric',
+    dark_mode: 'system',
   },
 };
 

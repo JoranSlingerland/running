@@ -9,7 +9,6 @@ interface UserInfo {
 }
 
 type UserSettings = {
-  dark_mode: 'dark' | 'light' | 'system';
   strava_authentication: {
     access_token: string;
     refresh_token: string;
@@ -36,6 +35,7 @@ type UserSettings = {
   preferences: {
     preferred_tss_type: 'hr' | 'pace';
     units: Units;
+    dark_mode: 'dark' | 'light' | 'system';
   };
   gender: 'male' | 'female' | undefined;
 };

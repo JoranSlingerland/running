@@ -44,10 +44,10 @@ function AppContent({ Component, pageProps }: AppContentProps) {
     );
 
   useEffect(() => {
-    if (userSettings?.data?.dark_mode) {
-      setTheme(userSettings.data.dark_mode);
+    if (userSettings?.data?.preferences.dark_mode) {
+      setTheme(userSettings.data.preferences.dark_mode);
     }
-  }, [userSettings?.data?.dark_mode, setTheme]);
+  }, [userSettings?.data?.preferences.dark_mode, setTheme]);
 
   return (
     <div className={className()}>

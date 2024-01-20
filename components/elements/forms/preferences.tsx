@@ -43,7 +43,7 @@ export function PreferencesForm() {
   useDeepCompareEffect(() => {
     if (userSettings?.data) {
       form.reset({
-        dark_mode: userSettings.data.dark_mode,
+        dark_mode: userSettings.data.preferences.dark_mode,
         preferred_tss_type: userSettings.data.preferences.preferred_tss_type,
         units: userSettings.data.preferences.units,
       });
@@ -55,13 +55,13 @@ export function PreferencesForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!userSettings?.data) return;
 
-    const newSettings = {
+    const newSettings: UserSettings = {
       ...userSettings.data,
-      dark_mode: values.dark_mode,
       preferences: {
         ...userSettings.data.preferences,
         preferred_tss_type: values.preferred_tss_type,
         units: values.units,
+        dark_mode: values.dark_mode,
       },
     };
 
