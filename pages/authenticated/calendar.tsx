@@ -34,7 +34,7 @@ import {
   formatTime,
   sportIcon,
 } from '@utils/formatting';
-import { getPreferredTss } from '@utils/tssHelpers';
+import { getPreferredTss } from '@utils/tss/helpers';
 import { isNotNullOrZero } from '@utils/utils';
 
 import type { Dayjs } from 'dayjs';
