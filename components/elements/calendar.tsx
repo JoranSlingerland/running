@@ -221,7 +221,7 @@ export default function Calendar({
               </CardHeader>
               <CardContent className="min-h-[10rem]">
                 {isLoading && Loading}
-                {dateCellRenderer && dateCellRenderer(day)}
+                {!isLoading && dateCellRenderer && dateCellRenderer(day)}
               </CardContent>
             </Card>
             {day.day() === 0 && (
@@ -229,7 +229,7 @@ export default function Calendar({
                 <Card className="rounded-none h-full pt-2">
                   <CardContent className="min-h-[10rem]">
                     {isLoading && Loading}
-                    {metaCellRenderer && metaCellRenderer(day)}
+                    {!isLoading && metaCellRenderer && metaCellRenderer(day)}
                   </CardContent>
                 </Card>
               </div>
