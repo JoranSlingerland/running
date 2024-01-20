@@ -34,7 +34,7 @@ import {
   formatTime,
   sportIcon,
 } from '@utils/formatting';
-import { getPreferredTss } from '@utils/tssHelpers';
+import { getPreferredTss } from '@utils/tss/helpers';
 import { isNotNullOrZero } from '@utils/utils';
 
 import type { Dayjs } from 'dayjs';
@@ -80,7 +80,10 @@ function CalendarItem({
   item: Activity;
   userSettings: UserSettings | undefined;
 }): JSX.Element {
-  const tss = getPreferredTss(userSettings, item);
+  const tss = getPreferredTss(
+    userSettings?.preferences?.preferred_tss_type,
+    item,
+  );
   return (
     <Card className="my-2 h-full brightness-125 transform hover:scale-105 transition-transform duration-200">
       <CardHeader>
@@ -383,7 +386,10 @@ export default function app() {
 
     // Add preferred tss to each activity
     filtered = filtered.map((item) => {
-      const tss = getPreferredTss(userSettings?.data, item);
+      const tss = getPreferredTss(
+        userSettings?.data?.preferences.preferred_tss_type,
+        item,
+      );
       return {
         ...item,
         tss: tss.tss || 0,

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDeepCompareEffect } from 'rooks';
 import { WretchError } from 'wretch/resolver';
 
@@ -115,10 +115,15 @@ function useFetch<Body, Query, Response>({
   // Effects
   useDeepCompareEffect(() => {
     let abortController = new AbortController();
-
     if (enabled) {
       setIsError(false);
       setError(undefined);
+
+      // Refetch will set loading in the refetchData function
+      if (!refetch) {
+        setIsLoading(true);
+      }
+
       fetchDataAsync(abortController);
     }
 
@@ -126,6 +131,10 @@ function useFetch<Body, Query, Response>({
       abortController.abort();
     };
   }, [enabled, refetch, url, method, body, query]);
+
+  useEffect(() => {
+    setQuery(initialQuery);
+  }, [initialQuery]);
 
   return {
     data,

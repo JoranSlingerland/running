@@ -27,6 +27,22 @@
         "panel": "shared",
         "showReuseMessage": false,
         "clear": false
+      },
+      "dependsOn": [
+        "yarn: install"
+      ]
+    },
+    {
+      "type": "shell",
+      "label": "yarn: install",
+      "command": "yarn install",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "never",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false
       }
     }
   ]
