@@ -32,20 +32,31 @@ const loadingMessages = [
   "Charging up the app's stamina for a robust run...",
 ];
 
-export default function FullScreenLoader() {
+export default function FullScreenLoader({ active }: { active: boolean }) {
   const [randomMessage, setRandomMessage] = useState('Loading...');
 
   useEffect(() => {
-    const message =
-      loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
-    setRandomMessage(message);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setRandomMessage(
+      loadingMessages[Math.floor(Math.random() * loadingMessages.length)],
+    );
   }, []);
 
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
+  useEffect(() => {
+    if (active) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [active]);
+
+  return active ? (
+    <div className="absolute inset-0 flex flex-col items-center justify-center min-h-screen bg-background">
       <Loader2 className="animate-spin mb-4" />
       <p>{randomMessage}</p>
     </div>
-  );
+  ) : null;
 }

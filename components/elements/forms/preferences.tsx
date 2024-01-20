@@ -2,6 +2,7 @@ import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useDeepCompareEffect } from 'rooks';
 import * as z from 'zod';
+import { useTheme } from 'next-themes';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useProps } from '@hooks/useProps';
@@ -27,7 +28,8 @@ const formSchema = z.object({
 });
 
 export function PreferencesForm() {
-  const { userSettings, theme } = useProps();
+  const { userSettings } = useProps();
+  const { setTheme } = useTheme();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -48,7 +50,7 @@ export function PreferencesForm() {
     }
   }, [userSettings?.data, form]);
 
-  theme.setThemeType(form.watch('dark_mode'));
+  setTheme(form.watch('dark_mode'));
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!userSettings?.data) return;
@@ -67,7 +69,7 @@ export function PreferencesForm() {
       body: newSettings,
     }).then(() => {
       userSettings?.refetchData({
-        cacheOnly: true,
+        overwrite: true,
       });
     });
   }
