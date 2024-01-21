@@ -11,29 +11,6 @@ body {
 * {
   box-sizing: border-box;
 }
-
-/* Ant design overwrites */
-
-.ant-btn-primary {
-  background: #1677ff;
-}
-
-div.ant-list-pagination {
-  justify-content: center;
-  display: flex;
-  margin-top: 10px !important;
-}
-
-.ant-tag {
-  cursor: default;
-}
-
-.ant-picker-content tr {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  grid-auto-rows: 1fr;
-  column-gap: 10px;
-}
  
 /* shadcn/ui configuration */
 
