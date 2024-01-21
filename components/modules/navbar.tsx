@@ -49,25 +49,30 @@ const logOut = {
 };
 
 function getLinkClassName(key: string, current: string) {
-  return `flex items-center text-sm font-medium transition-colors ${
+  return `flex items-center text-sm font-medium transition-colors rounded-xl h-9 p-2 ${
     key === current
-      ? 'bg-slate-400 rounded-xl bg-opacity-10 p-1 text-primary'
-      : 'hover:bg-slate-400 hover:bg-opacity-10 rounded-xl p-1 hover:text-primary'
+      ? 'bg-zinc-100 text-zinc-900 shadow-sm hover:bg-zinc-100/80 dark:bg-zinc-800 dark:text-zinc-50 dark:hover:bg-zinc-800/80'
+      : 'hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-50'
   }`;
 }
 
 function MainNav({
   className,
   current,
+  setCurrent,
   ...props
-}: React.HTMLAttributes<HTMLElement> & { current: string }) {
+}: React.HTMLAttributes<HTMLElement> & {
+  current: string;
+  setCurrent: (current: string) => void;
+}) {
   return (
-    <nav className={cn('flex items-center space-x-4', className)} {...props}>
+    <nav className={cn('items-center space-x-2', className)} {...props}>
       {menuItems.map((item) => (
         <Link
           key={item.key}
           href={item.key}
           className={getLinkClassName(item.key, current)}
+          onClick={() => setCurrent(item.key)}
         >
           {item.icon}
           {item.label}
@@ -80,9 +85,11 @@ function MainNav({
 function UserNav({
   userInfo,
   isAuthenticated,
+  setCurrent,
 }: {
   userInfo: UserInfo | undefined;
   isAuthenticated: boolean;
+  setCurrent: (current: string) => void;
 }) {
   return (
     <DropdownMenu>
@@ -102,7 +109,11 @@ function UserNav({
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuGroup>
           {userMenuItems.map((item) => (
-            <Link key={item.key} href={item.key}>
+            <Link
+              key={item.key}
+              href={item.key}
+              onClick={() => setCurrent(item.key)}
+            >
               <DropdownMenuItem
                 className={'text-sm font-medium transition-colors'}
               >
@@ -115,7 +126,7 @@ function UserNav({
           ))}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <Link href={logOut.key}>
+        <Link href={logOut.key} onClick={() => setCurrent(logOut.key)}>
           <DropdownMenuItem>
             <div className="text-sm font-medium flex items-center">
               {logOut.icon}
@@ -131,9 +142,11 @@ function UserNav({
 function SheetNav({
   current,
   className,
+  setCurrent,
 }: {
   current: string;
   className?: string;
+  setCurrent: (current: string) => void;
 }) {
   return (
     <Sheet>
@@ -144,12 +157,13 @@ function SheetNav({
         <SheetHeader>
           <SheetTitle>Menu</SheetTitle>
         </SheetHeader>
-        <nav className="flex flex-col">
+        <nav className="flex flex-col space-y-2">
           {menuItems.map((item) => (
             <Link
               key={item.key}
               href={item.key}
               className={getLinkClassName(item.key, current)}
+              onClick={() => setCurrent(item.key)}
             >
               {item.icon}
               <span className="ml-2">{item.label}</span>
@@ -159,6 +173,7 @@ function SheetNav({
           <Link
             href={logOut.key}
             className={getLinkClassName(logOut.key, current)}
+            onClick={() => setCurrent(logOut.key)}
           >
             {logOut.icon}
             <span className="ml-2">{logOut.label}</span>
@@ -186,12 +201,21 @@ export default function App() {
   return (
     <div className="border-b">
       <div className="mx-4 flex h-12 items-center ">
-        <MainNav className="hidden sm:block" current={current} />
-        <SheetNav className="sm:hidden block" current={current} />
+        <MainNav
+          className="hidden sm:flex"
+          current={current}
+          setCurrent={setCurrent}
+        />
+        <SheetNav
+          className="sm:hidden"
+          current={current}
+          setCurrent={setCurrent}
+        />
         <div className="ml-auto flex items-center space-x-4">
           <UserNav
             userInfo={userInfo?.data}
             isAuthenticated={isAuthenticated()}
+            setCurrent={setCurrent}
           />
         </div>
       </div>
