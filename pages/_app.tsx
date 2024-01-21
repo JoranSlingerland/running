@@ -2,6 +2,7 @@ import '../styles/globals.css';
 
 import { Inter as FontSans } from 'next/font/google';
 import React, { useEffect } from 'react';
+import { isAuthenticated } from '@utils/authentications';
 
 import { PropsContext } from '@hooks/useProps';
 import Footer from '@modules/footer';
@@ -49,6 +50,20 @@ function AppContent({ Component, pageProps }: AppContentProps) {
     }
   }, [userSettings?.data?.preferences.dark_mode, setTheme]);
 
+  // Make sure the user is authenticated
+  if (userInfo.isLoading) {
+    return <FullScreenLoader active={true} />;
+  }
+
+  if (
+    !isAuthenticated(userInfo.data) &&
+    !['/login', '/login/'].includes(window.location.pathname)
+  ) {
+    window.location.href = '/login';
+    return <FullScreenLoader active={true} />;
+  }
+
+  // Main content
   return (
     <div className={className()}>
       <PropsContext.Provider
@@ -65,9 +80,7 @@ function AppContent({ Component, pageProps }: AppContentProps) {
         </div>
         <Footer />
 
-        <FullScreenLoader
-          active={userInfo.isLoading || userSettings.isLoading}
-        />
+        <FullScreenLoader active={userSettings.isLoading} />
       </PropsContext.Provider>
     </div>
   );

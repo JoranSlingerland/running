@@ -1,15 +1,16 @@
 {
+  "trailingSlash": "auto",
   "routes": [
     {
       "route": "/",
       "redirect": "/authenticated/calendar"
     },
     {
-      "route": "/authenticated/*",
+      "route": "/authenticated*",
       "allowedRoles": ["authenticated"]
     },
     {
-      "route": "/api/*",
+      "route": "/api*",
       "allowedRoles": ["authenticated"]
     },
     {
