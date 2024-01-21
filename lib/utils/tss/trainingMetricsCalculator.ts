@@ -3,10 +3,8 @@ import { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import { calculateDailyTss } from '@utils/tss/helpers';
 
-const constants = {
-  acuteTimeConstant: 7,
-  chronicTimeConstant: 42,
-};
+const acuteLoadTimePeriod = 7;
+const chronicLoadTimePeriod = 42;
 
 function calculateDailyTrainingLoads(
   trainingStressScore: number,
@@ -14,8 +12,8 @@ function calculateDailyTrainingLoads(
   chronicLoadYesterday: number,
 ) {
   // Calculate decay factors for acute and chronic loads
-  const acuteDecayFactor = 2 / (constants.acuteTimeConstant + 1);
-  const chronicDecayFactor = 2 / (constants.chronicTimeConstant + 1);
+  const acuteDecayFactor = 2 / (acuteLoadTimePeriod + 1);
+  const chronicDecayFactor = 2 / (chronicLoadTimePeriod + 1);
 
   // Calculate ATL and CTL for today
   const acuteLoadToday =
@@ -66,7 +64,7 @@ function calculateMetricsForAllDays(dailyTss: { date: string; tss: number }[]) {
   });
 
   return singleDay.filter(
-    (day) => day.date > singleDay[constants.chronicTimeConstant].date,
+    (day) => day.date > singleDay[chronicLoadTimePeriod].date,
   );
 }
 
@@ -97,7 +95,7 @@ function calculateTrainingMetrics({
 
   // Validate that we have at least more data then the chronic time constant
   const days = endDate.diff(startDate, 'day');
-  if (days < constants.chronicTimeConstant) {
+  if (days < chronicLoadTimePeriod) {
     console.warn('Not enough data to calculate training metrics');
     return [];
   }
