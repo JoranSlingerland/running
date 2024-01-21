@@ -22,6 +22,7 @@ import {
   SheetTrigger,
 } from '@ui/sheet';
 import { cn } from '@utils/shadcn';
+import { isAuthenticated } from '@utils/authentications';
 
 const menuItems = [
   {
@@ -187,12 +188,6 @@ function SheetNav({
 export default function App() {
   const { userInfo } = useProps();
   const [current, setCurrent] = useState('');
-  const isAuthenticated = () => {
-    return (
-      userInfo?.data?.clientPrincipal?.userRoles.includes('authenticated') ||
-      false
-    );
-  };
 
   useEffect(() => {
     setCurrent(window.location.pathname);
@@ -214,7 +209,7 @@ export default function App() {
         <div className="ml-auto flex items-center space-x-4">
           <UserNav
             userInfo={userInfo?.data}
-            isAuthenticated={isAuthenticated()}
+            isAuthenticated={isAuthenticated(userInfo?.data)}
             setCurrent={setCurrent}
           />
         </div>

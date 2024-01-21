@@ -1,8 +1,9 @@
 import '../styles/globals.css';
 
 import { Inter as FontSans } from 'next/font/google';
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { isAuthenticated } from '@utils/authentications';
+import { useRouter } from 'next/router';
 
 import { PropsContext } from '@hooks/useProps';
 import Footer from '@modules/footer';
@@ -34,21 +35,25 @@ function MyApp({ Component, pageProps }: AppProps) {
 }
 
 function AppContent({ Component, pageProps }: AppContentProps) {
+  const router = useRouter();
   const { setTheme } = useTheme();
   const userSettings = useUserSettings();
   const userInfo = useUserInfo();
-
-  const className = () =>
-    cn(
-      'bg-background font-sans antialiased flex flex-col min-h-screen justify-between',
-      fontSans.variable || '',
-    );
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   useEffect(() => {
-    if (userSettings?.data?.preferences.dark_mode) {
+    if (!userSettings.isLoading) {
+      setHasLoadedOnce(true);
+    }
+
+    if (userSettings?.data?.preferences?.dark_mode) {
       setTheme(userSettings.data.preferences.dark_mode);
     }
-  }, [userSettings?.data?.preferences.dark_mode, setTheme]);
+  }, [
+    userSettings.isLoading,
+    userSettings?.data?.preferences?.dark_mode,
+    setTheme,
+  ]);
 
   // Make sure the user is authenticated
   if (userInfo.isLoading) {
@@ -57,15 +62,20 @@ function AppContent({ Component, pageProps }: AppContentProps) {
 
   if (
     !isAuthenticated(userInfo.data) &&
-    !['/login', '/login/'].includes(window.location.pathname)
+    !['/login', '/login/'].includes(router.pathname)
   ) {
-    window.location.href = '/login';
-    return <FullScreenLoader active={true} />;
+    router.push('/login');
+    return <></>;
   }
 
   // Main content
   return (
-    <div className={className()}>
+    <div
+      className={cn(
+        'font-sans antialiased flex flex-col min-h-screen justify-between',
+        fontSans.variable || '',
+      )}
+    >
       <PropsContext.Provider
         value={{
           userInfo,
@@ -80,7 +90,7 @@ function AppContent({ Component, pageProps }: AppContentProps) {
         </div>
         <Footer />
 
-        <FullScreenLoader active={userSettings.isLoading} />
+        <FullScreenLoader active={userSettings.isLoading && !hasLoadedOnce} />
       </PropsContext.Provider>
     </div>
   );
