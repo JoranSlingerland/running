@@ -9,7 +9,7 @@
       "allowedRoles": ["authenticated"]
     },
     {
-      "route": "/api/orchestrator/*",
+      "route": "/api/*",
       "allowedRoles": ["authenticated"]
     },
     {
