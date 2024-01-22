@@ -9,5 +9,5 @@ module.exports = {
   publicRuntimeConfig: {
     NEXT_PUBLIC_STRAVA_CLIENT_ID: process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID,
   },
-  output: 'export',
+  output: 'standalone',
 };
