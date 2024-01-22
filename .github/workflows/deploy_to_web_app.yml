@@ -25,7 +25,7 @@ jobs:
 
       - name: Install dependencies # Installs your app dependencies
         run: |
-          npm install
+          yarn install
 
       - name: 'Login to Azure Subscription' # This is required for OIDC authentication to Azure
         uses: azure/login@v1
@@ -34,7 +34,7 @@ jobs:
 
       - name: Build Next.js app
         run: |
-          yarn run build
+          yarn build
           mv .next/static .next/standalone/.next/static
           # mv public .next/standalone/public
           
@@ -44,14 +44,15 @@ jobs:
             $ZIP_FILE_NAME = "./${FILE_NAME}.zip"
             zip $ZIP_FILE_NAME ./* .next -qr
 
+            write-host "Deploying $ZIP_FILE_NAME to $WEB_APP_NAME in $RESOURCE_GROUP_NAME"
+
             az webapp deploy `
                 --resource-group $RESOURCE_GROUP_NAME `
                 --name $WEB_APP_NAME `
                 --src-path $ZIP_FILE_NAME `
-                --slot staging `
                 --type zip `
                 --clean true 
         env:
             FILE_NAME: "build"
-            RESOURCE_GROUP_NAME: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
-            WEB_APP_NAME: ${{ secrets.AZURE_WEB_APP_NAME }}
+            RESOURCE_GROUP_NAME: 'Dev'
+            WEB_APP_NAME: 'test-web-app-43fsd32'
