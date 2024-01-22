@@ -41,18 +41,18 @@ jobs:
       - name: Deploy
         shell: pwsh
         run: |
-            $ZIP_FILE_NAME = "./${FILE_NAME}.zip"
-            zip $ZIP_FILE_NAME ./* .next -qr
-
-            write-host "Deploying $ZIP_FILE_NAME to $WEB_APP_NAME in $RESOURCE_GROUP_NAME"
-
-            az webapp deploy `
-                --resource-group $RESOURCE_GROUP_NAME `
-                --name $WEB_APP_NAME `
-                --src-path $ZIP_FILE_NAME `
-                --type zip `
-                --clean true 
+          $ZIP_FILE_NAME = "./${{ env.FILE_NAME }}.zip"
+          zip $ZIP_FILE_NAME ./* .next -qr
+        
+          write-host "Deploying $ZIP_FILE_NAME to ${{ env.WEB_APP_NAME }} in ${{ env.RESOURCE_GROUP_NAME }}"
+        
+          az webapp deploy `
+              --resource-group ${{ env.RESOURCE_GROUP_NAME }} `
+              --name ${{ env.WEB_APP_NAME }} `
+              --src-path $ZIP_FILE_NAME `
+              --type zip `
+              --clean true 
         env:
-            FILE_NAME: "build"
-            RESOURCE_GROUP_NAME: 'Dev'
-            WEB_APP_NAME: 'test-web-app-43fsd32'
+          FILE_NAME: "build"
+          RESOURCE_GROUP_NAME: 'Dev'
+          WEB_APP_NAME: 'test-web-app-43fsd32'
