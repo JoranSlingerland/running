@@ -3658,6 +3658,7 @@ streamsearch@^1.1.0:
   integrity sha512-Mcc5wHehp9aXz1ax6bZUyY5afg9u2rv5cqQI3mRrYkGC8rW2hM02jWuwjtL++LS5qinSyhj2QfLyNsuc+VsExg==
 
 "string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0:
+  name string-width-cjs
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -4148,10 +4149,10 @@ wrappy@1:
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==
 
-wretch@^2.7.0:
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/wretch/-/wretch-2.7.0.tgz#6ad1664e2ad827d878fc41f4100208f60b7c6cb8"
-  integrity sha512-IOjqi9SlQ8FEWp1X3KJ74wLNqpDVBoJIJvC7ZDHxPhzriNJd84+7RAhFBTl2sHiqnzBhzfqs1sznaB0Ik/3Ngw==
+wretch@^2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/wretch/-/wretch-2.8.0.tgz#0cc788bc998f25e9012fed72432f7f79ec2f16b4"
+  integrity sha512-MNYh+lukFfFgcmVpvxv0KsQt2LtAPvKFfLNcLGpCMiHTD3ndSoQ3/k5fGOCPI1J7CgN1mYAbp9mhPFFUGTzUeg==
 
 yallist@^4.0.0:
   version "4.0.0"
