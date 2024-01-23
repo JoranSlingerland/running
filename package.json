@@ -29,7 +29,7 @@
     "@tanstack/react-table": "^8.11.6",
     "@tremor/react": "^3.13.2",
     "@types/react-router-dom": "^5.3.3",
-    "autoprefixer": "^10.4.16",
+    "autoprefixer": "^10.4.17",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "dayjs": "^1.11.10",
