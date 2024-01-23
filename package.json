@@ -11,6 +11,7 @@
     "test": "playwright test"
   },
   "dependencies": {
+    "@azure/cosmos": "^4.0.0",
     "@azure/msal-browser": "^3.7.0",
     "@azure/msal-react": "^2.0.6",
     "@hookform/resolvers": "^3.3.4",
@@ -33,7 +34,6 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "dayjs": "^1.11.10",
-    "dotenv": "^16.3.1",
     "isomorphic-unfetch": "^4.0.2",
     "lucide-react": "^0.312.0",
     "next": "^14.0.4",

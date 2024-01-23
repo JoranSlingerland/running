@@ -25,7 +25,6 @@ function Layout({
 export default function Home() {
   const { data: session, status } = useSession();
   const userEmail = session?.user?.email;
-  console.log(process.env.NEXT_PUBLIC_api_key);
 
   if (status === 'authenticated') {
     return (

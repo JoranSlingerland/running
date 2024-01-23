@@ -25,6 +25,7 @@
       "@services/*": ["lib/services/*"],
       "@ui/*": ["components/ui/*"],
       "@utils/*": ["lib/utils/*"],
+      "@pages/*": ["pages/*"],
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/_app.tsx", "tailwind.config.ts"],
