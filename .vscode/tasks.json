@@ -3,24 +3,10 @@
   "tasks": [
     {
       "type": "shell",
-      "label": "swa: start",
-      "command": "swa start",
+      "label": "yarn: dev",
+      "command": "yarn dev",
+      "problemMatcher": [],
       "isBackground": true,
-      "problemMatcher": {
-        "owner": "swa",
-        "pattern": {
-          "regexp": ".*",
-          "file": 1,
-          "location": 2,
-          "message": 3
-        },
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "Welcome to Azure Static Web Apps CLI \\(.*\\)",
-          "endsPattern": ".*"
-        },
-        "severity": "info"
-      },
       "presentation": {
         "reveal": "never",
         "focus": false,
