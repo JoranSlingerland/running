@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
+import { useSession, signOut } from 'next-auth/react';
 
 import { Icon } from '@elements/icon';
-import { useProps } from '@hooks/useProps';
-import { Avatar, AvatarFallback } from '@ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@ui/avatar';
 import { Button } from '@ui/button';
 import {
   DropdownMenu,
@@ -22,7 +22,6 @@ import {
   SheetTrigger,
 } from '@ui/sheet';
 import { cn } from '@utils/shadcn';
-import { isAuthenticated } from '@utils/authentications';
 
 const menuItems = [
   {
@@ -41,12 +40,8 @@ const userMenuItems = [
 ];
 
 const logOut = {
-  key: '/.auth/logout?post_logout_redirect_uri=/',
   icon: <Icon icon={'logout'} />,
   label: 'Logout',
-  onclick: () => {
-    sessionStorage.clear();
-  },
 };
 
 function getLinkClassName(key: string, current: string) {
@@ -84,11 +79,13 @@ function MainNav({
 }
 
 function UserNav({
-  userInfo,
+  avatarImage,
+  avatarFallback,
   isAuthenticated,
   setCurrent,
 }: {
-  userInfo: UserInfo | undefined;
+  avatarImage?: string | null;
+  avatarFallback?: string | null;
   isAuthenticated: boolean;
   setCurrent: (current: string) => void;
 }) {
@@ -101,8 +98,9 @@ function UserNav({
           disabled={!isAuthenticated}
         >
           <Avatar className="h-8 w-8">
+            <AvatarImage src={avatarImage || ''} />
             <AvatarFallback>
-              {(userInfo?.clientPrincipal?.userDetails || '').split(' ')[0][0]}
+              {avatarFallback && avatarFallback[0]}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -127,14 +125,12 @@ function UserNav({
           ))}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <Link href={logOut.key} onClick={() => setCurrent(logOut.key)}>
-          <DropdownMenuItem>
-            <div className="text-sm font-medium flex items-center">
-              {logOut.icon}
-              <span className="ml-2">{logOut.label}</span>
-            </div>
-          </DropdownMenuItem>
-        </Link>
+        <DropdownMenuItem onClick={() => signOut()}>
+          <div className="text-sm font-medium flex items-center">
+            {logOut.icon}
+            <span className="ml-2">{logOut.label}</span>
+          </div>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -171,14 +167,13 @@ function SheetNav({
             </Link>
           ))}
           <Separator />
-          <Link
-            href={logOut.key}
-            className={getLinkClassName(logOut.key, current)}
-            onClick={() => setCurrent(logOut.key)}
+          <div
+            className={getLinkClassName('', current)}
+            onClick={() => signOut()}
           >
             {logOut.icon}
             <span className="ml-2">{logOut.label}</span>
-          </Link>
+          </div>
         </nav>
       </SheetContent>
     </Sheet>
@@ -186,7 +181,7 @@ function SheetNav({
 }
 
 export default function App() {
-  const { userInfo } = useProps();
+  const { data: session, status } = useSession();
   const [current, setCurrent] = useState('');
 
   useEffect(() => {
@@ -208,8 +203,9 @@ export default function App() {
         />
         <div className="ml-auto flex items-center space-x-4">
           <UserNav
-            userInfo={userInfo?.data}
-            isAuthenticated={isAuthenticated(userInfo?.data)}
+            avatarImage={session?.user?.image}
+            avatarFallback={session?.user?.name}
+            isAuthenticated={status === 'authenticated'}
             setCurrent={setCurrent}
           />
         </div>

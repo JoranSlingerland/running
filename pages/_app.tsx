@@ -9,7 +9,6 @@ import { PropsContext } from '@hooks/useProps';
 import Footer from '@modules/footer';
 import Navbar from '@modules/navbar';
 import FullScreenLoader from '@modules/loading';
-import { useUserInfo } from '@services/.auth/me';
 import { useUserSettings } from '@services/user/get';
 import { Toaster } from '@ui/sonner';
 import { cn } from '@utils/shadcn';
@@ -43,7 +42,6 @@ function MyApp({ Component, pageProps, session }: SessionAppProps) {
 function AppContent({ Component, pageProps }: AppContentProps) {
   const { setTheme } = useTheme();
   const userSettings = useUserSettings();
-  const userInfo = useUserInfo();
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   useEffect(() => {
@@ -70,7 +68,6 @@ function AppContent({ Component, pageProps }: AppContentProps) {
     >
       <PropsContext.Provider
         value={{
-          userInfo,
           userSettings,
         }}
       >
