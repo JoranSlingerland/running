@@ -2,8 +2,8 @@ import '../styles/globals.css';
 
 import { Inter as FontSans } from 'next/font/google';
 import React, { useState, useEffect } from 'react';
-import { isAuthenticated } from '@utils/authentications';
-import { useRouter } from 'next/router';
+import { SessionProvider } from 'next-auth/react';
+import { Session } from 'next-auth';
 
 import { PropsContext } from '@hooks/useProps';
 import Footer from '@modules/footer';
@@ -26,16 +26,21 @@ interface AppContentProps {
   pageProps: AppProps['pageProps'];
 }
 
-function MyApp({ Component, pageProps }: AppProps) {
+interface SessionAppProps extends AppProps {
+  session: Session;
+}
+
+function MyApp({ Component, pageProps, session }: SessionAppProps) {
   return (
-    <ThemeProvider defaultTheme="system" attribute="class">
-      <AppContent Component={Component} pageProps={pageProps} />
-    </ThemeProvider>
+    <SessionProvider session={session}>
+      <ThemeProvider defaultTheme="system" attribute="class">
+        <AppContent Component={Component} pageProps={pageProps} />
+      </ThemeProvider>
+    </SessionProvider>
   );
 }
 
 function AppContent({ Component, pageProps }: AppContentProps) {
-  const router = useRouter();
   const { setTheme } = useTheme();
   const userSettings = useUserSettings();
   const userInfo = useUserInfo();
@@ -54,19 +59,6 @@ function AppContent({ Component, pageProps }: AppContentProps) {
     userSettings?.data?.preferences?.dark_mode,
     setTheme,
   ]);
-
-  // Make sure the user is authenticated
-  if (userInfo.isLoading) {
-    return <FullScreenLoader active={true} />;
-  }
-
-  if (
-    !isAuthenticated(userInfo.data) &&
-    !['/login', '/login/'].includes(router.pathname)
-  ) {
-    router.push('/login');
-    return <></>;
-  }
 
   // Main content
   return (
