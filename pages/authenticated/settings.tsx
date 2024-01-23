@@ -1,4 +1,3 @@
-import getConfig from 'next/config';
 import { useRouter } from 'next/router';
 import { toast } from 'sonner';
 
@@ -35,21 +34,20 @@ export default function Home() {
     enabled: tab === 'orchestrations',
   });
   const router = useRouter();
-  const { publicRuntimeConfig } = getConfig();
 
   // handle click functions
   function handleStravaAuthentication() {
     const callback_url = `${window.location.origin}/authenticated/callback/strava`;
     const scope = 'profile:read_all,activity:read_all';
 
-    if (!publicRuntimeConfig.NEXT_PUBLIC_STRAVA_CLIENT_ID) {
+    if (!process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID) {
       toast.error('Strava client id not found');
       return;
     }
 
     // Push the strava authentication page to the router
     router.push(
-      `https://www.strava.com/oauth/authorize?client_id=${publicRuntimeConfig.NEXT_PUBLIC_STRAVA_CLIENT_ID}&redirect_uri=${callback_url}&response_type=code&%20response_type=force&scope=${scope}`,
+      `https://www.strava.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID}&redirect_uri=${callback_url}&response_type=code&%20response_type=force&scope=${scope}`,
     );
   }
 

@@ -19,8 +19,8 @@ declare module 'next-auth' {
 export default NextAuth({
   providers: [
     GithubProvider({
-      clientId: process.env.clientId as string,
-      clientSecret: process.env.clientSecret as string,
+      clientId: process.env.NEXTAUTH_GITHUB_CLIENTID as string,
+      clientSecret: process.env.NEXTAUTH_GITHUB_CLIENTSECRET as string,
     }),
   ],
   pages: {
@@ -28,7 +28,7 @@ export default NextAuth({
   },
   callbacks: {
     jwt({ token, account, user }) {
-      const adminEmails = JSON.parse(process.env.adminEmails || '[]');
+      const adminEmails = JSON.parse(process.env.NEXTAUTH_ADMINEMAILS || '[]');
       if (account) {
         token.accessToken = account.access_token;
         token.id = crypto
