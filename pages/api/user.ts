@@ -3,7 +3,7 @@ import { getToken } from 'next-auth/jwt';
 import {
   cosmosContainer,
   containerFunctionWithBackOff,
-  removeSensitiveKeys,
+  removeKeys,
 } from '@utils/cosmosdb';
 import { Container } from '@azure/cosmos';
 import { userSettingsSchema } from '@utils/zodSchema';
@@ -50,7 +50,18 @@ async function handleGet(
     return;
   }
 
-  return res.status(200).json(removeSensitiveKeys(user[0]));
+  return res
+    .status(200)
+    .json(
+      removeKeys(user[0], [
+        '_rid',
+        '_self',
+        '_etag',
+        '_attachments',
+        '_ts',
+        'id',
+      ]),
+    );
 }
 
 async function handlePost(
@@ -75,7 +86,16 @@ async function handlePost(
   if (!result.isError && result.result) {
     return res
       .status(200)
-      .json(removeSensitiveKeys(result.result.resource || {}));
+      .json(
+        removeKeys(result.result.resource || {}, [
+          '_rid',
+          '_self',
+          '_etag',
+          '_attachments',
+          '_ts',
+          'id',
+        ]),
+      );
   }
 
   return res

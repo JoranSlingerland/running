@@ -75,17 +75,10 @@ async function containerFunctionWithBackOff(
   return { result, isError };
 }
 
-function removeSensitiveKeys(
+function removeKeys(
   obj: Record<string, unknown>,
-  sensitiveOnly: boolean = false,
+  keys: string[] = ['_rid', '_self', '_etag', '_attachments', '_ts'],
 ): Record<string, unknown> {
-  const genericKeys = ['_rid', '_self', '_etag', '_attachments', '_ts'];
-  const sensitiveKeys = ['id'];
-
-  const keys = sensitiveOnly
-    ? sensitiveKeys
-    : [...genericKeys, ...sensitiveKeys];
-
   const newObj = { ...obj };
 
   keys.forEach((key) => {
@@ -99,5 +92,5 @@ export {
   cosmosClient,
   cosmosContainer,
   containerFunctionWithBackOff,
-  removeSensitiveKeys,
+  removeKeys,
 };
