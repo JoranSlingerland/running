@@ -1,7 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
-import { cosmosContainer } from '@utils/cosmosdb';
+import {
+  cosmosContainer,
+  containerFunctionWithBackOff,
+  removeSensitiveKeys,
+} from '@utils/cosmosdb';
 import { Container } from '@azure/cosmos';
+import { userSettingsSchema } from '@utils/zodSchema';
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,7 +25,7 @@ export default async function handler(
       await handleGet(res, container, token.id as string);
       break;
     case 'POST':
-      await handlePost(req, res);
+      await handlePost(req, res, container, token.id as string);
       break;
     default:
       res.setHeader('Allow', 'GET, POST');
@@ -39,14 +44,41 @@ async function handleGet(
       parameters: [{ name: '@id', value: id }],
     })
     .fetchAll();
+
   if (!user || user.length === 0) {
     res.status(400).json({ message: 'User not found' });
     return;
   }
-  res.status(200).json(user[0]);
-  return;
+
+  return res.status(200).json(removeSensitiveKeys(user[0]));
 }
 
-async function handlePost(req: NextApiRequest, res: NextApiResponse) {
-  // Update user in cosmosdb database
+async function handlePost(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  container: Container,
+  id: string,
+) {
+  const validated = userSettingsSchema.safeParse(req.body);
+  if (!validated.success) {
+    res.status(400).json({ message: validated.error });
+    return;
+  }
+
+  const result = await containerFunctionWithBackOff(async () => {
+    return await container.items.upsert({
+      id,
+      ...validated.data,
+    });
+  });
+
+  if (!result.isError && result.result) {
+    return res
+      .status(200)
+      .json(removeSensitiveKeys(result.result.resource || {}));
+  }
+
+  return res
+    .status(result.result?.statusCode || 500)
+    .json({ message: 'Something went wrong' });
 }

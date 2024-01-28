@@ -1,5 +1,4 @@
-import { CosmosClient } from '@azure/cosmos';
-import { promisify } from 'util';
+import { CosmosClient, ItemResponse, ItemDefinition } from '@azure/cosmos';
 
 function cosmosClient() {
   const endpoint = process.env.COSMOSDB_ENDPOINT as string;
@@ -18,38 +17,87 @@ function cosmosContainer(containerName: string) {
 }
 
 async function containerFunctionWithBackOff(
-  functionToExecute: () => Promise<void>,
-  maxRetries: number = 10,
-  delay: number = Math.random() * 0.2,
+  functionToExecute: () => Promise<ItemResponse<ItemDefinition>>,
+  maxRetries: number = 5,
   maxDelay: number = 5,
-) {
+): Promise<{
+  result: ItemResponse<ItemDefinition> | undefined;
+  isError: boolean;
+}> {
+  let isError = false;
   let retryCount = 0;
+  let delay = Math.random();
+  let result: ItemResponse<ItemDefinition> | undefined = undefined;
+
+  const operation = async () => {
+    const result = await functionToExecute();
+
+    if (result.statusCode >= 200 && result.statusCode < 300) {
+      return result;
+    }
+
+    isError = true;
+
+    if (result.statusCode === 404) {
+      console.debug('Item not found');
+    } else if (result.statusCode === 409) {
+      console.debug('Item already exists');
+    } else {
+      console.error('Something went wrong');
+    }
+
+    return result;
+  };
+
   while (true) {
     try {
-      await functionToExecute();
+      result = await operation();
       break;
     } catch (error) {
-      // TODO: Add retry logic for specific errors
-      // if (error.code === 409) {
-      //   console.debug('Item already exists');
-      //   break;
-      // } else if (error.code === 404) {
-      //   console.debug('Item not found');
-      //   break;
-      // }
+      retryCount += 1;
 
-      if (retryCount >= maxRetries) {
+      if (retryCount > maxRetries) {
         console.error('Max retries reached, See error below:');
         console.error(error);
+        isError = true;
+        break;
       }
+
       console.debug(error);
       console.debug(`Retrying in ${delay} seconds`);
-      await promisify(setTimeout)(delay * 1000);
-      delay =
-        Math.min(delay * 2, maxDelay) + Math.random() * Math.min(retryCount, 1);
-      retryCount += 1;
+
+      await new Promise((resolve) => setTimeout(resolve, delay * 1000));
+
+      delay = Math.min(delay * 2, maxDelay);
     }
   }
+
+  return { result, isError };
 }
 
-export { cosmosClient, cosmosContainer, containerFunctionWithBackOff };
+function removeSensitiveKeys(
+  obj: Record<string, unknown>,
+  sensitiveOnly: boolean = false,
+): Record<string, unknown> {
+  const genericKeys = ['_rid', '_self', '_etag', '_attachments', '_ts'];
+  const sensitiveKeys = ['id'];
+
+  const keys = sensitiveOnly
+    ? sensitiveKeys
+    : [...genericKeys, ...sensitiveKeys];
+
+  const newObj = { ...obj };
+
+  keys.forEach((key) => {
+    delete newObj[key];
+  });
+
+  return newObj;
+}
+
+export {
+  cosmosClient,
+  cosmosContainer,
+  containerFunctionWithBackOff,
+  removeSensitiveKeys,
+};
