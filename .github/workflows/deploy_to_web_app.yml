@@ -58,14 +58,19 @@ jobs:
         uses: azure/login@v1
         with:
             creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Unzip artifact for deployment
+        run: |
+          unzip build.zip -d build
       
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'test-web-app-43fsd32'
-          package: build.zip
+          package: ./build
           slot-name: 'production'
+          
 
       # - name: Deploy
       #   shell: pwsh
