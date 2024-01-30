@@ -15,7 +15,6 @@
         "clear": false
       },
       "dependsOn": [
-        "run: Comos emulator",
         "yarn: install"
       ]
     },
