@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: "18"
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
           yarn install
         
@@ -29,6 +29,10 @@ jobs:
         run: |
           yarn build
           mv .next/static .next/standalone/.next/static
+
+      - name: Zip Artifact for Deployment
+        run: |
+          zip ${{ env.DEPLOYMENT_PACKAGE_NAME }} ./* /next -qr
 
       - name:  Upload Artifact for Deployment
         uses: actions/upload-artifact@v4
