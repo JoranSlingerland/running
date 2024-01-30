@@ -11,6 +11,7 @@ import { startOrchestrator } from '@services/orchestrator/start';
 import { Button } from '@ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/tabs';
 import { Text, Title } from '@ui/typography';
+import { authUrl } from '@utils/strava/config';
 
 // handle click functions
 function handleSessionStorageClearClick() {
@@ -22,9 +23,72 @@ function handleSessionStorageClearClick() {
   }
 }
 
-export default function Home() {
-  // State and constants
+function handleStravaAuthentication(router: ReturnType<typeof useRouter>) {
+  const callback_url = `${window.location.origin}/authenticated/callback/strava`;
+  const scope = 'profile:read_all,activity:read_all';
+
+  if (!process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID) {
+    toast.error('Strava client id not found');
+    return;
+  }
+
+  router.push(
+    `${authUrl}?client_id=${process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID}&redirect_uri=${callback_url}&response_type=code&%20response_type=force&scope=${scope}`,
+  );
+}
+
+// Components
+const buttonRow = (
+  title: string,
+  description: string,
+  onClick: () => void,
+  buttonText: string,
+) => (
+  <div className="grid grid-cols-2 grid-rows-2">
+    <Title variant="h4">{title}</Title>
+    <div className="row-span-2 ml-auto mr-0">
+      <Button variant="secondary" onClick={onClick}>
+        {buttonText}
+      </Button>
+    </div>
+    <Text>{description}</Text>
+  </div>
+);
+
+const Actions = (router: ReturnType<typeof useRouter>) => (
+  <div className="flex flex-col items-center">
+    <div className="w-full px-2 columns-1 space-y-4">
+      {buttonRow(
+        'Refresh data',
+        'This will Refresh all the data from scratch.',
+        () => {
+          startOrchestrator({
+            query: {
+              functionName: 'orch_gather_data',
+            },
+          });
+        },
+        'Refresh',
+      )}
+      {buttonRow(
+        'Clear local storage',
+        'This will clear all cached data in the local storage of the browser.',
+        () => handleSessionStorageClearClick,
+        'Clear',
+      )}
+      {buttonRow(
+        'Authenticate Strava',
+        'This will authenticate strava again or for the first time.',
+        () => handleStravaAuthentication(router),
+        'Authenticate',
+      )}
+    </div>
+  </div>
+);
+
+export default function Settings() {
   const [tab, setTab] = useSessionStorageState('settingsTab', 'account');
+  const router = useRouter();
   const {
     data: orchestratorListData,
     isLoading: orchestratorListIsLoading,
@@ -33,74 +97,7 @@ export default function Home() {
     query: { days: 7 },
     enabled: tab === 'orchestrations',
   });
-  const router = useRouter();
 
-  // handle click functions
-  function handleStravaAuthentication() {
-    const callback_url = `${window.location.origin}/authenticated/callback/strava`;
-    const scope = 'profile:read_all,activity:read_all';
-
-    if (!process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID) {
-      toast.error('Strava client id not found');
-      return;
-    }
-
-    // Push the strava authentication page to the router
-    router.push(
-      `https://www.strava.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID}&redirect_uri=${callback_url}&response_type=code&%20response_type=force&scope=${scope}`,
-    );
-  }
-
-  // Components
-  const buttonRow = (
-    title: string,
-    description: string,
-    onClick: () => void,
-    buttonText: string,
-  ) => (
-    <div className="grid grid-cols-2 grid-rows-2">
-      <Title variant="h4">{title}</Title>
-      <div className="row-span-2 ml-auto mr-0">
-        <Button variant="secondary" onClick={onClick}>
-          {buttonText}
-        </Button>
-      </div>
-      <Text>{description}</Text>
-    </div>
-  );
-
-  const Actions = () => (
-    <div className="flex flex-col items-center">
-      <div className="w-full px-2 columns-1 space-y-4">
-        <div className="flex items-center justify-center">
-          <Title variant="h3">Safe changes</Title>
-        </div>
-        {buttonRow(
-          'Refresh data',
-          'This will Refresh all the data from scratch.',
-          () =>
-            startOrchestrator({
-              query: {
-                functionName: 'orch_gather_data',
-              },
-            }),
-          'Refresh',
-        )}
-        {buttonRow(
-          'Clear local storage',
-          'This will clear all cached data in the local storage of the browser.',
-          () => handleSessionStorageClearClick(),
-          'Clear',
-        )}
-        {buttonRow(
-          'Authenticate Strava',
-          'This will authenticate strava again or for the first time.',
-          () => handleStravaAuthentication(),
-          'Authenticate',
-        )}
-      </div>
-    </div>
-  );
   return (
     <>
       <Title variant="h2" className="flex items-center justify-center p-5">
@@ -123,7 +120,7 @@ export default function Home() {
             <PreferencesForm />
           </TabsContent>
           <TabsContent className="px-2" value="actions">
-            <Actions />
+            {Actions(router)}
           </TabsContent>
           <TabsContent className="px-2" value="orchestrations">
             <DataTable

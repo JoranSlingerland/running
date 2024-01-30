@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
-import { cosmosContainer, removeKeys } from '@utils/cosmosdb';
+import { cosmosContainer, removeKeys } from '@utils/database/helpers';
 import { Container } from '@azure/cosmos';
+import { getQueryParam } from '@utils/api';
 
 export default async function handler(
   req: NextApiRequest,
@@ -32,14 +33,8 @@ async function handleGet(
   id: string,
 ) {
   let queryStr = 'SELECT * FROM c WHERE c.userId = @id';
-  let startDate =
-    Array.isArray(req.query.startDate) || req.query.startDate === undefined
-      ? ''
-      : req.query.startDate;
-  let endDate =
-    Array.isArray(req.query.endDate) || req.query.endDate === undefined
-      ? ''
-      : req.query.endDate;
+  const startDate = getQueryParam(req.query, 'startDate') || '';
+  const endDate = getQueryParam(req.query, 'endDate') || '';
 
   if (startDate) {
     queryStr += ' AND c.start_date >= @startDate';

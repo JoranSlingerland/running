@@ -1,12 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
+import { removeKeys } from '@utils/database/helpers';
 import {
-  cosmosContainer,
-  containerFunctionWithBackOff,
-  removeKeys,
-} from '@utils/cosmosdb';
-import { Container } from '@azure/cosmos';
-import { userSettingsSchema } from '@utils/zodSchema';
+  userSettingsFromCosmos,
+  upsertUserSettingsToCosmos,
+} from '@utils/database/user';
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,14 +16,12 @@ export default async function handler(
     return;
   }
 
-  const container = cosmosContainer('users');
-
   switch (req.method) {
     case 'GET':
-      await handleGet(res, container, token.id as string);
+      await handleGet(res, token.id as string);
       break;
     case 'POST':
-      await handlePost(req, res, container, token.id as string);
+      await handlePost(req, res, token.id as string);
       break;
     default:
       res.setHeader('Allow', 'GET, POST');
@@ -33,19 +29,9 @@ export default async function handler(
   }
 }
 
-async function handleGet(
-  res: NextApiResponse,
-  container: Container,
-  id: string,
-) {
-  const { resources: user } = await container.items
-    .query({
-      query: 'SELECT * FROM c WHERE c.id = @id',
-      parameters: [{ name: '@id', value: id }],
-    })
-    .fetchAll();
-
-  if (!user || user.length === 0) {
+async function handleGet(res: NextApiResponse, id: string) {
+  const user = await userSettingsFromCosmos(id);
+  if (!user) {
     res.status(400).json({ message: 'User not found' });
     return;
   }
@@ -53,35 +39,17 @@ async function handleGet(
   return res
     .status(200)
     .json(
-      removeKeys(user[0], [
-        '_rid',
-        '_self',
-        '_etag',
-        '_attachments',
-        '_ts',
-        'id',
-      ]),
+      removeKeys(user, ['_rid', '_self', '_etag', '_attachments', '_ts', 'id']),
     );
 }
 
+// TODO: More descriptive error messages
 async function handlePost(
   req: NextApiRequest,
   res: NextApiResponse,
-  container: Container,
   id: string,
 ) {
-  const validated = userSettingsSchema.safeParse(req.body);
-  if (!validated.success) {
-    res.status(400).json({ message: validated.error });
-    return;
-  }
-
-  const result = await containerFunctionWithBackOff(async () => {
-    return await container.items.upsert({
-      id,
-      ...validated.data,
-    });
-  });
+  const result = await upsertUserSettingsToCosmos(id, req.body);
 
   if (!result.isError && result.result) {
     return res
