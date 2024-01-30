@@ -24,7 +24,7 @@ const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     jwt({ token, account, user }) {
-      const adminEmails = JSON.parse(process.env.NEXTAUTH_ADMINEMAILS || '[]');
+      const adminEmails = JSON.parse(process.env.NEXTAUTH_ADMIN_EMAILS || '[]');
       if (account) {
         token.accessToken = account.access_token;
         token.id = crypto
