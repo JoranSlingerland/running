@@ -5,16 +5,19 @@ on:
     branches: ["main", "feature/next-auth"]
   workflow_dispatch:
 
+env:
+  DEPLOYMENT_PACKAGE_NAME: "release.zip"
+
 jobs:
   build:
-    name: Build
+    name: Build Application
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
         with:
           node-version: "18"
 
@@ -22,70 +25,42 @@ jobs:
         run: |
           yarn install
         
-      - name: Build Next.js app
+      - name: Build Next.js Application
         run: |
           yarn build
           mv .next/static .next/standalone/.next/static
-          # mv public .next/standalone/public
 
-      - name: Zip artifact for deployment
-        run: |
-          zip build.zip ./* .next -qr
-
-      - name: Upload artifact for deployment
-        uses: actions/upload-artifact@v2
+      - name:  Upload Artifact for Deployment
+        uses: actions/upload-artifact@v4
         with:
           name: build
-          path: build.zip
+          path: ${{ env.DEPLOYMENT_PACKAGE_NAME}}
 
   deploy:
+    name: Deploy to Azure
     runs-on: ubuntu-latest
     needs: build
     environment:
       name: production
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
+      id-token: write
 
     steps:
-      - name:  Download artifact for deployment
-        uses: actions/download-artifact@v3
+      - name:  Download Artifact for Deployment
+        uses: actions/download-artifact@v4
         with:
           name: build
 
-      - name: 'Login to Azure Subscription'
+      - name: Login to Azure Subscription
         uses: azure/login@v1
         with:
             creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Unzip artifact for deployment
-        run: |
-          dir
       
-      - name: 'Deploy to Azure Web App'
+      - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'test-web-app-43fsd32'
-          package: build.zip
+          app-name: ${{ secrets.AZURE_WEB_APP_NAME }}
+          package: ${{ env.DEPLOYMENT_PACKAGE_NAME }}
           slot-name: 'production'
-          
-
-      # - name: Deploy
-      #   shell: pwsh
-      #   run: |
-      #     $ZIP_FILE_NAME = "./${{ env.FILE_NAME }}.zip"
-      #     zip $ZIP_FILE_NAME ./* .next -qr
-        
-      #     write-host "Deploying $ZIP_FILE_NAME to ${{ env.WEB_APP_NAME }} in ${{ env.RESOURCE_GROUP_NAME }}"
-        
-      #     az webapp deploy `
-      #         --resource-group ${{ env.RESOURCE_GROUP_NAME }} `
-      #         --name ${{ env.WEB_APP_NAME }} `
-      #         --src-path $ZIP_FILE_NAME `
-      #         --type zip `
-      #         --clean true 
-      #   env:
-      #     FILE_NAME: "build"
-      #     RESOURCE_GROUP_NAME: 'Dev'
-      #     WEB_APP_NAME: 'test-web-app-43fsd32'
