@@ -49,10 +49,9 @@ jobs:
 
     steps:
       - name:  Download artifact for deployment
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: build
-          path: build.zip
 
       - name: 'Login to Azure Subscription'
         uses: azure/login@v1
@@ -61,14 +60,14 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: |
-          unzip build.zip -d build
+          dir
       
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'test-web-app-43fsd32'
-          package: ./build
+          package: build.zip
           slot-name: 'production'
           
 
