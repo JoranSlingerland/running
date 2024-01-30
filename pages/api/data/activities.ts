@@ -21,7 +21,7 @@ export default async function handler(
       await handleGet(res, req, container, token.id as string);
       break;
     default:
-      res.setHeader('Allow', 'GET, POST');
+      res.setHeader('Allow', 'GET');
       res.status(405).json({ message: `Method ${req.method} Not Allowed` });
   }
 }
