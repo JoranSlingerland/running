@@ -4,6 +4,7 @@ import wretch from 'wretch';
 import AbortAddon from 'wretch/addons/abort';
 import QueryStringAddon from 'wretch/addons/queryString';
 import { WretchError } from 'wretch/resolver';
+import { NextApiRequest } from 'next';
 
 const MILLISECONDS_IN_HOUR = 1000 * 60 * 60;
 
@@ -395,4 +396,9 @@ async function regularFetch<Query, Body, Response>({
   return { response, isError, error };
 }
 
-export { regularFetch };
+function getQueryParam(query: NextApiRequest['query'], param: string) {
+  const value = query[param];
+  return Array.isArray(value) ? undefined : value;
+}
+
+export { regularFetch, getQueryParam, createWretchInstance };

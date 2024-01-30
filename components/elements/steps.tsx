@@ -34,10 +34,10 @@ export default function Steps({
                     step.status === 'process'
                       ? 'bg-blue-500'
                       : step.status === 'finish'
-                      ? 'bg-green-500'
-                      : step.status === 'error'
-                      ? 'bg-red-500'
-                      : 'bg-gray-500'
+                        ? 'bg-green-500'
+                        : step.status === 'error'
+                          ? 'bg-red-500'
+                          : 'bg-gray-500'
                   } w-8 h-8`}
                 >
                   {step.icon}

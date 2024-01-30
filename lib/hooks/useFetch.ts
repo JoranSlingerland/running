@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDeepCompareEffect } from 'rooks';
 import { WretchError } from 'wretch/resolver';
 
@@ -34,11 +34,7 @@ interface UseFetchResult<Response, Query> {
   isLoading: boolean;
   isError: boolean;
   error: WretchError | undefined;
-  refetchData: (params?: {
-    query?: Query;
-    setLoading?: boolean;
-    overwrite?: boolean;
-  }) => void;
+  refetchData: (params?: { setLoading?: boolean; overwrite?: boolean }) => void;
   overwriteData: (data: Response) => void;
 }
 
@@ -46,7 +42,7 @@ function useFetch<Body, Query, Response>({
   url,
   method,
   body,
-  query: initialQuery,
+  query,
   enabled = true,
   background = false,
   overwrite: initialOverwrite = false,
@@ -59,7 +55,6 @@ function useFetch<Body, Query, Response>({
   const [refetch, setRefetch] = useState(false);
   const [data, setData] = useState<Response | undefined>(initialData);
   const [error, setError] = useState<WretchError | undefined>(undefined);
-  const [query, setQuery] = useState<Query | undefined>(initialQuery);
   const [overwrite, setOverwrite] = useState(initialOverwrite);
   const [isLoading, setIsLoading] = useState(
     background || overwrite ? false : true,
@@ -67,7 +62,6 @@ function useFetch<Body, Query, Response>({
 
   // Functions
   const refetchData = ({
-    query,
     setLoading = false,
     overwrite = false,
   }: {
@@ -78,9 +72,6 @@ function useFetch<Body, Query, Response>({
     setRefetch(true);
     setIsLoading(setLoading);
     setOverwrite(overwrite);
-    if (query) {
-      setQuery(query);
-    }
   };
   const overwriteData = (data: Response) => {
     setData(data);
@@ -115,6 +106,7 @@ function useFetch<Body, Query, Response>({
   // Effects
   useDeepCompareEffect(() => {
     let abortController = new AbortController();
+
     if (enabled) {
       setIsError(false);
       setError(undefined);
@@ -131,10 +123,6 @@ function useFetch<Body, Query, Response>({
       abortController.abort();
     };
   }, [enabled, refetch, url, method, body, query]);
-
-  useEffect(() => {
-    setQuery(initialQuery);
-  }, [initialQuery]);
 
   return {
     data,

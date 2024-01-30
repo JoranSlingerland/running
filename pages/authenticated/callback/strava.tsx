@@ -3,22 +3,29 @@ import { useRouter } from 'next/router';
 
 import Steps from '@elements/steps';
 import { useStravaCallback } from '@services/callback/strava';
+import { useEffect } from 'react';
 
 export default function home() {
   const router = useRouter();
   const { code, scope } = router.query;
+  const query = { code: code as string, scope: scope as string };
+
   const { isLoading, isError, data, error } = useStravaCallback({
-    query: { code: code as string, scope: scope as string },
-    enabled: code ? true : false,
+    query: query,
+    enabled: router.isReady,
   });
-  if (!isLoading) {
-    setTimeout(
-      () => {
-        router.push('/authenticated/settings');
-      },
-      isError ? 5000 : 1000,
-    );
-  }
+
+  useEffect(() => {
+    if (!isLoading) {
+      setTimeout(
+        () => {
+          router.push('/authenticated/settings');
+        },
+        isError ? 5000 : 1000,
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading, isError]);
 
   return (
     <div className="flex justify-center">
