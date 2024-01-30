@@ -2,7 +2,7 @@ name: Deploy to Azure
 
 on:
   push:
-    branches: ["main", "feature/next-auth"]
+    branches: ["main"]
   workflow_dispatch:
 
 env:
