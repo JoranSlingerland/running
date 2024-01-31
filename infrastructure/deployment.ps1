@@ -1,11 +1,11 @@
-$RESOURCE_GROUP_NAME = "Dev"
-$LOCATION = "westeurope"
+$RESOURCE_GROUP_NAME = ""
+$LOCATION = ""
 
-$APP_SERVICE_PLAN_NAME = "test-app-service-plan"
+$APP_SERVICE_PLAN_NAME = ""
 $APP_SERVICE_PLAN_SKU = "f1"
 
-$WEB_APP_NAME = "test-web-app-43fsd32"
-$WEB_APP_RUNTIME = "NODE:18-lts" # This is not the latest version of Node, but it is the version supported by Azure App Service at the time of writing this article.
+$WEB_APP_NAME = ""
+$WEB_APP_RUNTIME = "NODE:18-lts"
 
 az group create `
     --name $RESOURCE_GROUP_NAME `
