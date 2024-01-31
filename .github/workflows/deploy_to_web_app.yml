@@ -23,11 +23,11 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          yarn install
+          pnpm install
         
       - name: Build Next.js Application
         run: |
-          yarn build
+          pnpm build
           mv .next/static .next/standalone/.next/static
 
       - name: Zip Artifact for Deployment
