@@ -7,9 +7,7 @@
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
-  "devDependencies": {}
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*"
+  }
 }

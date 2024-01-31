@@ -7,6 +7,7 @@
         "dotEnv": [".env.production.local", ".env.local", ".env.production", ".env"]
       },
       "dev": {
+        "cache": false,
         "persistent": true,
         "dotEnv": [".env.production.local", ".env.local", ".env.production", ".env"]
       },

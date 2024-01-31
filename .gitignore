@@ -14,10 +14,6 @@ node_modules.old*
 /out/
 /.next.old*/
 
-# yarn
-yarn-debug.log*
-yarn-error.log*
-
 # production
 /build
 

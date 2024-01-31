@@ -16,8 +16,11 @@ jobs:
         with:
           node-version: 18
 
+      - name: Install pnpm
+        run: npm install -g pnpm
+
       - name: Install Node.js dependencies
-        run: yarn install
+        run: pnpm install
 
       - name: Run build
-        run: yarn run build
+        run: pnpm run build
