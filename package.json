@@ -3,20 +3,27 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
+    "build:frontend": "turbo build --filter=frontend",
     "dev": "turbo dev",
+    "dev:frontend": "turbo dev --filter=frontend",
     "lint": "turbo lint",
+    "lint:frontend": "turbo lint --filter=frontend",
     "fix": "turbo fix",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "preinstall": "npx only-allow pnpm"
+    "fix:frontend": "turbo fix --filter=frontend",
+    "preinstall": "npx only-allow yarn"
   },
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*",
-    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "*",
+    "@repo/eslint-config": "*",
     "turbo": "^1.12.2",
     "prettier": "^3"
   },
-  "packageManager": "pnpm@8.15.1",
+  "packageManager": "yarn@1.22.19",
   "engines": {
     "node": "^18.17"
-  }
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
 }

@@ -8,7 +8,7 @@
     "fix": "next lint --fix",
     "lint": "next lint && tsc --noEmit --incremental false",
     "start": "next start",
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow yarn"
   },
   "dependencies": {
     "@azure/cosmos": "^4.0.0",
@@ -50,8 +50,8 @@
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^14.1.0",
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
     "@types/node": "^20",
     "@types/object-hash": "^3",
     "@types/react": "^18",

@@ -17,6 +17,10 @@ node_modules.old*
 # production
 /build
 
+# yarn
+.yarn/*
+yarn-error.log
+
 # misc
 .DS_Store
 
