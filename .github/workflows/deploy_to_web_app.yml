@@ -2,7 +2,10 @@ name: Deploy to Azure
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "feature/**"]
+    paths:
+      - 'apps/frontend/**'
+      - '.github/workflows/**'
   workflow_dispatch:
 
 env:
@@ -20,18 +23,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "18"
-
-      - name: Install pnpm
-        run: npm install -g pnpm
-        
-      - name: Install Dependencies
-        run: |
-          pnpm install
         
       - name: Build Next.js Application
         run: |
-          pnpm build
-          mv .next/static .next/standalone/.next/static
+          yarn build:frontend
+          mv app/frontend/.next/static .next/standalone/.next/static
 
       - name: Zip Artifact for Deployment
         run: |
