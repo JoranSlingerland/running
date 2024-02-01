@@ -31,7 +31,8 @@ jobs:
       - name: Build Next.js Application
         run: |
           yarn build:frontend
-          mv app/frontend/.next/static .next/standalone/.next/static
+          dir
+          mv .next/static .next/standalone/.next/static
 
       - name: Zip Artifact for Deployment
         run: |
