@@ -58,7 +58,6 @@
     "serve": "^14.2.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3",
-    "@repo/typescript-config": "workspace:*",
-    "@repo/eslint-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*"
   }
 }

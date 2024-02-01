@@ -1,13 +1,19 @@
 {
-  "name": "my-turborepo",
+  "name": "running-repo",
   "private": true,
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "preinstall": "npx only-allow pnpm"
   },
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*",
+    "turbo": "^1.12.2"
+  },
+  "packageManager": "pnpm@8.15.1",
+  "engines": {
+    "node": "^18.17"
   }
 }
