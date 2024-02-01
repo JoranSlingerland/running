@@ -31,12 +31,13 @@ jobs:
       - name: Build Next.js Application
         run: |
           yarn build:frontend
-          dir apps/frontend/ -ls
-          mv apps/frontend/.next/static apps/frontend/.next/standalone/.next/static
+          # Recursivly list all directories except node_modules
+          find . -type d -not -path "./node_modules/*" -print0 | xargs -0 -I {} sh -c 'echo "Directory: {}"; ls -la {}'
+          mv .next/static .next/standalone/.next/static
 
       - name: Zip Artifact for Deployment
         run: |
-         zip ${{ env.DEPLOYMENT_PACKAGE_NAME }} ./apps/frontend/* -qr
+          zip ${{ env.DEPLOYMENT_PACKAGE_NAME }} ./* /next -qr
 
       - name:  Upload Artifact for Deployment
         uses: actions/upload-artifact@v4
