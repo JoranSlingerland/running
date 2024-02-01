@@ -16,11 +16,8 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install pnpm
-        run: npm install -g pnpm
-
-      - name: Install Node.js dependencies
-        run: pnpm install
+      - name: Set up PNPM
+        uses: pnpm/action-setup@v2
 
       - name: Run linters
         run: pnpm run lint
