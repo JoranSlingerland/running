@@ -32,6 +32,7 @@ jobs:
         run: |
           yarn build:frontend
           # Recursivly list all directories except node_modules
+          mkdir -p ./apps/frontend/.next/standalone/.next
           pwd
           find . -type d -not -path "./node_modules/*" -print0 | xargs -0 -I {} sh -c 'echo "Directory: {}"; ls -la {}'
           mv ./apps/frontend/.next/static ./apps/frontend/.next/standalone/.next/static
