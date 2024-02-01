@@ -307,7 +307,7 @@ function MetaItem({
   );
 }
 
-export default function app() {
+export default function App() {
   // Dayjs locale
   dayjs.updateLocale('en', {
     weekStart: 1,
@@ -367,7 +367,7 @@ export default function app() {
     );
   };
 
-  const metaCellRenderer = (value: Dayjs) => {
+  const MetaCellRenderer = (value: Dayjs) => {
     const firstDay = value.startOf('week');
     const lastDay = value.endOf('week');
 
@@ -398,6 +398,7 @@ export default function app() {
 
     const sports = [...new Set(filtered.map((item) => item.type))];
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
       if (selectedSport === null && sports.length > 0) {
         const runSport = sports.find((sport) => sport === 'run');
@@ -524,7 +525,7 @@ export default function app() {
       setCurrentDay={setCurrentDay}
       dateCellRenderer={dateCellRenderer}
       isLoading={activitiesIsLoading}
-      metaCellRenderer={metaCellRenderer}
+      metaCellRenderer={MetaCellRenderer}
     />
   );
 }

@@ -5,7 +5,7 @@ import Steps from '@elements/steps';
 import { useStravaCallback } from '@services/callback/strava';
 import { useEffect } from 'react';
 
-export default function home() {
+export default function App() {
   const router = useRouter();
   const { code, scope } = router.query;
   const query = { code: code as string, scope: scope as string };
