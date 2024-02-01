@@ -1,7 +1,6 @@
 {
     "root": true,
     "extends": [
-        "next/core-web-vitals",
         "@repo/eslint-config/main.json"
     ],
     "parser": "@typescript-eslint/parser",
