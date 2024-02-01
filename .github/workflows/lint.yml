@@ -19,5 +19,8 @@ jobs:
       - name: Set up PNPM
         uses: pnpm/action-setup@v2
 
+      - name: Install dependencies
+        run: pnpm install
+
       - name: Run linters
         run: pnpm run lint
