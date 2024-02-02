@@ -23,7 +23,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "18"
-       
+      
+      - name: Add nohoist to root package.json
+        run: |
+          cat package.json
+          jq '.workspaces.nohoist = ["**"]' package.json > package.json.tmp && mv package.json.tmp package.json
+          cat package.json
+            
       - name: Install Dependencies
         run: |
           yarn install --frozen-lockfile --non-interactive
@@ -33,15 +39,15 @@ jobs:
           yarn build:frontend
           # Recursivly list all directories except node_modules
           mkdir -p ./apps/frontend/.next/standalone/.next
-          pwd
-          find . -type d -not -path "./node_modules/*" -print0 | xargs -0 -I {} sh -c 'echo "Directory: {}"; ls -la {}'
+          # pwd
+          # find . -type d -not -path "./node_modules/*" -print0 | xargs -0 -I {} sh -c 'echo "Directory: {}"; ls -la {}'
           mv ./apps/frontend/.next/static ./apps/frontend/.next/standalone/.next/static
           
 
       - name: Zip Artifact for Deployment
         working-directory: ./apps/frontend
         run: |
-          zip ${{ env.DEPLOYMENT_PACKAGE_NAME }} ./* /next -qr
+          zip ../../${{ env.DEPLOYMENT_PACKAGE_NAME }} ./* /next -qr
 
       - name:  Upload Artifact for Deployment
         uses: actions/upload-artifact@v4
