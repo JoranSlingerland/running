@@ -22,8 +22,10 @@
   "engines": {
     "node": "^18.17"
   },
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "packages/*"
+    ]
+  }
 }
