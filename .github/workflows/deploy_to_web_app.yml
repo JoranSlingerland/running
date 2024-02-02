@@ -37,7 +37,7 @@ jobs:
       - name: Build Next.js Application
         run: |
           yarn build:${{ env.WORKSPACE_NAME }}
-          mv -f .${{ env.WORKSPACE_ROOT }}/.next/standalone/apps/frontend/* ${{ env.WORKSPACE_ROOT }}/.next/standalone
+          mv -f ${{ env.WORKSPACE_ROOT }}/.next/standalone/apps/frontend/* ${{ env.WORKSPACE_ROOT }}/.next/standalone
           mv ${{ env.WORKSPACE_ROOT }}/.next/static ${{ env.WORKSPACE_ROOT }}/.next/standalone/.next/static
           rm -rf ./apps/frontend/.next/standalone/apps
           
