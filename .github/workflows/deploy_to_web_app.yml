@@ -36,10 +36,12 @@ jobs:
           pwd
           find . -type d -not -path "./node_modules/*" -print0 | xargs -0 -I {} sh -c 'echo "Directory: {}"; ls -la {}'
           mv ./apps/frontend/.next/static ./apps/frontend/.next/standalone/.next/static
+          
 
       - name: Zip Artifact for Deployment
+        working-directory: ./apps/frontend
         run: |
-          zip ${{ env.DEPLOYMENT_PACKAGE_NAME }} ./apps/frontend/* /apps/frontend/next -qr
+          zip ${{ env.DEPLOYMENT_PACKAGE_NAME }} ./* /next -qr
 
       - name:  Upload Artifact for Deployment
         uses: actions/upload-artifact@v4
