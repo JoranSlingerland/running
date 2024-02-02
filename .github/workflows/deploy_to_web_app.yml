@@ -39,7 +39,7 @@ jobs:
           yarn build:${{ env.WORKSPACE_NAME }}
           mv -f ${{ env.WORKSPACE_ROOT }}/.next/standalone/apps/frontend/* ${{ env.WORKSPACE_ROOT }}/.next/standalone
           ls -all ${{ env.WORKSPACE_ROOT }}/.next/
-          ls -all ${{ env.WORKSPACE_ROOT }}/.next/standalone/.next
+          ls -all ${{ env.WORKSPACE_ROOT }}/.next/standalone
           mkdir -p ${{ env.WORKSPACE_ROOT }}/.next/standalone/.next/static
           ls -all ${{ env.WORKSPACE_ROOT }}/.next/standalone/.next
           mv -f ${{ env.WORKSPACE_ROOT }}/.next/static ${{ env.WORKSPACE_ROOT }}/.next/standalone/.next/static
