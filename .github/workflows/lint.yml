@@ -10,8 +10,10 @@ jobs:
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
+      
       - name:
-        run: 
+        run: |
+          pwd
           ls -la
           ls -la ./.github
           ls -la ./.github/actions
