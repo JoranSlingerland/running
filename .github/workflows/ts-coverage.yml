@@ -11,17 +11,13 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: ./.github/workflows/actions/setup-node
         with:
-          node-version: 18
-
-      - name: Install dependencies
-        run: |
-          yarn install --frozen-lockfile
-          yarn global add typescript typescript-coverage-report type-coverage
-          sudo apt-get update
-          sudo apt-get install python3-html2text
+          additional-script: |
+            yarn global add typescript typescript-coverage-report type-coverage
+            sudo apt-get update
+            sudo apt-get install python3-html2text
 
       - name: TypeScript Coverage
         run: yarn run ts-coverage
