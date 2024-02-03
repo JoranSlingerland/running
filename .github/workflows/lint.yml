@@ -17,7 +17,7 @@ jobs:
           ls -la
           ls -la ./.github
 
-      - uses: ./.github/actions/setup-node
+      - uses: ./.github/workflows/actions/setup-node
         with:
           node-version: 18
 
