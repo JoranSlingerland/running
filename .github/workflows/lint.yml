@@ -17,7 +17,7 @@ jobs:
           ls -la
           ls -la ./.github
           ls -la ./.github/workflows
-          cat ./.github/workflows/setup-node.yaml
+          cat ./.github/workflows/setup-node.yml
 
       - uses: ./.github/actions/setup-node.yml
         with:
