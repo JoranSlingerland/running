@@ -16,7 +16,7 @@ jobs:
           pwd
           ls -la
           ls -la ./.github
-          ls -la ./.github/actions
+          ls -la ./.github/workflows
 
       - name: Setup Node.js and install dependencies
         uses: ./.github/actions/setup-node.yaml
