@@ -2,7 +2,7 @@ name: Deploy to Azure
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "feature/monorepo"]
     paths:
       - 'apps/frontend/**'
       - '.github/workflows/**'
@@ -21,19 +21,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js Environment
-        uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: ./.github/workflows/actions/setup-node
         with:
-          node-version: "18"
-      
-      - name: Add nohoist to root package.json
-        run: |
-          jq '.workspaces.nohoist = ["**"]' package.json > package.json.tmp && mv package.json.tmp package.json
+          nohoist: true
             
-      - name: Install Dependencies
-        run: |
-          yarn install --frozen-lockfile --non-interactive
-
       - name: Build Next.js Application
         run: |
           yarn build --filter=${{ env.WORKSPACE_NAME }}
