@@ -11,8 +11,10 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
-      - name: Setup
-        uses: ./.github/workflows/nodeSetup.yml
+      - name: Setup Node.js and install dependencies
+        uses: ./.github/actions/setup-node.yaml
+        with:
+          node-version: 18
 
       - name: Run linters
         run: yarn run lint
