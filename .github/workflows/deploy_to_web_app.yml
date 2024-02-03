@@ -2,7 +2,7 @@ name: Deploy to Azure
 
 on:
   push:
-    branches: ["main", "feature/**"]
+    branches: ["main"]
     paths:
       - 'apps/frontend/**'
       - '.github/workflows/**'
@@ -41,7 +41,8 @@ jobs:
           mv -f ${{ env.WORKSPACE_ROOT }}/.next/standalone/apps/frontend/* ${{ env.WORKSPACE_ROOT }}/.next/standalone
           mkdir -p ${{ env.WORKSPACE_ROOT }}/.next/standalone/.next/static
           mv -f ${{ env.WORKSPACE_ROOT }}/.next/static/* ${{ env.WORKSPACE_ROOT }}/.next/standalone/.next/static
-          rm -rf ./apps/frontend/.next/standalone/apps
+          rm -rf ${{ env.WORKSPACE_ROOT }}/.next/standalone/apps
+          rm -rf ${{ env.WORKSPACE_ROOT }}/.next/static
           
 
       - name: Zip Artifact for Deployment
