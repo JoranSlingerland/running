@@ -16,10 +16,8 @@ jobs:
           pwd
           ls -la
           ls -la ./.github
-          ls -la ./.github/templates
-          cat ./.github/templates/setup-node.yaml
 
-      - uses: ./.github/templates/setup-node.yaml
+      - uses: ./.github/actions/setup-node
         with:
           node-version: 18
 
