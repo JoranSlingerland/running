@@ -2,7 +2,7 @@ name: Deploy to Azure
 
 on:
   push:
-    branches: ["main", "feature/monorepo"]
+    branches: ["main"]
     paths:
       - 'apps/frontend/**'
       - '.github/workflows/**'
