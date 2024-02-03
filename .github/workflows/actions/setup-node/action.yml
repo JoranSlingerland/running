@@ -21,8 +21,8 @@ runs:
 
     - name: Add nohoist to root package.json
       if: ${{ inputs.nohoist == 'true' }}
-      run: |
-        jq '.workspaces.nohoist = ["**"]' package.json > package.json.tmp && mv package.json.tmp package.json
+      run: jq '.workspaces.nohoist = ["**"]' package.json > package.json.tmp && mv package.json.tmp package.json
+      shell: bash
 
     - name: Install dependencies
       run: yarn install
