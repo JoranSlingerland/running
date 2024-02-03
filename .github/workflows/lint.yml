@@ -17,7 +17,7 @@ jobs:
           ls -la
           ls -la ./.github
           ls -la ./.github/templates
-          cat ./.github/actions/setup-node.yaml
+          cat ./.github/templates/setup-node.yaml
 
       - uses: ./.github/templates/setup-node.yaml
         with:
