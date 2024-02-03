@@ -11,13 +11,8 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Install dependencies
-        run: yarn install
+      - name: Setup Node.js
+        uses: ./.github/workflows/actions/setup-node
 
       - name: Run build
         run: yarn run build
