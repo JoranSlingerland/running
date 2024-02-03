@@ -18,6 +18,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          yarn install --frozen-lockfile
           yarn global add typescript typescript-coverage-report type-coverage
 
       - name: TypeScript Coverage
