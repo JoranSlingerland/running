@@ -19,8 +19,7 @@ jobs:
           ls -la ./.github/workflows
           cat ./.github/workflows/setup-node.yaml
 
-      - name: Setup Node.js and install dependencies
-        uses: ./.github/actions/setup-node.yaml
+      - uses: ./.github/actions/setup-node.yml
         with:
           node-version: 18
 
