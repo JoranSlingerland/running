@@ -3,20 +3,17 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "build:frontend": "turbo build --filter=frontend",
     "dev": "turbo dev",
-    "dev:frontend": "turbo dev --filter=frontend",
     "lint": "turbo lint",
-    "lint:frontend": "turbo lint --filter=frontend",
     "fix": "turbo fix",
-    "fix:frontend": "turbo fix --filter=frontend",
+    "ts-coverage": "turbo ts-coverage",
     "preinstall": "npx only-allow yarn"
   },
   "devDependencies": {
-    "@repo/typescript-config": "*",
     "@repo/eslint-config": "*",
-    "turbo": "^1.12.2",
-    "prettier": "^3"
+    "@repo/typescript-config": "*",
+    "prettier": "^3",
+    "turbo": "^1.12.2"
   },
   "packageManager": "yarn@1.22.19",
   "engines": {

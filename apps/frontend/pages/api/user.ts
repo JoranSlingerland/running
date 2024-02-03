@@ -1,4 +1,5 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiResponse } from 'next';
+import { NextApiRequestUnknown } from '@pages/api/types';
 import { getToken } from 'next-auth/jwt';
 import { removeKeys } from '@utils/database/helpers';
 import {
@@ -7,7 +8,7 @@ import {
 } from '@utils/database/user';
 
 export default async function handler(
-  req: NextApiRequest,
+  req: NextApiRequestUnknown,
   res: NextApiResponse,
 ) {
   const token = await getToken({ req });
@@ -45,7 +46,7 @@ async function handleGet(res: NextApiResponse, id: string) {
 
 // TODO: More descriptive error messages
 async function handlePost(
-  req: NextApiRequest,
+  req: NextApiRequestUnknown,
   res: NextApiResponse,
   id: string,
 ) {

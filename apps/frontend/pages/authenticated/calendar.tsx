@@ -167,7 +167,9 @@ function MetaItem({
 
   const chartHasData = Object.values(chartData).some((array) =>
     array.some((obj) =>
-      Object.values(obj).some((val) => typeof val === 'number' && val > 0),
+      Object.values(obj).some(
+        (val: unknown) => typeof val === 'number' && val > 0,
+      ),
     ),
   );
 

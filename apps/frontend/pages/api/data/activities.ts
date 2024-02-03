@@ -1,11 +1,12 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiResponse } from 'next';
+import { NextApiRequestUnknown } from '@pages/api/types';
 import { getToken } from 'next-auth/jwt';
 import { cosmosContainer, removeKeys } from '@utils/database/helpers';
 import { Container } from '@azure/cosmos';
 import { getQueryParam } from '@utils/api';
 
 export default async function handler(
-  req: NextApiRequest,
+  req: NextApiRequestUnknown,
   res: NextApiResponse,
 ) {
   const token = await getToken({ req });
@@ -28,7 +29,7 @@ export default async function handler(
 
 async function handleGet(
   res: NextApiResponse,
-  req: NextApiRequest,
+  req: NextApiRequestUnknown,
   container: Container,
   id: string,
 ) {
@@ -54,9 +55,11 @@ async function handleGet(
     })
     .fetchAll();
 
-  const cleanActivities = activities.map((activity) => {
-    return removeKeys(activity);
-  });
+  const cleanActivities = activities.map(
+    (activity: Record<string, unknown>) => {
+      return removeKeys(activity);
+    },
+  );
 
   return res.status(200).json(cleanActivities);
 }

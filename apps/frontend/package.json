@@ -8,6 +8,7 @@
     "fix": "next lint --fix",
     "lint": "next lint && tsc --noEmit --incremental false",
     "start": "next start",
+    "ts-coverage": "typescript-coverage-report --threshold 100",
     "preinstall": "npx only-allow yarn"
   },
   "dependencies": {

@@ -1,4 +1,5 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiResponse } from 'next';
+import { NextApiRequestUnknown } from '@pages/api/types';
 import { getToken } from 'next-auth/jwt';
 import { removeKeys } from '@utils/database/helpers';
 import {
@@ -9,7 +10,7 @@ import strava from '@utils/strava';
 import { getQueryParam } from '@utils/api';
 
 export default async function handler(
-  req: NextApiRequest,
+  req: NextApiRequestUnknown,
   res: NextApiResponse,
 ) {
   const token = await getToken({ req });
@@ -30,7 +31,7 @@ export default async function handler(
 
 async function handleGet(
   res: NextApiResponse,
-  req: NextApiRequest,
+  req: NextApiRequestUnknown,
   id: string,
 ) {
   const code = getQueryParam(req.query, 'code');

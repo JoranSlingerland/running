@@ -18,7 +18,7 @@ async function userSettingsFromCosmos(id: string) {
   return response.resources[0] as UserSettings;
 }
 
-async function upsertUserSettingsToCosmos(id: string, body: any) {
+async function upsertUserSettingsToCosmos(id: string, body: unknown) {
   const container = cosmosContainer('users');
   const validated = userSettingsSchema.safeParse(body);
   if (!validated.success) {

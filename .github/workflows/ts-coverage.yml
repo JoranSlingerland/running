@@ -1,0 +1,24 @@
+name: TypeScript Coverage
+
+on: push
+
+jobs:
+  lint:
+    name: TypeScript Coverage Report
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: |
+          yarn global add typescript typescript-coverage-report type-coverage
+
+      - name: TypeScript Coverage
+        run: yarn run ts-coverage

@@ -10,7 +10,7 @@ export default function App() {
   const { code, scope } = router.query;
   const query = { code: code as string, scope: scope as string };
 
-  const { isLoading, isError, data, error } = useStravaCallback({
+  const { isLoading, isError, data } = useStravaCallback({
     query: query,
     enabled: router.isReady,
   });
@@ -46,7 +46,9 @@ export default function App() {
             title: 'Redirecting to settings',
             status: isLoading ? 'wait' : isError ? 'error' : 'finish',
             icon: isLoading ? <></> : <Loader2 className="animate-spin" />,
-            description: isError ? error?.json.result : data?.result,
+            description: isError
+              ? 'Something went wrong, please try again.'
+              : data?.result,
           },
         ]}
         className="w-auto mt-4"

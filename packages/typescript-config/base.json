@@ -19,6 +19,7 @@
       "noUnusedParameters": false,
       "downlevelIteration": true,
       "baseUrl": ".",
+      "noImplicitAny": true,
     },
 }
   

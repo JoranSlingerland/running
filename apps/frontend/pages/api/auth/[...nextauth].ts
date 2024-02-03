@@ -24,7 +24,6 @@ const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     jwt({ token, account, user }) {
-      const adminEmails = JSON.parse(process.env.NEXTAUTH_ADMIN_EMAILS || '[]');
       if (account) {
         token.accessToken = account.access_token;
         token.id = crypto
@@ -33,7 +32,7 @@ const authOptions: NextAuthOptions = {
             `${account.provider}-${user?.id}-${process.env.NEXTAUTH_SALT}`,
           )
           .digest('hex');
-        if (adminEmails.includes(user?.email)) {
+        if (user?.email === process.env.NEXTAUTH_ADMIN_EMAIL) {
           token.admin = true;
         }
       }

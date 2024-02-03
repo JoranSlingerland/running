@@ -1,15 +1,17 @@
 import hash from 'object-hash';
 import { toast } from 'sonner';
-import wretch from 'wretch';
-import AbortAddon from 'wretch/addons/abort';
-import QueryStringAddon from 'wretch/addons/queryString';
+import wretch, { Wretch, WretchResponseChain } from 'wretch';
+import AbortAddon, { AbortResolver, AbortWretch } from 'wretch/addons/abort';
+import QueryStringAddon, {
+  QueryStringAddon as QueryStringAddonType,
+} from 'wretch/addons/queryString';
 import { WretchError } from 'wretch/resolver';
-import { NextApiRequest } from 'next';
+import { NextApiRequestUnknown } from '@pages/api/types';
 
 const MILLISECONDS_IN_HOUR = 1000 * 60 * 60;
 
 // Types
-type cachedResponse<Response> = {
+type CachedResponse<Response> = {
   value: Response;
   expiry: number;
   start_end_dates?: [string, string][];
@@ -24,6 +26,16 @@ type CacheSettings = {
   useStartEndDates?: boolean;
   deDupeKey?: string;
 };
+
+type WretchInstance = QueryStringAddonType &
+  AbortWretch &
+  Wretch<AbortWretch & QueryStringAddonType, AbortResolver, undefined>;
+type WretchResponse = AbortResolver &
+  WretchResponseChain<
+    AbortWretch & QueryStringAddonType,
+    AbortResolver,
+    undefined
+  >;
 
 // Helper functions
 function setWithExpiry<T>(
@@ -56,13 +68,13 @@ function setWithExpiry<T>(
 function getWithExpiry<Response>(
   key: string,
   storageType: StorageType,
-): null | cachedResponse<Response> {
+): null | CachedResponse<Response> {
   const storage = window[storageType];
   const itemStr = storage.getItem(key);
   if (!itemStr) {
     return null;
   }
-  const item = JSON.parse(itemStr);
+  const item: CachedResponse<Response> = JSON.parse(itemStr);
   const now = new Date();
   if (now.getTime() > item.expiry) {
     storage.removeItem(key);
@@ -82,7 +94,7 @@ function removeExpiredItems(storageType: StorageType) {
   Object.keys(storage).forEach((key) => {
     const itemStr = storage.getItem(key);
     if (itemStr) {
-      const item = JSON.parse(itemStr);
+      const item: CachedResponse<Response> = JSON.parse(itemStr);
       if (now > item.expiry) {
         storage.removeItem(key);
       }
@@ -104,8 +116,11 @@ function newKey<Query, Body>(
 
 function deDupeData<T>(data: T[], deDupeKey: string) {
   const seen = new Set();
+  // type-coverage:ignore-next-line
   return data.filter((item: any) => {
+    // type-coverage:ignore-next-line
     const duplicate = seen.has(item[deDupeKey]);
+    // type-coverage:ignore-next-line
     seen.add(item[deDupeKey]);
     return !duplicate;
   });
@@ -151,19 +166,36 @@ function handleCacheSet<Query, Response>({
   storageType,
 }: {
   cache?: CacheSettings;
-  cachedResponse: cachedResponse<Response> | null;
+  cachedResponse: CachedResponse<Response> | null;
   query?: Query;
   key: string;
   response: Response;
   hours: number;
   storageType: StorageType;
 }) {
+  let data: Response[] | Response;
+  let start_end_dates: [string, string][] | undefined = undefined;
+
   if (cache?.useStartEndDates) {
-    const { startDate, endDate } = query as any;
+    if (
+      !query ||
+      typeof query !== 'object' ||
+      !('startDate' in query) ||
+      !('endDate' in query) ||
+      typeof query.startDate !== 'string' ||
+      typeof query.endDate !== 'string'
+    ) {
+      console.warn(
+        'Invalid query. Query must be an object with startDate and endDate as strings for useStartEndDates',
+      );
+      return;
+    }
+
+    const { startDate, endDate } = query;
     const cachedData = cachedResponse?.value || [];
     const newData = (cachedData as Response[]).concat(response);
     const deDupedData = deDupeData(newData, cache.deDupeKey || 'id');
-    let start_end_dates: [string, string][] = [];
+
     if (!cachedResponse?.start_end_dates) {
       start_end_dates = [[startDate, endDate]];
     } else {
@@ -172,17 +204,18 @@ function handleCacheSet<Query, Response>({
       ]);
       start_end_dates = mergeStartEndDates(start_end_dates);
     }
-
-    setWithExpiry(
-      key,
-      deDupedData,
-      hours * MILLISECONDS_IN_HOUR,
-      storageType,
-      start_end_dates,
-    );
+    data = deDupedData;
   } else {
-    setWithExpiry(key, response, hours * MILLISECONDS_IN_HOUR, storageType);
+    data = response;
   }
+
+  setWithExpiry(
+    key,
+    data,
+    hours * MILLISECONDS_IN_HOUR,
+    storageType,
+    cache?.useStartEndDates ? start_end_dates : undefined,
+  );
 }
 
 function createWretchInstance<Query, Body>({
@@ -198,8 +231,7 @@ function createWretchInstance<Query, Body>({
   query?: Query;
   body?: Body;
 }) {
-  let wretchInstance;
-  wretchInstance = wretch()
+  let wretchInstance: WretchInstance | WretchResponse = wretch()
     .url(url)
     .addon(AbortAddon())
     .addon(QueryStringAddon)
@@ -222,8 +254,8 @@ function createWretchInstance<Query, Body>({
   return wretchInstance;
 }
 
-function processCachedResponse<Query>(
-  cachedResponse: any,
+function processCachedResponse<Query, Response>(
+  cachedResponse: CachedResponse<Response> | null,
   messageEnabled: boolean,
   sendSuccessMessage: Function,
   cache: CacheSettings | undefined,
@@ -237,7 +269,20 @@ function processCachedResponse<Query>(
 
   if (messageEnabled) sendSuccessMessage();
   if (cache?.useStartEndDates) {
-    const { startDate, endDate } = query as any;
+    if (
+      !query ||
+      typeof query !== 'object' ||
+      !('startDate' in query) ||
+      !('endDate' in query) ||
+      typeof query.startDate !== 'string' ||
+      typeof query.endDate !== 'string'
+    ) {
+      console.warn(
+        'Invalid query. Query must be an object with startDate and endDate as strings for useStartEndDates',
+      );
+      return;
+    }
+    const { startDate, endDate } = query;
     var fallsWithin = false;
 
     if (Array.isArray(cachedResponse.start_end_dates)) {
@@ -295,7 +340,7 @@ async function regularFetch<Query, Body, Response>({
   controller = controller || new AbortController();
   let isError = false;
   let error: WretchError | undefined = undefined;
-  let cachedResponse: cachedResponse<Response> | null = null;
+  let cachedResponse: CachedResponse<Response> | null = null;
   const key = cache?.customKey || newKey(url, method, body, query);
   const {
     enabled: messageEnabled,
@@ -396,7 +441,7 @@ async function regularFetch<Query, Body, Response>({
   return { response, isError, error };
 }
 
-function getQueryParam(query: NextApiRequest['query'], param: string) {
+function getQueryParam(query: NextApiRequestUnknown['query'], param: string) {
   const value = query[param];
   return Array.isArray(value) ? undefined : value;
 }

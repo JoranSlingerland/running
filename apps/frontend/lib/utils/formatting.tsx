@@ -16,7 +16,7 @@ dayjs.extend(timezone);
 
 // Helper functions
 function unitMapper(units: Units, type: 'distance' | 'speed' | 'pace') {
-  let result;
+  let result: string;
 
   switch (type) {
     case 'distance':

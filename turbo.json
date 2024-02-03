@@ -40,6 +40,8 @@
         ".env"
       ]
     },
-    "type-check": {}
+    "ts-coverage": {
+      "cache": false
+    }
   }
 }

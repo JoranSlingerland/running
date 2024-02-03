@@ -20,13 +20,19 @@ export const fontSans = FontSans({
   variable: '--font-sans',
 });
 
+interface PageProps {
+  title: string;
+  content: string;
+}
+
 interface AppContentProps {
   Component: AppProps['Component'];
-  pageProps: AppProps['pageProps'];
+  pageProps: PageProps;
 }
 
 interface SessionAppProps extends AppProps {
   session: Session;
+  pageProps: PageProps;
 }
 
 function MyApp({ Component, pageProps, session }: SessionAppProps) {
