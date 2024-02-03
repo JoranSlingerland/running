@@ -3,7 +3,7 @@ name: TypeScript Coverage
 on: push
 
 jobs:
-  lint:
+  ts-coverage:
     name: TypeScript Coverage Report
     runs-on: ubuntu-latest
 
@@ -25,15 +25,19 @@ jobs:
 
       - name: TypeScript Coverage
         run: yarn run ts-coverage
-    
-      - name: Output to summary
+
+  output:
+    name: Output to summary
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        workspace: ["./apps/frontend"]
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Convert HTML to Markdown and output to summary
         run: |
-          workspaces=("./apps/frontend")
-
-          for workspace in "${workspaces[@]}"
-          do
-              echo "# $workspace" >> $GITHUB_STEP_SUMMARY
-              echo "" >> $GITHUB_STEP_SUMMARY
-              html2markdown --ignore-links $workspace/coverage-ts/index.html | sed '/# TypeScript coverage report/d' >> $GITHUB_STEP_SUMMARY
-          done
-
+          workspace=${{ matrix.workspace }}
+          echo "# ${{ matrix.workspace }}" >> $GITHUB_STEP_SUMMARY
+          html2markdown --ignore-links ${{ matrix.workspace }}/coverage-ts/index.html | sed '/# TypeScript coverage report/d' >> $GITHUB_STEP_SUMMARY
