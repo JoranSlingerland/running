@@ -21,7 +21,7 @@ jobs:
           yarn install --frozen-lockfile
           yarn global add typescript typescript-coverage-report type-coverage
           sudo apt-get update
-          sudo apt-get install pandoc
+          sudo apt-get install python3-html2text
 
       - name: TypeScript Coverage
         run: yarn run ts-coverage
@@ -34,6 +34,6 @@ jobs:
           do
               echo "# $workspace" >> $GITHUB_STEP_SUMMARY
               echo "" >> $GITHUB_STEP_SUMMARY
-              pandoc -f html -t markdown "$workspace/coverage-ts/index.html" >> $GITHUB_STEP_SUMMARY
+              html2markdown --ignore-links $workspace/coverage-ts/index.html | sed '/# TypeScript coverage report/d' >> $GITHUB_STEP_SUMMARY
           done
 
