@@ -35,6 +35,7 @@ jobs:
           mv -f ${{ env.WORKSPACE_ROOT }}/.next/static/* ${{ env.WORKSPACE_ROOT }}/.next/standalone/.next/static
           rm -rf ${{ env.WORKSPACE_ROOT }}/.next/standalone/apps
           rm -rf ${{ env.WORKSPACE_ROOT }}/.next/static
+          find ${{ env.WORKSPACE_ROOT }} -maxdepth 1 -mindepth 1 -not -name .next -exec rm -rf {} \;
 
       - name: Zip Artifact for Deployment
         working-directory: ${{ env.WORKSPACE_ROOT }}
