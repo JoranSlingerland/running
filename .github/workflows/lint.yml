@@ -11,15 +11,8 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
       
-      - name:
-        run: |
-          pwd
-          ls -la
-          ls -la ./.github
-
-      - uses: ./.github/workflows/actions/setup-node
-        with:
-          node-version: 18
+      - name: Setup Node.js
+        uses: ./.github/workflows/actions/setup-node
 
       - name: Run linters
         run: yarn run lint
