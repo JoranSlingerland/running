@@ -20,6 +20,20 @@ jobs:
         run: |
           yarn install --frozen-lockfile
           yarn global add typescript typescript-coverage-report type-coverage
+          sudo apt-get update
+          sudo apt-get install pandoc
 
       - name: TypeScript Coverage
         run: yarn run ts-coverage
+    
+      - name: Output to summary
+        run: |
+          workspaces=("./apps/frontend")
+
+          for workspace in "${workspaces[@]}"
+          do
+              echo "# $workspace" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              pandoc -f html -t markdown "$workspace/coverage-ts/index.html" >> $GITHUB_STEP_SUMMARY
+          done
+
