@@ -29,4 +29,4 @@ az webapp create `
 az webapp config set `
     --resource-group $RESOURCE_GROUP_NAME `
     --name $WEB_APP_NAME `
-    --startup-file "node .next/standalone/server.js"
+    --startup-file "node standalone/server.js"
