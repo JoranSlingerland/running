@@ -23,12 +23,6 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
 
-    - name: Install Yarn 4 into .yarn/releases
-      run: |
-        YARN_VERSION=$(jq -r '.packageManager' package.json | cut -d '@' -f 2)
-        yarn set version $YARN_VERSION
-      shell: bash
-
     - name: Add nohoist to root package.json
       if: ${{ inputs.nohoist == 'true' }}
       run: jq '.workspaces.nohoist = ["**"]' package.json > package.json.tmp && mv package.json.tmp package.json
