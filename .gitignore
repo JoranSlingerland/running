@@ -18,7 +18,7 @@ node_modules.old*
 /build
 
 # yarn
-.yarn/*
+.yarn
 yarn-error.log
 
 # misc
