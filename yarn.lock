@@ -1571,16 +1571,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.x":
-  version: 18.19.14
-  resolution: "@types/node@npm:18.19.14"
-  dependencies:
-    undici-types: "npm:~5.26.4"
-  checksum: 10c0/a614e85d3d75e9bb73c1155f77843804506806629d20774e0479e88678efd64ab57f7bb2ba290b226fe732b6aead037ac181db04851a2f37e1c2a14744ffdb96
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^20":
+"@types/node@npm:^20, @types/node@npm:^20.x":
   version: 20.11.16
   resolution: "@types/node@npm:20.11.16"
   dependencies:
@@ -2127,7 +2118,7 @@ __metadata:
     "@azure/functions": "npm:^4.0.0"
     "@repo/eslint-config": "npm:*"
     "@repo/typescript-config": "npm:*"
-    "@types/node": "npm:^18.x"
+    "@types/node": "npm:^20.x"
     typescript: "npm:^4.0.0"
   languageName: unknown
   linkType: soft
