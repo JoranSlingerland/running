@@ -2,7 +2,7 @@ name: Deploy to Azure
 
 on:
   push:
-    branches: ["main", "/feature/monorepo"]
+    branches: ["main"]
     paths:
       - 'apps/frontend/**'
       - '.github/workflows/**'
@@ -23,8 +23,6 @@ jobs:
 
       - name: Setup Node.js
         uses: ./.github/workflows/actions/setup-node
-        with:
-          nohoist: false
             
       - name: Build Next.js Application
         run: |
