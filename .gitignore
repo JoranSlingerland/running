@@ -49,3 +49,11 @@ yarn-error.log
 
 # TypeScript
 coverage-ts
+dist
+out
+
+# Azurite artifacts
+.azurite
+
+# Azure functions
+local.settings.json

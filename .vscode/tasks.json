@@ -43,6 +43,53 @@
         "showReuseMessage": false,
         "clear": false
       }
-    }
+    },
+    {
+      "type": "func",
+      "label": "func: host start",
+      "command": "host start",
+      "problemMatcher": "$func-node-watch",
+      "isBackground": true,
+      "dependsOn":[ "yarn build (backend)", "azurite"],
+      "options": {
+        "cwd": "${workspaceFolder}/apps\\backend"
+      }
+    },
+    {
+      "type": "shell",
+      "label": "yarn build (backend)",
+      "command": "yarn build --filter=backend",
+      "dependsOn": "yarn: install",
+      "problemMatcher": "$tsc",
+    },
+    {
+      "label": "azurite",
+      "type": "shell",
+      "command": "azurite --location ./.azurite",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "azurite",
+        "pattern": [
+          {
+            "regexp": "Azurite Blob service is successfully listening at http://[0-9.]+:10000",
+            "file": 1,
+            "line": 2,
+            "message": 3
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Azurite Blob service is starting",
+          "endsPattern": "Azurite Blob service is successfully listening"
+        }
+      },
+      "presentation": {
+        "reveal": "never",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false
+      }
+    },
   ]
 }
