@@ -15,7 +15,6 @@ jobs:
         uses: ./.github/workflows/actions/setup-node
         with:
           additional-script: |
-            yarn global add typescript typescript-coverage-report type-coverage
             sudo apt-get update
             sudo apt-get install python3-html2text
 
