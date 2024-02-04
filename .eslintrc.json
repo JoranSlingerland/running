@@ -1,14 +1,10 @@
 {
-  "extends": ["next/core-web-vitals", "next", "prettier"],
-  "plugins": ["prettier"],
-  "rules": {
-    "prettier/prettier": [
-      "warn",
-      {
-        "endOfLine": "auto"
-      }
-    ],
-    "react-hooks/rules-of-hooks": "off",
-    "@next/next/no-html-link-for-pages": "off"
-  }
+  "extends": [
+    "@repo/eslint-config/library.js"
+  ],
+  "ignorePatterns": [
+    "apps/**",
+    "packages/**"
+  ],
+  "parser": "@typescript-eslint/parser"
 }

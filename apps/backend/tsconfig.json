@@ -1,0 +1,15 @@
+{
+  "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "outDir": "dist",
+    "rootDir": ".",
+    "sourceMap": false,
+    "noEmit": false,
+    "baseUrl": ".",
+    "paths": {
+      "@api/*": ["api/*"],
+    }
+  }
+}

@@ -3,10 +3,15 @@ name: Deploy to Azure
 on:
   push:
     branches: ["main"]
+    paths:
+      - 'apps/frontend/**'
+      - '.github/workflows/**'
   workflow_dispatch:
 
 env:
   DEPLOYMENT_PACKAGE_NAME: "release.zip"
+  WORKSPACE_ROOT: "./apps/frontend"
+  WORKSPACE_NAME: "frontend"
 
 jobs:
   build:
@@ -16,29 +21,29 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js Environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18"
-
-      - name: Install Dependencies
-        run: |
-          yarn install
-        
+      - name: Setup Node.js
+        uses: ./.github/workflows/actions/setup-node
+            
       - name: Build Next.js Application
         run: |
-          yarn build
-          mv .next/static .next/standalone/.next/static
+          yarn build --filter=${{ env.WORKSPACE_NAME }}
+          shopt -s dotglob
+          mv -f ${{ env.WORKSPACE_ROOT }}/.next/standalone/apps/frontend/* ${{ env.WORKSPACE_ROOT }}/.next/standalone
+          mkdir -p ${{ env.WORKSPACE_ROOT }}/.next/standalone/.next/static
+          mv -f ${{ env.WORKSPACE_ROOT }}/.next/static/* ${{ env.WORKSPACE_ROOT }}/.next/standalone/.next/static
+          rm -rf ${{ env.WORKSPACE_ROOT }}/.next/standalone/apps
+          rm -rf ${{ env.WORKSPACE_ROOT }}/.next/static
 
       - name: Zip Artifact for Deployment
+        working-directory: ${{ env.WORKSPACE_ROOT }}/.next
         run: |
-          zip ${{ env.DEPLOYMENT_PACKAGE_NAME }} ./* /next -qr
+          zip ${{ env.DEPLOYMENT_PACKAGE_NAME }} ./* -qr
 
       - name:  Upload Artifact for Deployment
         uses: actions/upload-artifact@v4
         with:
-          name: build
-          path: ${{ env.DEPLOYMENT_PACKAGE_NAME}}
+          name: artifact
+          path: ${{ env.WORKSPACE_ROOT }}/.next/${{ env.DEPLOYMENT_PACKAGE_NAME}}
 
   deploy:
     name: Deploy to Azure
@@ -54,17 +59,16 @@ jobs:
       - name:  Download Artifact for Deployment
         uses: actions/download-artifact@v4
         with:
-          name: build
+          name: artifact
 
       - name: Login to Azure Subscription
         uses: azure/login@v1
         with:
             creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
+
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ secrets.AZURE_WEB_APP_NAME }}
           package: ${{ env.DEPLOYMENT_PACKAGE_NAME }}
-          slot-name: 'production'

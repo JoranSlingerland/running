@@ -4,4 +4,9 @@
         "source.fixAll": "explicit"
     },
     "editor.formatOnSave": true,
+    "azureFunctions.deploySubpath": "apps\\backend",
+    "azureFunctions.postDeployTask": "yarn install",
+    "azureFunctions.projectLanguage": "TypeScript",
+    "azureFunctions.projectRuntime": "~4",
+    "azureFunctions.projectLanguageModel": 4,
 }

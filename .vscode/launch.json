@@ -2,13 +2,34 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "SWA: Run Stocktracker-FrontEnd",
+      "name": "Next.js: debug server-side",
+      "type": "node-terminal",
       "request": "launch",
+      "command": "yarn run dev"
+    },
+    {
+      "name": "Next.js: debug client-side",
       "type": "chrome",
-      "url": "http://localhost:4280",
-      "preLaunchTask": "swa: start",
-      "webRoot": "${workspaceFolder}/",
-      "timeout": 30000
+      "request": "launch",
+      "url": "http://localhost:3000"
+    },
+    {
+      "name": "Next.js: debug full stack",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "yarn run dev",
+      "serverReadyAction": {
+        "pattern": "started server on .+, url: (https?://.+)",
+        "uriFormat": "%s",
+        "action": "debugWithChrome"
+      }
+    },
+    {
+      "name": "Attach to Node Functions",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "preLaunchTask": "func: host start"
     }
   ]
 }

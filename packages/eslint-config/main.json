@@ -1,0 +1,18 @@
+{
+    "extends": [
+        "prettier",
+        "eslint-config-turbo"
+    ],
+    "plugins": [
+        "prettier"
+    ],
+    "rules": {
+        "prettier/prettier": [
+            "warn",
+            {
+                "endOfLine": "auto"
+            }
+        ],
+        "turbo/no-undeclared-env-vars": "off"
+    }
+}

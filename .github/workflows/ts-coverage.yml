@@ -1,0 +1,34 @@
+name: TypeScript Coverage
+
+on: push
+
+jobs:
+  lint:
+    name: TypeScript Coverage Report
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: ./.github/workflows/actions/setup-node
+        
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install python3-html2text
+
+      - name: TypeScript Coverage
+        run: yarn run ts-coverage
+    
+      - name: Output to summary
+        if: always()
+        run: |
+          workspaces=("./apps/frontend")
+
+          for workspace in "${workspaces[@]}"
+          do
+              echo "# $workspace" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              html2markdown --ignore-links $workspace/coverage-ts/index.html | sed '/# TypeScript coverage report/d' >> $GITHUB_STEP_SUMMARY
+          done
+

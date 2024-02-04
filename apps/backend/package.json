@@ -1,0 +1,26 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend for the application",
+  "scripts": {
+    "build": "tsc",
+    "dev": "func start",
+    "lint": "npx eslint . --ext .ts --ignore-pattern 'node_modules/*'",
+    "fix": "npx eslint . --ext .ts --fix --ignore-pattern 'node_modules/*'",
+    "ts-coverage": "typescript-coverage-report --threshold 100",
+    "watch": "tsc -w",
+    "prestart": "yarn run build",
+    "start": "func start",
+    "preinstall": "npx only-allow yarn"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.0.0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
+    "@types/node": "^18.x",
+    "typescript": "^4.0.0"
+  },
+  "main": "dist/app.js"
+}
