@@ -44,7 +44,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: artifact
-          path: ${{ env.WORKSPACE_ROOT }}/${{ env.DEPLOYMENT_PACKAGE_NAME}}
+          path: ${{ env.WORKSPACE_ROOT }}/.next/${{ env.DEPLOYMENT_PACKAGE_NAME}}
 
   deploy:
     name: Deploy to Azure
