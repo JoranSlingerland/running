@@ -7,10 +7,11 @@
     "lint": "turbo lint",
     "fix": "turbo fix",
     "ts-coverage": "turbo ts-coverage",
-    "preinstall": "npx only-allow yarn"
+    "preinstall": "npx only-allow yarn",
+    "watch": "turbo watch"
   },
   "devDependencies": {
-    "@repo/eslint-config": "*",
+    "@repo/eslint-config": "workspace:^",
     "@repo/typescript-config": "*",
     "@types/eslint": "^8",
     "eslint": "^8.56.0",
