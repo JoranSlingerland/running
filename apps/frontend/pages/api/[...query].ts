@@ -66,7 +66,7 @@ export default async function handler(
     .catch((err: WretchError) => {
       isError = true;
       statusCode = err.status;
-      error = err.json;
+      error = err.json; // type-coverage:ignore-line
     });
 
   res.status(statusCode).json(isError ? error : response);

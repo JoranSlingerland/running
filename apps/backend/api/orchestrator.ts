@@ -36,7 +36,9 @@ export const orchestratorStart: HttpHandler = async (
     });
   }
 
-  const instanceId: string = await client.startNew(functionName);
+  const instanceId: string = await client.startNew(functionName, {
+    input: { id: jwt.id },
+  });
 
   context.log(
     `Started orchestration ${functionName} with ID = '${instanceId}'.`,

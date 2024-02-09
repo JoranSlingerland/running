@@ -1,5 +1,6 @@
 interface jwtObject {
   [key: string]: any;
+  id?: string;
 }
 
 interface Options {
