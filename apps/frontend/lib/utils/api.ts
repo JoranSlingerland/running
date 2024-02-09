@@ -226,7 +226,7 @@ function createWretchInstance<Query, Body>({
   controller,
 }: {
   url: string;
-  method: 'GET' | 'POST' | 'DELETE';
+  method: 'GET' | 'POST' | 'DELETE' | string;
   controller: AbortController;
   query?: Query;
   body?: Body;
