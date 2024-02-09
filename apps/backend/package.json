@@ -14,7 +14,9 @@
     "preinstall": "npx only-allow yarn"
   },
   "dependencies": {
-    "@azure/functions": "^4.0.0"
+    "@azure/functions": "^4.0.0",
+    "@repo/jwt": "*",
+    "durable-functions": "3.0.0-alpha.5"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
