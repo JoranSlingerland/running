@@ -224,12 +224,14 @@ function createWretchInstance<Query, Body>({
   query,
   body,
   controller,
+  bearerToken,
 }: {
   url: string;
   method: 'GET' | 'POST' | 'DELETE' | string;
   controller: AbortController;
   query?: Query;
   body?: Body;
+  bearerToken?: string;
 }) {
   let wretchInstance: WretchInstance | WretchResponse = wretch()
     .url(url)
@@ -237,6 +239,10 @@ function createWretchInstance<Query, Body>({
     .addon(QueryStringAddon)
     .signal(controller)
     .query(query || {});
+
+  if (bearerToken) {
+    wretchInstance = wretchInstance.auth(`Bearer ${bearerToken}`);
+  }
 
   switch (method) {
     case 'GET':

@@ -47,13 +47,13 @@ export default async function handler(
   const url = `${process.env.AZURE_FUNCTION_URL}${urlPath.replace('/api', '')}`;
   const query = {
     code: process.env.AZURE_FUNCTION_KEY,
-    token: jwt,
   };
   const wretchInstance = createWretchInstance({
     url,
     method,
     controller: new AbortController(),
     query,
+    bearerToken: jwt,
   });
 
   // Send request and handle response
