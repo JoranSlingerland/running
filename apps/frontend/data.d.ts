@@ -40,14 +40,6 @@ type UserSettings = {
   gender: 'male' | 'female' | undefined;
 };
 
-type ThemeType = 'light' | 'dark' | 'system';
-
-type Theme = {
-  themeType: ThemeType;
-  setThemeType: (themeType: ThemeType) => void;
-  theme: 'light' | 'dark';
-};
-
 type StorageType = 'sessionStorage' | 'localStorage';
 
 type Units = 'metric' | 'imperial';
