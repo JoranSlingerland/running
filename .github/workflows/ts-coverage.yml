@@ -23,7 +23,7 @@ jobs:
       - name: Output to summary
         if: always()
         run: |
-          workspaces=("./apps/frontend", "./apps/backend", "./packages/jwt")
+          workspaces=("./apps/frontend" "./apps/backend" "./packages/jwt")
 
           for workspace in "${workspaces[@]}"
           do
