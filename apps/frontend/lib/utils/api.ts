@@ -115,16 +115,13 @@ function newKey<Query, Body>(
   return hash(url + body_string + query_string + method);
 }
 
-function deDupeData<T>(data: T[], deDupeKey: string) {
-  const seen = new Set();
-  // type-coverage:ignore-next-line
-  return data.filter((item: any) => {
-    // type-coverage:ignore-next-line
+function deDupeData<T>(data: T[], deDupeKey: keyof T): T[] {
+  const seen = new Set<T[keyof T]>();
+  return data.filter((item) => {
     const duplicate = seen.has(item[deDupeKey]);
-    // type-coverage:ignore-next-line
     seen.add(item[deDupeKey]);
     return !duplicate;
-  });
+  }) as T[];
 }
 
 function mergeStartEndDates(
@@ -195,7 +192,10 @@ function handleCacheSet<Query, Response>({
     const { startDate, endDate } = query;
     const cachedData = cachedResponse?.value || [];
     const newData = (cachedData as Response[]).concat(response);
-    const deDupedData = deDupeData(newData, cache.deDupeKey || 'id');
+    const deDupedData = deDupeData(
+      newData,
+      (cache.deDupeKey as keyof Response) || ('id' as keyof Response),
+    );
 
     if (!cachedResponse?.start_end_dates) {
       start_end_dates = [[startDate, endDate]];
@@ -264,7 +264,7 @@ function createWretchInstance<Query, Body>({
 function processCachedResponse<Query, Response>(
   cachedResponse: CachedResponse<Response> | null,
   messageEnabled: boolean,
-  sendSuccessMessage: Function,
+  sendSuccessMessage: () => void,
   cache: CacheSettings | undefined,
   query: Query,
   isError: boolean,
@@ -294,7 +294,7 @@ function processCachedResponse<Query, Response>(
     return;
   }
   const { startDate, endDate } = query;
-  var fallsWithin = false;
+  let fallsWithin = false;
 
   if (Array.isArray(cachedResponse.start_end_dates)) {
     for (const [

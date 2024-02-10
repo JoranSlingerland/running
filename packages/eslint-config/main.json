@@ -7,14 +7,14 @@
         "plugin:import/recommended",
         "plugin:import/typescript",
         "plugin:sonarjs/recommended",
-        "plugin:tailwindcss/recommended"
+        "plugin:tailwindcss/recommended",
+        "plugin:@typescript-eslint/recommended"
     ],
     "plugins": [
         "prettier",
         "@typescript-eslint",
         "import",
         "sonarjs"
-
     ],
     "rules": {
         "prettier/prettier": [
@@ -69,5 +69,6 @@
         "sonarjs/no-small-switch": "off",
         "tailwindcss/no-custom-classname": "off"
     },
-    "parser": "@typescript-eslint/parser"
+    "parser": "@typescript-eslint/parser",
+    "root": true
 }

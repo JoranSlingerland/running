@@ -443,7 +443,7 @@ export default function App() {
     );
 
     // Get chart data
-    let chartData: ChartData = {
+    const chartData: ChartData = {
       totals: [],
     };
     sports.forEach((sport) => {

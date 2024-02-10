@@ -29,7 +29,7 @@ interface UseFetchOptions<Body, Query, Response> {
   };
 }
 
-interface UseFetchResult<Response, Query> {
+interface UseFetchResult<Response> {
   data: Response | undefined;
   isLoading: boolean;
   isError: boolean;
@@ -49,7 +49,7 @@ function useFetch<Body, Query, Response>({
   initialData,
   cache,
   message,
-}: UseFetchOptions<Body, Query, Response>): UseFetchResult<Response, Query> {
+}: UseFetchOptions<Body, Query, Response>): UseFetchResult<Response> {
   // Constants
   const [isError, setIsError] = useState(false);
   const [refetch, setRefetch] = useState(false);
@@ -105,7 +105,7 @@ function useFetch<Body, Query, Response>({
 
   // Effects
   useDeepCompareEffect(() => {
-    let abortController = new AbortController();
+    const abortController = new AbortController();
 
     if (enabled) {
       setIsError(false);

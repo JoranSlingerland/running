@@ -42,24 +42,24 @@ function calculatePaceZones(threshold: string, units: Units) {
     units,
   );
   const zones = Object.keys(zonePercentages);
-  let result = {
+  const result = {
     speedInMetersPerSeconds: [] as { name: string; min: number; max: number }[],
     pace: [] as { name: string; min: string; max: string }[],
   };
   zones.map((name) => {
     const percentage = zonePercentages[name as keyof typeof zonePercentages];
-    let minSpeed: number = speed * percentage[0];
+    const minSpeed: number = speed * percentage[0];
     let maxSpeed: number = speed * percentage[1];
 
     if (name === 'Zone 5C: Anaerobic Capacity') {
       maxSpeed = 27.5;
     }
 
-    let minPace = formatPace({
+    const minPace = formatPace({
       metersPerSecond: minSpeed,
       units: units,
     });
-    let maxPace = formatPace({
+    const maxPace = formatPace({
       metersPerSecond: maxSpeed,
       units: units,
     });
@@ -93,7 +93,7 @@ function calculateHeartRateZones({ threshold }: { threshold: number }) {
 
   return zones.map((name) => {
     const percentage = zonePercentages[name as keyof typeof zonePercentages];
-    let min = threshold * percentage[0];
+    const min = threshold * percentage[0];
     let max = threshold * percentage[1];
 
     if (name === 'Zone 5C: Anaerobic Capacity') {
@@ -125,11 +125,11 @@ export function AccountForm() {
       }),
     },
   });
-  let paceZones = calculatePaceZones(
+  const paceZones = calculatePaceZones(
     form.watch('pace_threshold'),
     userSettings?.data?.preferences.units || 'metric',
   );
-  let heartRateZones = calculateHeartRateZones({
+  const heartRateZones = calculateHeartRateZones({
     threshold: form.watch('hr_threshold'),
   });
 

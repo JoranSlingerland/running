@@ -1351,6 +1351,8 @@ __metadata:
     eslint-plugin-sonarjs: "npm:^0.23.0"
     eslint-plugin-tailwindcss: "npm:^3.14.2"
     prettier: "npm:^3"
+    tailwindcss: "npm:^3.4.1"
+    typescript: "npm:^5.3.3"
   languageName: unknown
   linkType: soft
 

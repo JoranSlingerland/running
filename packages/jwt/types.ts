@@ -1,5 +1,5 @@
 interface jwtObject {
-  [key: string]: any;
+  [key: string]: unknown;
   id?: string;
 }
 

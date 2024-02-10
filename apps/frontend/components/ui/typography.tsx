@@ -50,8 +50,8 @@ const Text: React.FC<CustomTextProps> = ({
   className = '',
   ...props
 }) => {
-  let sizeClass = getSizeClass(size);
-  let typeClass = getTypeClass(type);
+  const sizeClass = getSizeClass(size);
+  const typeClass = getTypeClass(type);
 
   return <p className={`${sizeClass} ${typeClass} ${className}`} {...props} />;
 };
