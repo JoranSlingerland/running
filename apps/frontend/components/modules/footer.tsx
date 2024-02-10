@@ -40,7 +40,7 @@ function FooterLinks() {
   );
 }
 
-function Footer({}: {}): JSX.Element {
+function Footer(): JSX.Element {
   return (
     <div className="mt-auto">
       <Separator />

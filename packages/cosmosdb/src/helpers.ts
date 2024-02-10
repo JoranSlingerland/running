@@ -25,7 +25,6 @@ async function containerFunctionWithBackOff(
   isError: boolean;
 }> {
   let isError = false;
-  let retryCount = 0;
   let delay = Math.random();
   let result: ItemResponse<ItemDefinition> | undefined = undefined;
 
@@ -49,14 +48,11 @@ async function containerFunctionWithBackOff(
     return result;
   };
 
-  while (true) {
+  for (let i = 0; i <= maxRetries; i++) {
     try {
       result = await operation();
-      break;
     } catch (error) {
-      retryCount += 1;
-
-      if (retryCount > maxRetries) {
+      if (i === maxRetries) {
         console.error('Max retries reached, See error below:');
         console.error(error);
         isError = true;

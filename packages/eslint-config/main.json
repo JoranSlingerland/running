@@ -3,6 +3,7 @@
     "extends": [
         "prettier",
         "eslint-config-turbo",
+        "eslint:recommended",
         "plugin:import/recommended",
         "plugin:import/typescript"
     ],
@@ -55,7 +56,12 @@
                 }
             }
         ],
-        "import/no-named-as-default": "off"
+        "import/no-named-as-default": "off",
+        "no-undef": "off",
+        "no-unused-vars": "off",
+        "no-redeclare": "off",
+        "require-yield": "off",
+        "no-prototype-builtins": "off"
     },
     "parser": "@typescript-eslint/parser"
 }
