@@ -75,17 +75,17 @@ async function containerFunctionWithBackOff(
   return { result, isError };
 }
 
-function removeKeys(
+function removeKeys<T>(
   obj: Record<string, unknown>,
   keys: string[] = ['_rid', '_self', '_etag', '_attachments', '_ts'],
-): Record<string, unknown> {
+): T {
   const newObj = { ...obj };
 
   keys.forEach((key) => {
     delete newObj[key];
   });
 
-  return newObj;
+  return newObj as T;
 }
 
 export {
