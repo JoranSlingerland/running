@@ -15,7 +15,7 @@
         "clear": false
       },
       "dependsOn": [
-        "yarn install"
+        "yarn watch"
       ]
     },
     {
@@ -50,7 +50,10 @@
       "command": "host start",
       "problemMatcher": "$func-node-watch",
       "isBackground": true,
-      "dependsOn":[ "yarn watch", "azurite"],
+      "dependsOn": [
+        "yarn watch",
+        "azurite"
+      ],
       "options": {
         "cwd": "${workspaceFolder}/apps\\backend"
       }
@@ -62,13 +65,14 @@
       "isBackground": true,
       "problemMatcher": {
         "owner": "watch",
-        "pattern": [{
-          // Regexp should match if a line includes "watching for file changes"
-          "regexp": ".*",
-          "file": 1,
-          "line": 2,
-          "message": 3
-        }],
+        "pattern": [
+          {
+            "regexp": ".*",
+            "file": 1,
+            "line": 2,
+            "message": 3
+          }
+        ],
         "background": {
           "activeOnStart": true,
           "beginsPattern": ".* - Starting compilation in watch mode...",

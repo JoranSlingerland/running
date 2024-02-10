@@ -1324,12 +1324,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@repo/cosmosdb@workspace:packages/cosmosdb":
+"@repo/cosmosdb@npm:*, @repo/cosmosdb@workspace:packages/cosmosdb":
   version: 0.0.0-use.local
   resolution: "@repo/cosmosdb@workspace:packages/cosmosdb"
   dependencies:
     "@azure/cosmos": "npm:^4.0.0"
     "@repo/eslint-config": "npm:*"
+    "@repo/schemas": "npm:*"
+    "@repo/types": "npm:*"
     "@repo/typescript-config": "npm:*"
   languageName: unknown
   linkType: soft
@@ -3593,7 +3595,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "frontend@workspace:apps/frontend"
   dependencies:
-    "@azure/cosmos": "npm:^4.0.0"
     "@hookform/resolvers": "npm:^3.3.4"
     "@next/eslint-plugin-next": "npm:^14.1.0"
     "@radix-ui/react-accordion": "npm:^1.1.2"
@@ -3608,6 +3609,7 @@ __metadata:
     "@radix-ui/react-separator": "npm:^1.0.3"
     "@radix-ui/react-slot": "npm:^1.0.2"
     "@radix-ui/react-tabs": "npm:^1.0.4"
+    "@repo/cosmosdb": "npm:*"
     "@repo/eslint-config": "npm:*"
     "@repo/jwt": "npm:*"
     "@repo/schemas": "npm:*"

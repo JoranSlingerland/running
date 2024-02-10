@@ -1,7 +1,7 @@
 import type { NextApiResponse } from 'next';
 import { NextApiRequestUnknown } from '@pages/api/types';
 import { getToken } from 'next-auth/jwt';
-import { activitiesFromCosmos } from '@utils/database/activities';
+import { activitiesFromCosmos } from '@repo/cosmosdb';
 import { getQueryParam } from '@utils/api';
 
 export default async function handler(
