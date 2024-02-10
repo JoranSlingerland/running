@@ -25,7 +25,7 @@ const initialData: UserSettings = {
 };
 
 function useUserSettings({ enabled = true }: { enabled?: boolean } = {}) {
-  const fetchResult = useFetch<undefined, undefined, UserSettings>({
+  return useFetch<undefined, undefined, UserSettings>({
     url: '/api/user',
     method: 'GET',
     body: undefined,
@@ -38,7 +38,6 @@ function useUserSettings({ enabled = true }: { enabled?: boolean } = {}) {
       customKey: 'userSettings',
     },
   });
-  return fetchResult;
 }
 
 export { useUserSettings };

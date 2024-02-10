@@ -5,12 +5,15 @@
         "eslint-config-turbo",
         "eslint:recommended",
         "plugin:import/recommended",
-        "plugin:import/typescript"
+        "plugin:import/typescript",
+        "plugin:sonarjs/recommended"
     ],
     "plugins": [
         "prettier",
         "@typescript-eslint",
-        "import"
+        "import",
+        "sonarjs"
+
     ],
     "rules": {
         "prettier/prettier": [
@@ -61,7 +64,8 @@
         "no-unused-vars": "off",
         "no-redeclare": "off",
         "require-yield": "off",
-        "no-prototype-builtins": "off"
+        "no-prototype-builtins": "off",
+        "sonarjs/no-small-switch": "off"
     },
     "parser": "@typescript-eslint/parser"
 }

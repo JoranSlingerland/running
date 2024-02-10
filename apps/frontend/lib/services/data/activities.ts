@@ -16,7 +16,7 @@ function useActivities({
   enabled?: boolean;
   background?: boolean;
 }) {
-  const fetchResult = useFetch<undefined, GetActivitiesQuery, Activity[]>({
+  return useFetch<undefined, GetActivitiesQuery, Activity[]>({
     url: '/api/data/activities',
     method: 'GET',
     query,
@@ -31,8 +31,6 @@ function useActivities({
       deDupeKey: 'id',
     },
   });
-
-  return fetchResult;
 }
 
 export { useActivities };

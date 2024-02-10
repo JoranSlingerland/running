@@ -23,11 +23,7 @@ export function encryptJwt(payload: jwtObject, options: Options): string {
   encryptedPayload += cipher.final('hex');
 
   // Create JWT token with encrypted payload
-  const token = jwt.sign(
-    { data: encryptedPayload, iv: iv.toString('hex') },
-    secret,
-    { algorithm: 'HS256' },
-  );
-
-  return token;
+  return jwt.sign({ data: encryptedPayload, iv: iv.toString('hex') }, secret, {
+    algorithm: 'HS256',
+  });
 }

@@ -91,7 +91,7 @@ function calculateHeartRateZones({ threshold }: { threshold: number }) {
 
   const zones = Object.keys(zonePercentages);
 
-  const zonesWithValues = zones.map((name) => {
+  return zones.map((name) => {
     const percentage = zonePercentages[name as keyof typeof zonePercentages];
     let min = threshold * percentage[0];
     let max = threshold * percentage[1];
@@ -106,8 +106,6 @@ function calculateHeartRateZones({ threshold }: { threshold: number }) {
       max,
     };
   });
-
-  return zonesWithValues;
 }
 
 // Component

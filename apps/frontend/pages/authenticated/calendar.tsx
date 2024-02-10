@@ -316,10 +316,11 @@ export default function App() {
   });
 
   // Constants
+  const dateFormat = 'YYYY-MM-DD';
   const [currentDay, setCurrentDay] = useState(dayjs());
   const [query, setQuery] = useState<GetActivitiesQuery>({
-    startDate: getFirstMondayBeforeMonth(currentDay).format('YYYY-MM-DD'),
-    endDate: getFirstSundayAfterMonth(currentDay).format('YYYY-MM-DD'),
+    startDate: getFirstMondayBeforeMonth(currentDay).format(dateFormat),
+    endDate: getFirstSundayAfterMonth(currentDay).format(dateFormat),
   });
   const { data: activitiesData, isLoading: activitiesIsLoading } =
     useActivities({
@@ -335,20 +336,20 @@ export default function App() {
 
   function onDateChange(date: Dayjs) {
     setQuery({
-      startDate: getFirstMondayBeforeMonth(date).format('YYYY-MM-DD'),
-      endDate: getFirstSundayAfterMonth(date).format('YYYY-MM-DD'),
+      startDate: getFirstMondayBeforeMonth(date).format(dateFormat),
+      endDate: getFirstSundayAfterMonth(date).format(dateFormat),
     });
   }
 
   const dateCellRenderer = (value: Dayjs) => {
-    const date = value.format('YYYY-MM-DD');
+    const date = value.format(dateFormat);
     const filtered = activitiesData
       ? activitiesData
           .filter((item) => {
             const itemStartDate = dayjs
               .utc(item.start_date)
               .utcOffset(value.utcOffset())
-              .format('YYYY-MM-DD');
+              .format(dateFormat);
             return itemStartDate.includes(date);
           })
           .sort(
@@ -469,7 +470,7 @@ export default function App() {
       );
 
       chartData.totals.push({
-        start_date: date.format('YYYY-MM-DD'),
+        start_date: date.format(dateFormat),
         distance: totalsForDay.distance,
         moving_time: totalsForDay.time,
         tss: totalsForDay.tss,
@@ -492,7 +493,7 @@ export default function App() {
         );
 
         chartData[sport].push({
-          start_date: date.format('YYYY-MM-DD'),
+          start_date: date.format(dateFormat),
           distance: totalsForSport.distance,
           moving_time: totalsForSport.time,
           tss: totalsForSport.tss,

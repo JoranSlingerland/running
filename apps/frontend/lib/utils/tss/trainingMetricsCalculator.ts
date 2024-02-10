@@ -109,17 +109,13 @@ function calculateTrainingMetrics({
   );
 
   // Calculate ATL, CTL, and TSB for each day
-  const trainingMetrics = calculateMetricsForAllDays(dailyTssData).map(
-    (day) => ({
-      date: dayjs(day.date),
-      atl: day.acuteLoadToday,
-      ctl: day.chronicLoadToday,
-      tsb: day.stressBalanceToday,
-      wlr: day.workloadRatio,
-    }),
-  );
-
-  return trainingMetrics;
+  return calculateMetricsForAllDays(dailyTssData).map((day) => ({
+    date: dayjs(day.date),
+    atl: day.acuteLoadToday,
+    ctl: day.chronicLoadToday,
+    tsb: day.stressBalanceToday,
+    wlr: day.workloadRatio,
+  }));
 }
 
 export { calculateTrainingMetrics };

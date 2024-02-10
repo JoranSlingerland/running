@@ -275,46 +275,67 @@ function processCachedResponse<Query, Response>(
   }
 
   if (messageEnabled) sendSuccessMessage();
-  if (cache?.useStartEndDates) {
-    if (
-      !query ||
-      typeof query !== 'object' ||
-      !('startDate' in query) ||
-      !('endDate' in query) ||
-      typeof query.startDate !== 'string' ||
-      typeof query.endDate !== 'string'
-    ) {
-      console.warn(
-        'Invalid query. Query must be an object with startDate and endDate as strings for useStartEndDates',
-      );
-      return;
-    }
-    const { startDate, endDate } = query;
-    var fallsWithin = false;
 
-    if (Array.isArray(cachedResponse.start_end_dates)) {
-      for (const [
-        cache_start_date,
-        cache_end_date,
-      ] of cachedResponse.start_end_dates) {
-        if (
-          new Date(startDate) >= new Date(cache_start_date) &&
-          new Date(endDate) <= new Date(cache_end_date)
-        ) {
-          fallsWithin = true;
-          break;
-        }
+  if (!cache?.useStartEndDates) {
+    return { response: cachedResponse.value, isError, error };
+  }
+
+  if (
+    !query ||
+    typeof query !== 'object' ||
+    !('startDate' in query) ||
+    !('endDate' in query) ||
+    typeof query.startDate !== 'string' ||
+    typeof query.endDate !== 'string'
+  ) {
+    console.warn(
+      'Invalid query. Query must be an object with startDate and endDate as strings for useStartEndDates',
+    );
+    return;
+  }
+  const { startDate, endDate } = query;
+  var fallsWithin = false;
+
+  if (Array.isArray(cachedResponse.start_end_dates)) {
+    for (const [
+      cache_start_date,
+      cache_end_date,
+    ] of cachedResponse.start_end_dates) {
+      if (
+        new Date(startDate) >= new Date(cache_start_date) &&
+        new Date(endDate) <= new Date(cache_end_date)
+      ) {
+        fallsWithin = true;
+        break;
       }
     }
-    if (fallsWithin) {
-      return { response: cachedResponse.value, isError, error };
-    }
-  } else {
+  }
+  if (fallsWithin) {
     return { response: cachedResponse.value, isError, error };
   }
 }
 
+function showMessage(
+  errorMessage: string | undefined,
+  successMessage: string | undefined,
+) {
+  // Define message functions
+  const sendErrorMessage = () => {
+    toast.dismiss();
+    toast.error(errorMessage);
+  };
+
+  const sendSuccessMessage = () => {
+    toast.dismiss();
+    toast.success(successMessage);
+  };
+
+  // Return the message functions so they can be used outside this function
+  return { sendErrorMessage, sendSuccessMessage };
+}
+
 // main functions
+// eslint-disable-next-line sonarjs/cognitive-complexity
 async function regularFetch<Query, Body, Response>({
   url,
   method,
@@ -365,15 +386,10 @@ async function regularFetch<Query, Body, Response>({
   };
 
   // Define message functions
-  const sendErrorMessage = () => {
-    toast.dismiss();
-    toast.error(errorMessage);
-  };
-
-  const sendSuccessMessage = () => {
-    toast.dismiss();
-    toast.success(successMessage);
-  };
+  const { sendErrorMessage, sendSuccessMessage } = showMessage(
+    errorMessage,
+    successMessage,
+  );
 
   // Start main logic
   if (messageEnabled) {

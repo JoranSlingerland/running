@@ -26,14 +26,12 @@ async function upsertUserSettingsToCosmos(id: string, body: unknown) {
     return { result: undefined, isError: true };
   }
 
-  const result = await containerFunctionWithBackOff(async () => {
+  return await containerFunctionWithBackOff(async () => {
     return await container.items.upsert({
       id,
       ...validated.data,
     });
   });
-
-  return result;
 }
 
 export { userSettingsFromCosmos, upsertUserSettingsToCosmos };

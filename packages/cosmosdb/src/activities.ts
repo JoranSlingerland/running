@@ -37,13 +37,9 @@ async function activitiesFromCosmos({
     return undefined;
   }
 
-  const cleanActivities = response.resources.map(
-    (activity: Record<string, unknown>) => {
-      return removeKeys<Activity>(activity);
-    },
-  );
-
-  return cleanActivities;
+  return response.resources.map((activity: Record<string, unknown>) => {
+    return removeKeys<Activity>(activity);
+  });
 }
 
 export { activitiesFromCosmos };

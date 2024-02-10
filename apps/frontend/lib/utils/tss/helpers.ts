@@ -13,17 +13,14 @@ function getPreferredTss(
       tss: hr_tss,
       type: 'hr',
     };
-  } else if (preferredTss === 'pace' && pace_tss) {
+  }
+  if ((preferredTss === 'pace' && pace_tss) || pace_tss) {
     return {
       tss: pace_tss,
       type: 'pace',
     };
-  } else if (pace_tss) {
-    return {
-      tss: pace_tss,
-      type: 'pace',
-    };
-  } else if (hr_tss) {
+  }
+  if (hr_tss) {
     return {
       tss: hr_tss,
       type: 'hr',
