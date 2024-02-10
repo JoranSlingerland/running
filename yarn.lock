@@ -1378,6 +1378,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@repo/types@npm:*, @repo/types@workspace:packages/types":
+  version: 0.0.0-use.local
+  resolution: "@repo/types@workspace:packages/types"
+  dependencies:
+    "@repo/eslint-config": "npm:*"
+    "@repo/typescript-config": "npm:*"
+  languageName: unknown
+  linkType: soft
+
 "@repo/typescript-config@npm:*, @repo/typescript-config@workspace:packages/typescript-config":
   version: 0.0.0-use.local
   resolution: "@repo/typescript-config@workspace:packages/typescript-config"
@@ -3602,6 +3611,7 @@ __metadata:
     "@repo/eslint-config": "npm:*"
     "@repo/jwt": "npm:*"
     "@repo/schemas": "npm:*"
+    "@repo/types": "npm:*"
     "@repo/typescript-config": "npm:*"
     "@tanstack/react-table": "npm:^8.11.6"
     "@tremor/react": "npm:^3.13.2"
@@ -3632,7 +3642,6 @@ __metadata:
     tailwindcss-animate: "npm:^1.0.7"
     typescript: "npm:^5.3.3"
     wretch: "npm:^2.8.0"
-    zod: "npm:^3.22.4"
   languageName: unknown
   linkType: soft
 
