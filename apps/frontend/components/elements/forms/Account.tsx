@@ -1,7 +1,6 @@
 import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useDeepCompareEffect } from 'rooks';
-import * as z from 'zod';
 
 import { heartRateZoneColumns } from '@elements/columns/heartRateZoneColumns';
 import { paceZoneColumns } from '@elements/columns/paceZoneColumns';
@@ -25,20 +24,7 @@ import {
   convertPaceToSeconds,
 } from '@utils/convert';
 import { formatPace } from '@utils/formatting';
-
-// Constants
-const paceRegex = /^(\d{1,3}):(\d{1,2})$/;
-
-const formSchema = z.object({
-  gender: z.union([z.literal('male'), z.literal('female')]),
-  hr_max: z.number().min(0).max(300),
-  hr_rest: z.number().min(0).max(300),
-  hr_threshold: z.number().min(0).max(300),
-  pace_threshold: z.string().refine((v) => paceRegex.test(v), {
-    message:
-      'Pace threshold must be in the format MM:SS, where leading zeros are optional.',
-  }),
-});
+import { accountForm, AccountForm } from '@repo/schemas';
 
 // Helper functions
 function calculatePaceZones(threshold: string, units: Units) {
@@ -127,8 +113,8 @@ function calculateHeartRateZones({ threshold }: { threshold: number }) {
 // Component
 export function AccountForm() {
   const { userSettings } = useProps();
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<AccountForm>({
+    resolver: zodResolver(accountForm),
     defaultValues: {
       gender: userSettings?.data?.gender,
       hr_max: userSettings?.data?.heart_rate?.max,
@@ -165,7 +151,7 @@ export function AccountForm() {
     }
   }, [userSettings, form]);
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: AccountForm) {
     if (!userSettings?.data) return;
     const newSettings = {
       ...userSettings?.data,

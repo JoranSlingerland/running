@@ -1324,6 +1324,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@repo/cosmosdb@workspace:packages/cosmosdb":
+  version: 0.0.0-use.local
+  resolution: "@repo/cosmosdb@workspace:packages/cosmosdb"
+  dependencies:
+    "@azure/cosmos": "npm:^4.0.0"
+    "@repo/eslint-config": "npm:*"
+    "@repo/typescript-config": "npm:*"
+  languageName: unknown
+  linkType: soft
+
 "@repo/eslint-config@npm:*, @repo/eslint-config@workspace:^, @repo/eslint-config@workspace:packages/eslint-config":
   version: 0.0.0-use.local
   resolution: "@repo/eslint-config@workspace:packages/eslint-config"
@@ -1346,6 +1356,16 @@ __metadata:
     "@repo/typescript-config": "npm:*"
     "@types/jsonwebtoken": "npm:^9"
     jsonwebtoken: "npm:^9.0.2"
+  languageName: unknown
+  linkType: soft
+
+"@repo/schemas@npm:*, @repo/schemas@workspace:packages/schemas":
+  version: 0.0.0-use.local
+  resolution: "@repo/schemas@workspace:packages/schemas"
+  dependencies:
+    "@repo/eslint-config": "npm:*"
+    "@repo/typescript-config": "npm:*"
+    zod: "npm:^3.22.4"
   languageName: unknown
   linkType: soft
 
@@ -3581,6 +3601,7 @@ __metadata:
     "@radix-ui/react-tabs": "npm:^1.0.4"
     "@repo/eslint-config": "npm:*"
     "@repo/jwt": "npm:*"
+    "@repo/schemas": "npm:*"
     "@repo/typescript-config": "npm:*"
     "@tanstack/react-table": "npm:^8.11.6"
     "@tremor/react": "npm:^3.13.2"
