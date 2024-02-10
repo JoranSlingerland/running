@@ -3,7 +3,6 @@
     "extends": [
         "@repo/eslint-config/main.json"
     ],
-    "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "project": true
     }

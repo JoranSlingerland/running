@@ -21,8 +21,7 @@
   "devDependencies": {
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
-    "@types/node": "^18.x",
-    "typescript": "^4.0.0"
+    "@types/node": "^18.x"
   },
   "main": "dist/app.js"
 }

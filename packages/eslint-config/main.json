@@ -1,4 +1,5 @@
 {
+    "$schema": "http://json.schemastore.org/eslintrc",
     "extends": [
         "prettier",
         "eslint-config-turbo"
@@ -14,5 +15,6 @@
             }
         ],
         "turbo/no-undeclared-env-vars": "off"
-    }
+    },
+    "parser": "@typescript-eslint/parser"
 }
