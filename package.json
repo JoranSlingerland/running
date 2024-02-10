@@ -15,6 +15,7 @@
     "@repo/typescript-config": "*",
     "@types/eslint": "^8",
     "eslint": "^8.56.0",
+    "only-allow": "^1.2.1",
     "prettier": "^3",
     "turbo": "^1.12.2",
     "type-coverage": "^2.27.1",

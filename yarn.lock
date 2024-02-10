@@ -5328,6 +5328,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"only-allow@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "only-allow@npm:1.2.1"
+  dependencies:
+    which-pm-runs: "npm:^1.1.0"
+  bin:
+    only-allow: bin.js
+  checksum: 10c0/0b68d0cf9af652743098eaa460cfe95711ec2dbdb04f487da8904d308321aa192f20896563fd1087ef36f5de0e3671459945a30223849f87c269bb3592273bd1
+  languageName: node
+  linkType: hard
+
 "openid-client@npm:^5.4.0":
   version: 5.6.4
   resolution: "openid-client@npm:5.6.4"
@@ -6134,6 +6145,7 @@ __metadata:
     "@repo/typescript-config": "npm:*"
     "@types/eslint": "npm:^8"
     eslint: "npm:^8.56.0"
+    only-allow: "npm:^1.2.1"
     prettier: "npm:^3"
     turbo: "npm:^1.12.2"
     type-coverage: "npm:^2.27.1"
@@ -7277,6 +7289,13 @@ __metadata:
     is-weakmap: "npm:^2.0.1"
     is-weakset: "npm:^2.0.1"
   checksum: 10c0/249f913e1758ed2f06f00706007d87dc22090a80591a56917376e70ecf8fc9ab6c41d98e1c87208bb9648676f65d4b09c0e4d23c56c7afb0f0a73a27d701df5d
+  languageName: node
+  linkType: hard
+
+"which-pm-runs@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "which-pm-runs@npm:1.1.0"
+  checksum: 10c0/b8f2f230aa49babe21cb93f169f5da13937f940b8cc7a47d2078d9d200950c0dba5ac5659bc01bdbe401e6db3adec6a97b6115215a4ca8e87fd714aebd0cabc6
   languageName: node
   linkType: hard
 
