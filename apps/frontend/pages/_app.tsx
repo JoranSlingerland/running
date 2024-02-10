@@ -1,14 +1,15 @@
 import '../styles/globals.css';
 
-import { Inter as FontSans } from 'next/font/google';
-import React, { useState, useEffect } from 'react';
-import { SessionProvider } from 'next-auth/react';
 import { Session } from 'next-auth';
+import { SessionProvider } from 'next-auth/react';
+import { Inter as FontSans } from 'next/font/google';
+import Head from 'next/head';
+import React, { useEffect, useState } from 'react';
 
 import { PropsContext } from '@hooks/useProps';
 import Footer from '@modules/footer';
-import Navbar from '@modules/navbar';
 import FullScreenLoader from '@modules/loading';
+import Navbar from '@modules/navbar';
 import { useUserSettings } from '@services/user/get';
 import { Toaster } from '@ui/sonner';
 import { cn } from '@utils/shadcn';
@@ -37,11 +38,16 @@ interface SessionAppProps extends AppProps {
 
 function MyApp({ Component, pageProps, session }: SessionAppProps) {
   return (
-    <SessionProvider session={session}>
-      <ThemeProvider defaultTheme="system" attribute="class">
-        <AppContent Component={Component} pageProps={pageProps} />
-      </ThemeProvider>
-    </SessionProvider>
+    <>
+      <Head>
+        <title>Running</title>
+      </Head>
+      <SessionProvider session={session}>
+        <ThemeProvider defaultTheme="system" attribute="class">
+          <AppContent Component={Component} pageProps={pageProps} />
+        </ThemeProvider>
+      </SessionProvider>
+    </>
   );
 }
 

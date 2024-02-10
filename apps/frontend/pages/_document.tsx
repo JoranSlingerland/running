@@ -6,14 +6,10 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head>
-          <link rel="manifest" href="/manifest.json" />
-          <link rel="apple-touch-icon" href="/icon.png"></link>
           <link
             href="https://fonts.googleapis.com/icon?family=Material+Icons"
             rel="stylesheet"
           />
-          <meta name="theme-color" content="#fff" />
-          <title>Running</title>
         </Head>
         <body>
           <Main />
