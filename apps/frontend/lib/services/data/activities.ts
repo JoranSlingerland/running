@@ -1,5 +1,6 @@
-import { useFetch } from '@hooks/useFetch';
 import { Activity } from '@repo/types';
+
+import { useFetch } from '@hooks/useFetch';
 
 interface GetActivitiesQuery {
   startDate?: string;

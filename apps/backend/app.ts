@@ -1,7 +1,8 @@
 // Entry point for the Azure Functions app
 
-import * as df from 'durable-functions';
 import { app } from '@azure/functions';
+import * as df from 'durable-functions';
+
 import { orchestratorStart } from './api/orchestrator';
 import { gatherData } from './app/gatherData';
 

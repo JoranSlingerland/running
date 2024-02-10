@@ -1,5 +1,5 @@
 import { Loader2 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const loadingMessages = [
   'Putting on your virtual running shoes...',

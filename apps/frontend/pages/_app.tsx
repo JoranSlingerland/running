@@ -1,9 +1,11 @@
 import '../styles/globals.css';
 
-import { Session } from 'next-auth';
-import { SessionProvider } from 'next-auth/react';
+import type { AppProps } from 'next/app';
 import { Inter as FontSans } from 'next/font/google';
 import Head from 'next/head';
+import { Session } from 'next-auth';
+import { SessionProvider } from 'next-auth/react';
+import { ThemeProvider, useTheme } from 'next-themes';
 import React, { useEffect, useState } from 'react';
 
 import { PropsContext } from '@hooks/useProps';
@@ -13,9 +15,7 @@ import Navbar from '@modules/navbar';
 import { useUserSettings } from '@services/user/get';
 import { Toaster } from '@ui/sonner';
 import { cn } from '@utils/shadcn';
-import { ThemeProvider, useTheme } from 'next-themes';
 
-import type { AppProps } from 'next/app';
 export const fontSans = FontSans({
   subsets: ['latin'],
   variable: '--font-sans',

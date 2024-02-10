@@ -1,7 +1,9 @@
-import { StravaAuthResponse } from './types';
-import { baseUrl } from './config';
 import wretch from 'wretch';
+
 import { createWretchInstance } from '@utils/api';
+
+import { baseUrl } from './config';
+import { StravaAuthResponse } from './types';
 
 async function initialAuth(
   code: string,

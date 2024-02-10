@@ -1,6 +1,8 @@
-import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import type { jwtObject, Options } from './types';
+
+import jwt from 'jsonwebtoken';
+
+import type { Options, jwtObject } from './types';
 
 export function decryptJwt(
   token: string | null | undefined,

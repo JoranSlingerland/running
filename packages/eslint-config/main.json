@@ -2,10 +2,14 @@
     "$schema": "http://json.schemastore.org/eslintrc",
     "extends": [
         "prettier",
-        "eslint-config-turbo"
+        "eslint-config-turbo",
+        "plugin:import/recommended",
+        "plugin:import/typescript"
     ],
     "plugins": [
-        "prettier"
+        "prettier",
+        "@typescript-eslint",
+        "import"
     ],
     "rules": {
         "prettier/prettier": [
@@ -14,7 +18,44 @@
                 "endOfLine": "auto"
             }
         ],
-        "turbo/no-undeclared-env-vars": "off"
+        "turbo/no-undeclared-env-vars": "off",
+        "sort-imports": [
+            "error",
+            {
+                "ignoreCase": false,
+                "ignoreDeclarationSort": true,
+                "ignoreMemberSort": false,
+                "memberSyntaxSortOrder": [
+                    "none",
+                    "all",
+                    "multiple",
+                    "single"
+                ],
+                "allowSeparatedGroups": true
+            }
+        ],
+        "import/no-unresolved": "off",
+        "import/order": [
+            "error",
+            {
+                "groups": [
+                    "builtin",
+                    "external",
+                    "internal",
+                    [
+                        "parent",
+                        "sibling"
+                    ],
+                    "index"
+                ],
+                "newlines-between": "always",
+                "alphabetize": {
+                    "order": "asc",
+                    "caseInsensitive": true
+                }
+            }
+        ],
+        "import/no-named-as-default": "off"
     },
     "parser": "@typescript-eslint/parser"
 }

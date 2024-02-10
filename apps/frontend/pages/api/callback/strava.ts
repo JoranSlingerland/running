@@ -1,13 +1,14 @@
-import type { NextApiResponse } from 'next';
-import { NextApiRequestUnknown } from '@pages/api/types';
-import { getToken } from 'next-auth/jwt';
 import {
   removeKeys,
-  userSettingsFromCosmos,
   upsertUserSettingsToCosmos,
+  userSettingsFromCosmos,
 } from '@repo/cosmosdb';
-import strava from '@utils/strava';
+import type { NextApiResponse } from 'next';
+import { getToken } from 'next-auth/jwt';
+
+import { NextApiRequestUnknown } from '@pages/api/types';
 import { getQueryParam } from '@utils/api';
+import strava from '@utils/strava';
 
 export default async function handler(
   req: NextApiRequestUnknown,

@@ -1,3 +1,5 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AccountForm, accountForm } from '@repo/schemas';
 import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useDeepCompareEffect } from 'rooks';
@@ -5,7 +7,6 @@ import { useDeepCompareEffect } from 'rooks';
 import { heartRateZoneColumns } from '@elements/columns/heartRateZoneColumns';
 import { paceZoneColumns } from '@elements/columns/paceZoneColumns';
 import { DataTable } from '@elements/shadcnTable';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useProps } from '@hooks/useProps';
 import { addUserData } from '@services/user/post';
 import { Button } from '@ui/button';
@@ -24,7 +25,6 @@ import {
   convertPaceToSeconds,
 } from '@utils/convert';
 import { formatPace } from '@utils/formatting';
-import { accountForm, AccountForm } from '@repo/schemas';
 
 // Helper functions
 function calculatePaceZones(threshold: string, units: Units) {

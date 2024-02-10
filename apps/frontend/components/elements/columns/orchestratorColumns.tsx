@@ -1,10 +1,10 @@
+import { ColumnDef } from '@tanstack/react-table';
 import { CheckCircle2, Loader2, MoreHorizontal, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { ListOrchestratorData } from '@services/orchestrator/list';
 import { purgeOrchestrator } from '@services/orchestrator/purge';
 import { terminateOrchestrator } from '@services/orchestrator/terminate';
-import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@ui/badge';
 import { Button } from '@ui/button';
 import {

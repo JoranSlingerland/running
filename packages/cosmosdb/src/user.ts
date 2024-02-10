@@ -1,6 +1,7 @@
-import { cosmosContainer, containerFunctionWithBackOff } from './helpers';
 import { userSettingsSchema } from '@repo/schemas';
 import { UserSettings } from '@repo/types';
+
+import { containerFunctionWithBackOff, cosmosContainer } from './helpers';
 
 async function userSettingsFromCosmos(id: string) {
   const container = cosmosContainer('users');

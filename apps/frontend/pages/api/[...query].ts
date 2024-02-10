@@ -1,9 +1,11 @@
-import type { NextApiResponse } from 'next';
-import { createWretchInstance } from '@utils/api';
-import { WretchError } from 'wretch/resolver';
-import type { NextApiRequestUnknown } from './types';
-import { getToken } from 'next-auth/jwt';
 import { encryptJwt } from '@repo/jwt';
+import type { NextApiResponse } from 'next';
+import { getToken } from 'next-auth/jwt';
+import { WretchError } from 'wretch/resolver';
+
+import { createWretchInstance } from '@utils/api';
+
+import type { NextApiRequestUnknown } from './types';
 
 const allowedMethods = ['POST', 'GET', 'DELETE'];
 

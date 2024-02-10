@@ -6,6 +6,7 @@ import QueryStringAddon, {
   QueryStringAddon as QueryStringAddonType,
 } from 'wretch/addons/queryString';
 import { WretchError } from 'wretch/resolver';
+
 import { NextApiRequestUnknown } from '@pages/api/types';
 
 const MILLISECONDS_IN_HOUR = 1000 * 60 * 60;

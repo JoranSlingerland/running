@@ -1,10 +1,10 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { PreferencesForm, preferencesForm } from '@repo/schemas';
 import { Loader2 } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import { useForm } from 'react-hook-form';
 import { useDeepCompareEffect } from 'rooks';
-import { useTheme } from 'next-themes';
 
-import { PreferencesForm, preferencesForm } from '@repo/schemas';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useProps } from '@hooks/useProps';
 import { addUserData } from '@services/user/post';
 import { Button } from '@ui/button';

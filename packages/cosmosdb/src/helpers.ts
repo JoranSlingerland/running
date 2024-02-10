@@ -1,4 +1,4 @@
-import { CosmosClient, ItemResponse, ItemDefinition } from '@azure/cosmos';
+import { CosmosClient, ItemDefinition, ItemResponse } from '@azure/cosmos';
 
 function cosmosClient() {
   const endpoint = process.env.COSMOSDB_ENDPOINT as string;

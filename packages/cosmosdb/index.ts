@@ -1,6 +1,6 @@
 import { activitiesFromCosmos } from './src/activities';
-import { userSettingsFromCosmos, upsertUserSettingsToCosmos } from './src/user';
 import { removeKeys } from './src/helpers';
+import { upsertUserSettingsToCosmos, userSettingsFromCosmos } from './src/user';
 
 export {
   activitiesFromCosmos,

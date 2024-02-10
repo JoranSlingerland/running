@@ -1,6 +1,7 @@
-import { useSession, signIn, signOut } from 'next-auth/react';
-import { Text, Title } from '@ui/typography';
+import { signIn, signOut, useSession } from 'next-auth/react';
+
 import { Button } from '@ui/button';
+import { Text, Title } from '@ui/typography';
 import { cn } from '@utils/shadcn';
 
 function Layout({

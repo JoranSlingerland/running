@@ -1,6 +1,8 @@
-import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import type { jwtObject, Options } from './types';
+
+import jwt from 'jsonwebtoken';
+
+import type { Options, jwtObject } from './types';
 
 export function encryptJwt(payload: jwtObject, options: Options): string {
   const { algorithm = 'aes-256-xts', secret } = options;

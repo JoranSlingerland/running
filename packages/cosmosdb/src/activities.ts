@@ -1,4 +1,5 @@
 import { Activity } from '@repo/types';
+
 import { cosmosContainer, removeKeys } from './helpers';
 
 async function activitiesFromCosmos({

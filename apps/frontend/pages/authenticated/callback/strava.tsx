@@ -1,9 +1,9 @@
 import { CheckCircle2, Loader2, XCircle } from 'lucide-react';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 import Steps from '@elements/steps';
 import { useStravaCallback } from '@services/callback/strava';
-import { useEffect } from 'react';
 
 export default function App() {
   const router = useRouter();

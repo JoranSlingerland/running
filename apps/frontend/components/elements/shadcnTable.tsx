@@ -1,4 +1,12 @@
 import {
+  ColumnDef,
+  Table as TanStackTable,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -6,14 +14,6 @@ import {
   RefreshCcw,
 } from 'lucide-react';
 
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  Table as TanStackTable,
-  useReactTable,
-} from '@tanstack/react-table';
 import { Button } from '@ui/button';
 import {
   Select,

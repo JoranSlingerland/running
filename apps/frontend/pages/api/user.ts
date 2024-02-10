@@ -1,11 +1,12 @@
-import type { NextApiResponse } from 'next';
-import { NextApiRequestUnknown } from '@pages/api/types';
-import { getToken } from 'next-auth/jwt';
 import {
   removeKeys,
-  userSettingsFromCosmos,
   upsertUserSettingsToCosmos,
+  userSettingsFromCosmos,
 } from '@repo/cosmosdb';
+import type { NextApiResponse } from 'next';
+import { getToken } from 'next-auth/jwt';
+
+import { NextApiRequestUnknown } from '@pages/api/types';
 
 export default async function handler(
   req: NextApiRequestUnknown,

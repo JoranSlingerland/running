@@ -1,6 +1,6 @@
 import Link from 'next/link';
+import { signOut, useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
-import { useSession, signOut } from 'next-auth/react';
 
 import { Icon } from '@elements/icon';
 import { Avatar, AvatarFallback, AvatarImage } from '@ui/avatar';

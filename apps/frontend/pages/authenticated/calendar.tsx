@@ -1,17 +1,19 @@
 import 'dayjs/locale/en';
 
+import type { Activity } from '@repo/types';
+import { SparkBarChart } from '@tremor/react';
 import dayjs from 'dayjs';
+import type { Dayjs } from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayLocaleData from 'dayjs/plugin/localeData';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import utc from 'dayjs/plugin/utc';
 import { useEffect, useState } from 'react';
-import useSessionStorageState from '@hooks/useSessionStorageState';
 
 import Calendar from '@elements/calendar';
 import { useProps } from '@hooks/useProps';
+import useSessionStorageState from '@hooks/useSessionStorageState';
 import { GetActivitiesQuery, useActivities } from '@services/data/activities';
-import { SparkBarChart } from '@tremor/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
 import {
   Select,
@@ -37,8 +39,6 @@ import {
 import { getPreferredTss } from '@utils/tss/helpers';
 import { isNotNullOrZero } from '@utils/utils';
 
-import type { Dayjs } from 'dayjs';
-import type { Activity } from '@repo/types';
 dayjs.extend(isBetween);
 dayjs.extend(dayLocaleData);
 dayjs.extend(updateLocale);
