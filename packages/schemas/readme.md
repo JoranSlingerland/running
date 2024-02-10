@@ -1,17 +1,9 @@
-# Template / starter package
+# Schemas
 
-This package is a template for creating new packages.
+This package contains the zod schemas for the project.
 
 ## Usage
 
 ```typescript
-import { template } from '@repo/template';
+import { userSettingsSchema } from '@repo/schema';
 ```
-
-## API
-
-`template(example: string): string`
-
-Returns a string containing the example provided.
-
-* `example`: The example to return.
