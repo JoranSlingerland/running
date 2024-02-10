@@ -85,7 +85,7 @@ function CalendarItem({
     item,
   );
   return (
-    <Card className="my-2 h-full brightness-125 transform hover:scale-105 transition-transform duration-200">
+    <Card className="my-2 h-full brightness-125 transition-transform duration-200 hover:scale-105">
       <CardHeader>
         <CardTitle>
           <div className="flex items-center space-x-1">
@@ -94,7 +94,7 @@ function CalendarItem({
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col text-left ml-2">
+      <CardContent className="ml-2 flex flex-col text-left">
         {isNotNullOrZero(item.elapsed_time) && (
           <Text>
             {formatTime({
@@ -207,12 +207,12 @@ function MetaItem({
             }
             value={chartTab}
           >
-            <TabsList className="my-2 w-full flex">
+            <TabsList className="my-2 flex w-full">
               {Object.keys(tabValues).map((value) => (
                 <TabsTrigger
                   key={value}
                   value={value}
-                  className="text-xs w-full truncate"
+                  className="w-full truncate text-xs"
                 >
                   {tabValues[value as keyof typeof tabValues]}
                 </TabsTrigger>
@@ -224,7 +224,7 @@ function MetaItem({
                   data={chartData.totals}
                   categories={[value]}
                   index={'start_date'}
-                  className="w-full h-8"
+                  className="h-8 w-full"
                 />
               </TabsContent>
             ))}
@@ -295,7 +295,7 @@ function MetaItem({
                             data={chartData[item.sport]}
                             categories={[value]}
                             index={'start_date'}
-                            className="w-full h-8"
+                            className="h-8 w-full"
                           />
                         </TabsContent>
                       ))}

@@ -306,7 +306,7 @@ export function AccountForm() {
           <Button disabled={userSettings?.isLoading} type="submit">
             Save
             {userSettings?.isLoading && (
-              <Loader2 className="animate-spin ml-2" size={16} />
+              <Loader2 className="ml-2 animate-spin" size={16} />
             )}
           </Button>
         </div>

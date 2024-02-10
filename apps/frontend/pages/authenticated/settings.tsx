@@ -57,7 +57,7 @@ const buttonRow = (
 
 const Actions = (router: ReturnType<typeof useRouter>) => (
   <div className="flex flex-col items-center">
-    <div className="w-full px-2 columns-1 space-y-4">
+    <div className="w-full columns-1 space-y-4 px-2">
       {buttonRow(
         'Refresh data',
         'This will Refresh all the data from scratch.',
@@ -103,9 +103,9 @@ export default function Settings() {
       <Title variant="h2" className="flex items-center justify-center p-5">
         Settings
       </Title>
-      <div className="mx-auto max-w-screen-xl w-full px-4">
+      <div className="mx-auto w-full max-w-screen-xl px-4">
         <Tabs onValueChange={(value) => setTab(value)} value={tab}>
-          <div className="flex mt-2 justify-center ">
+          <div className="mt-2 flex justify-center ">
             <TabsList>
               <TabsTrigger value="account">Account</TabsTrigger>
               <TabsTrigger value="preferences">Preferences</TabsTrigger>

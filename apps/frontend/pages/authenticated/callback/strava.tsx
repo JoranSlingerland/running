@@ -51,7 +51,7 @@ export default function App() {
               : data?.result,
           },
         ]}
-        className="w-auto mt-4"
+        className="mt-4 w-auto"
       />
     </div>
   );

@@ -94,10 +94,10 @@ function UserNav({
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="relative h-8 w-8"
+          className="relative size-8"
           disabled={!isAuthenticated}
         >
-          <Avatar className="h-8 w-8">
+          <Avatar className="size-8">
             <AvatarImage src={avatarImage || ''} />
             <AvatarFallback>
               {avatarFallback && avatarFallback[0]}
@@ -126,7 +126,7 @@ function UserNav({
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => signOut()}>
-          <div className="text-sm font-medium flex items-center">
+          <div className="flex items-center text-sm font-medium">
             {logOut.icon}
             <span className="ml-2">{logOut.label}</span>
           </div>

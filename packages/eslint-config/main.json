@@ -6,7 +6,8 @@
         "eslint:recommended",
         "plugin:import/recommended",
         "plugin:import/typescript",
-        "plugin:sonarjs/recommended"
+        "plugin:sonarjs/recommended",
+        "plugin:tailwindcss/recommended"
     ],
     "plugins": [
         "prettier",
@@ -65,7 +66,8 @@
         "no-redeclare": "off",
         "require-yield": "off",
         "no-prototype-builtins": "off",
-        "sonarjs/no-small-switch": "off"
+        "sonarjs/no-small-switch": "off",
+        "tailwindcss/no-custom-classname": "off"
     },
     "parser": "@typescript-eslint/parser"
 }
