@@ -1,35 +1,5 @@
-type UserSettings = {
-  strava_authentication: {
-    access_token: string;
-    refresh_token: string;
-    expires_at: number;
-  };
-  heart_rate: {
-    max: number;
-    resting: number;
-    threshold: number;
-    zones: {
-      name: string;
-      min: number;
-      max: number;
-    }[];
-  };
-  pace: {
-    threshold: number;
-    zones: {
-      name: string;
-      min: number;
-      max: number;
-    }[];
-  };
-  preferences: {
-    preferred_tss_type: 'hr' | 'pace';
-    units: Units;
-    dark_mode: 'dark' | 'light' | 'system';
-  };
-  gender: 'male' | 'female' | undefined;
-};
+import type { UserSettings } from './src/user';
+import type { Units } from './src/generic';
+import type { Activity } from './src/activity';
 
-type Units = 'metric' | 'imperial';
-
-export type { UserSettings, Units };
+export type { UserSettings, Units, Activity };

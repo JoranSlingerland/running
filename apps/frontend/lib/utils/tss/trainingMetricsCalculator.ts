@@ -1,4 +1,4 @@
-import { Activity } from '@services/data/activities';
+import { Activity } from '@repo/types';
 import { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import { calculateDailyTss } from '@utils/tss/helpers';

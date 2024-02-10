@@ -1,4 +1,4 @@
-import { Activity } from '@services/data/activities';
+import { Activity } from '@repo/types';
 import { cosmosContainer, removeKeys } from '@utils/database/helpers';
 
 async function activitiesFromCosmos({

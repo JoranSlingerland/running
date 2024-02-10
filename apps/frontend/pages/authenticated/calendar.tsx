@@ -38,7 +38,7 @@ import { getPreferredTss } from '@utils/tss/helpers';
 import { isNotNullOrZero } from '@utils/utils';
 
 import type { Dayjs } from 'dayjs';
-import type { Activity } from '@services/data/activities';
+import type { Activity } from '@repo/types';
 dayjs.extend(isBetween);
 dayjs.extend(dayLocaleData);
 dayjs.extend(updateLocale);

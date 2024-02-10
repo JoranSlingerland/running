@@ -1,4 +1,4 @@
-import type { Activity } from '@services/data/activities';
+import type { Activity } from '@repo/types';
 import { Dayjs } from 'dayjs';
 
 function getPreferredTss(
