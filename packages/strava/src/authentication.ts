@@ -1,5 +1,4 @@
 import { createWretchInstance } from '@repo/api';
-import wretch from 'wretch';
 
 import { baseUrl } from './config';
 import { StravaAuthResponse } from './types';
@@ -25,14 +24,19 @@ async function initialAuth(
 function refreshAuth(
   refresh_token: string,
 ): Promise<StravaAuthResponse | undefined> {
-  return wretch(`${baseUrl}/oauth/token`)
-    .post({
-      client_id: process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID,
-      client_secret: process.env.STRAVA_CLIENT_SECRET,
-      refresh_token,
-      grant_type: 'refresh_token',
-    })
-    .json();
+  const query = {
+    client_id: process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID,
+    client_secret: process.env.STRAVA_CLIENT_SECRET,
+    refresh_token,
+    grant_type: 'refresh_token',
+  };
+  const wretchInstance = createWretchInstance({
+    url: `${baseUrl}/oauth/token`,
+    method: 'POST',
+    query,
+    controller: new AbortController(),
+  });
+  return wretchInstance.json();
 }
 
 export { initialAuth, refreshAuth };

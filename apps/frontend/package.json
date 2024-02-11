@@ -29,6 +29,7 @@
     "@repo/cosmosdb": "*",
     "@repo/jwt": "*",
     "@repo/schemas": "*",
+    "@repo/strava": "*",
     "@tanstack/react-table": "^8.11.6",
     "@tremor/react": "^3.13.2",
     "@types/react-router-dom": "^5.3.3",

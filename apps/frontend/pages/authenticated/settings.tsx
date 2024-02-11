@@ -1,3 +1,4 @@
+import { stravaConfig } from '@repo/strava';
 import { useRouter } from 'next/router';
 import { toast } from 'sonner';
 
@@ -11,7 +12,6 @@ import { startOrchestrator } from '@services/orchestrator/start';
 import { Button } from '@ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/tabs';
 import { Text, Title } from '@ui/typography';
-import { authUrl } from '@utils/strava/config';
 
 // handle click functions
 function handleSessionStorageClearClick() {
@@ -33,7 +33,7 @@ function handleStravaAuthentication(router: ReturnType<typeof useRouter>) {
   }
 
   router.push(
-    `${authUrl}?client_id=${process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID}&redirect_uri=${callback_url}&response_type=code&%20response_type=force&scope=${scope}`,
+    `${stravaConfig.authUrl}?client_id=${process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID}&redirect_uri=${callback_url}&response_type=code&%20response_type=force&scope=${scope}`,
   );
 }
 

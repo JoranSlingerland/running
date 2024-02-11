@@ -3,12 +3,12 @@ import {
   upsertUserSettingsToCosmos,
   userSettingsFromCosmos,
 } from '@repo/cosmosdb';
+import strava from '@repo/strava';
 import type { NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 
 import { NextApiRequestUnknown } from '@pages/api/types';
 import { getQueryParam } from '@utils/api';
-import strava from '@utils/strava';
 
 export default async function handler(
   req: NextApiRequestUnknown,
@@ -75,18 +75,7 @@ async function handleGet(
   const result = await upsertUserSettingsToCosmos(id, userSettingsWithAuth);
 
   if (!result.isError && result.result) {
-    return res
-      .status(200)
-      .json(
-        removeKeys(result.result.resource || {}, [
-          '_rid',
-          '_self',
-          '_etag',
-          '_attachments',
-          '_ts',
-          'id',
-        ]),
-      );
+    return res.status(200).json(removeKeys(result.result.resource || {}));
   }
 
   return res

@@ -1,3 +1,5 @@
+import type { UserSettings } from '@repo/types';
+
 export type StravaAuthResponse = {
   token_type: 'Bearer';
   expires_at: number;
@@ -24,8 +26,4 @@ export type StravaSummaryAthlete = {
   updated_at: Date;
 };
 
-export type StravaAuthConfig = {
-  access_token: string;
-  refresh_token: string;
-  expires_at: number;
-};
+export type StravaAuthentication = UserSettings['strava_authentication'];

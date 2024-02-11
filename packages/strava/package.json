@@ -1,5 +1,5 @@
 {
-  "name": "@repo/api",
+  "name": "@repo/strava",
   "version": "0.0.0",
   "private": true,
   "publishConfig": {
@@ -14,10 +14,11 @@
     "preinstall": "npx only-allow yarn"
   },
   "dependencies": {
-    "wretch": "^2.8.0"
+    "@repo/api": "*"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
+    "@repo/types": "*",
     "@repo/typescript-config": "*"
   },
   "main": "dist/index.js"
