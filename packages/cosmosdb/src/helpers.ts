@@ -1,9 +1,13 @@
 import { CosmosClient, ItemDefinition, ItemResponse } from '@azure/cosmos';
 
 function cosmosClient() {
-  const endpoint = process.env.COSMOSDB_ENDPOINT as string;
+  const endpoint = process.env.COSMOSDB_ENDPOINT;
   const key = process.env.COSMOSDB_KEY;
-  const database = process.env.COSMOSDB_DATABASE as string;
+  const database = process.env.COSMOSDB_DATABASE;
+
+  if (!endpoint || !key || !database) {
+    throw new Error('Missing CosmosDB environment variables');
+  }
 
   const cosmosClient = new CosmosClient({ endpoint, key });
   const cosmosDatabase = cosmosClient.database(database);

@@ -30,4 +30,5 @@ export type UserSettings = {
     dark_mode: 'dark' | 'light' | 'system';
   };
   gender: 'male' | 'female' | undefined;
+  id: string;
 };

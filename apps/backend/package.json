@@ -15,11 +15,13 @@
   },
   "dependencies": {
     "@azure/functions": "^4.0.0",
+    "@repo/cosmosdb": "*",
     "@repo/jwt": "*",
     "durable-functions": "3.0.0-alpha.5"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
+    "@repo/types": "*",
     "@repo/typescript-config": "*",
     "@types/node": "^18.x"
   },
