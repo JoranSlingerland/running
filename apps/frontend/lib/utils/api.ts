@@ -1,7 +1,6 @@
-import { createWretchInstance } from '@repo/api';
+import { WretchError, createWretchInstance } from '@repo/api';
 import hash from 'object-hash';
 import { toast } from 'sonner';
-import { WretchError } from 'wretch/resolver';
 
 import { NextApiRequestUnknown } from '@pages/api/types';
 

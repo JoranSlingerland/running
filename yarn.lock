@@ -1324,6 +1324,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@repo/api@npm:*, @repo/api@workspace:packages/api":
+  version: 0.0.0-use.local
+  resolution: "@repo/api@workspace:packages/api"
+  dependencies:
+    "@repo/eslint-config": "npm:*"
+    "@repo/typescript-config": "npm:*"
+    wretch: "npm:^2.8.0"
+  languageName: unknown
+  linkType: soft
+
 "@repo/cosmosdb@npm:*, @repo/cosmosdb@workspace:packages/cosmosdb":
   version: 0.0.0-use.local
   resolution: "@repo/cosmosdb@workspace:packages/cosmosdb"
@@ -1374,6 +1384,17 @@ __metadata:
     "@repo/eslint-config": "npm:*"
     "@repo/typescript-config": "npm:*"
     zod: "npm:^3.22.4"
+  languageName: unknown
+  linkType: soft
+
+"@repo/strava@npm:*, @repo/strava@workspace:packages/strava":
+  version: 0.0.0-use.local
+  resolution: "@repo/strava@workspace:packages/strava"
+  dependencies:
+    "@repo/api": "npm:*"
+    "@repo/eslint-config": "npm:*"
+    "@repo/types": "npm:*"
+    "@repo/typescript-config": "npm:*"
   languageName: unknown
   linkType: soft
 
@@ -2202,8 +2223,10 @@ __metadata:
   resolution: "backend@workspace:apps/backend"
   dependencies:
     "@azure/functions": "npm:^4.0.0"
+    "@repo/cosmosdb": "npm:*"
     "@repo/eslint-config": "npm:*"
     "@repo/jwt": "npm:*"
+    "@repo/types": "npm:*"
     "@repo/typescript-config": "npm:*"
     "@types/node": "npm:^18.x"
     durable-functions: "npm:3.0.0-alpha.5"
@@ -3637,10 +3660,12 @@ __metadata:
     "@radix-ui/react-separator": "npm:^1.0.3"
     "@radix-ui/react-slot": "npm:^1.0.2"
     "@radix-ui/react-tabs": "npm:^1.0.4"
+    "@repo/api": "npm:*"
     "@repo/cosmosdb": "npm:*"
     "@repo/eslint-config": "npm:*"
     "@repo/jwt": "npm:*"
     "@repo/schemas": "npm:*"
+    "@repo/strava": "npm:*"
     "@repo/types": "npm:*"
     "@repo/typescript-config": "npm:*"
     "@tanstack/react-table": "npm:^8.11.6"
@@ -3668,7 +3693,6 @@ __metadata:
     tailwind-merge: "npm:^2.2.0"
     tailwindcss: "npm:^3.4.1"
     tailwindcss-animate: "npm:^1.0.7"
-    wretch: "npm:^2.8.0"
   languageName: unknown
   linkType: soft
 

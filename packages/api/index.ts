@@ -1,3 +1,5 @@
+import { WretchError } from 'wretch/resolver';
+
 import { createWretchInstance } from './src/wretch';
 
-export { createWretchInstance };
+export { createWretchInstance, WretchError };

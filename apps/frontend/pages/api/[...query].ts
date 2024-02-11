@@ -1,8 +1,7 @@
-import { createWretchInstance } from '@repo/api';
+import { WretchError, createWretchInstance } from '@repo/api';
 import { encryptJwt } from '@repo/jwt';
 import type { NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
-import { WretchError } from 'wretch/resolver';
 
 import type { NextApiRequestUnknown } from './types';
 
