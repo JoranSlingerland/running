@@ -72,7 +72,7 @@ async function handleGet(
     },
   };
 
-  const result = await upsertUserSettingsToCosmos(id, userSettingsWithAuth);
+  const result = await upsertUserSettingsToCosmos(userSettingsWithAuth);
 
   if (!result.isError && result.result) {
     return res.status(200).json(removeKeys(result.result.resource || {}));

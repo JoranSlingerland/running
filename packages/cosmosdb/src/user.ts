@@ -19,7 +19,7 @@ async function userSettingsFromCosmos(id: string) {
   return response.resources[0] as UserSettings;
 }
 
-async function upsertUserSettingsToCosmos(id: string, body: unknown) {
+async function upsertUserSettingsToCosmos(body: unknown) {
   const container = cosmosContainer('users');
   const validated = userSettingsSchema.safeParse(body);
   if (!validated.success) {
@@ -28,7 +28,6 @@ async function upsertUserSettingsToCosmos(id: string, body: unknown) {
 
   return await containerFunctionWithBackOff(async () => {
     return await container.items.upsert({
-      id,
       ...validated.data,
     });
   });
