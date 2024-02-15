@@ -26,4 +26,11 @@ export type StravaSummaryAthlete = {
   updated_at: Date;
 };
 
+export type ActivitiesQuery = {
+  before?: number | string;
+  after?: number | string;
+  page?: number;
+  per_page?: number;
+};
+
 export type StravaAuthentication = UserSettings['strava_authentication'];

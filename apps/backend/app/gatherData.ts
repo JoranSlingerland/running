@@ -1,7 +1,9 @@
 import {
   getLastActivityFromCosmos,
+  upsertUserSettingsToCosmos,
   userSettingsFromCosmos,
 } from '@repo/cosmosdb';
+import { StravaClient } from '@repo/strava';
 import { UserSettings } from '@repo/types';
 import {
   ActivityHandler,
@@ -40,8 +42,18 @@ const getUserSettings: ActivityHandler = async (id: string) => {
 
 const getActivities: ActivityHandler = async (userSettings: UserSettings) => {
   const latestActivityDate = await getLastActivityFromCosmos(userSettings.id);
-  console.info('Latest activity date:', latestActivityDate);
-  return latestActivityDate;
+
+  const stravaClient = new StravaClient(userSettings.strava_authentication);
+  const auth = await stravaClient.initialize();
+
+  upsertUserSettingsToCosmos({
+    ...userSettings,
+    strava_authentication: auth,
+  });
+
+  return await stravaClient.getActivities({
+    after: latestActivityDate?.start_date,
+  });
 };
 
 export { getUserSettings, gatherData, getActivities };

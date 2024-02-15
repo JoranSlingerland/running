@@ -1,7 +1,7 @@
 import { createWretchInstance } from '@repo/api';
 
 import { baseUrl } from './config';
-import { StravaAuthResponse } from './types';
+import { StravaAuthResponse, StravaAuthentication } from './types';
 
 async function initialAuth(
   code: string,
@@ -39,4 +39,22 @@ function refreshAuth(
   return wretchInstance.json();
 }
 
-export { initialAuth, refreshAuth };
+async function checkAuth(
+  auth: StravaAuthentication,
+): Promise<StravaAuthentication> {
+  const refreshThreshold = new Date().getTime() + 5 * 60 * 1000;
+  if (auth.expires_at < refreshThreshold) {
+    const refreshedAuth = await refreshAuth(auth.refresh_token);
+    if (!refreshedAuth) {
+      throw new Error('Error refreshing authentication');
+    }
+    return {
+      access_token: refreshedAuth.access_token,
+      refresh_token: refreshedAuth.refresh_token,
+      expires_at: refreshedAuth.expires_at,
+    };
+  }
+  return auth;
+}
+
+export { initialAuth, refreshAuth, checkAuth };

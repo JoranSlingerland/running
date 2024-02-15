@@ -2226,6 +2226,7 @@ __metadata:
     "@repo/cosmosdb": "npm:*"
     "@repo/eslint-config": "npm:*"
     "@repo/jwt": "npm:*"
+    "@repo/strava": "npm:*"
     "@repo/types": "npm:*"
     "@repo/typescript-config": "npm:*"
     "@types/node": "npm:^18.x"

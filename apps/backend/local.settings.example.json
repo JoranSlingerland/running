@@ -7,6 +7,9 @@
       "API_SHARED_KEY": "openssl rand -base64 32", // Should be the same in the apps/frontend
       "COSMOSDB_ENDPOINT": "https://localhost:8081",
       "COSMOSDB_KEY": "Your CosmosDB Key",
-      "COSMOSDB_DATABASE": "running"
+      "COSMOSDB_DATABASE": "running",
+      "NODE_TLS_REJECT_UNAUTHORIZED": "0", // Only for local development
+      "NEXT_PUBLIC_STRAVA_CLIENT_ID": "Your Strava Client ID",
+      "STRAVA_CLIENT_SECRET": "Your Strava Client Secret"
     }
   }
