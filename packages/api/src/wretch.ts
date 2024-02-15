@@ -36,24 +36,46 @@ function createWretchInstance<Query, Body>({
     .signal(controller)
     .query(query || {});
 
-  if (bearerToken) {
-    wretchInstance = wretchInstance.auth(`Bearer ${bearerToken}`);
-  }
+  wretchInstance = addBearerTokenToWretchInstance(bearerToken, wretchInstance);
 
   switch (method) {
     case 'GET':
-      wretchInstance = wretchInstance.get();
-      break;
+      return wretchInstance.get();
     case 'POST':
-      wretchInstance = wretchInstance.json(body || {}).post();
-      break;
+      return wretchInstance.json(body || {}).post();
     case 'DELETE':
-      wretchInstance = wretchInstance.json(body || {}).delete();
-      break;
+      return wretchInstance.json(body || {}).delete();
     default:
       throw new Error('Invalid method');
+  }
+}
+
+function addBearerTokenToWretchInstance(
+  bearerToken: string | undefined,
+  wretchInstance: WretchInstance,
+) {
+  if (bearerToken) {
+    return wretchInstance.auth(`Bearer ${bearerToken}`);
   }
   return wretchInstance;
 }
 
-export { createWretchInstance };
+function createBasicWretchInstance({
+  url,
+  controller,
+  bearerToken,
+}: {
+  url: string;
+  controller: AbortController;
+  bearerToken?: string;
+}) {
+  const wretchInstance = wretch()
+    .url(url)
+    .addon(AbortAddon())
+    .addon(QueryStringAddon)
+    .signal(controller);
+
+  return addBearerTokenToWretchInstance(bearerToken, wretchInstance);
+}
+
+export { createWretchInstance, createBasicWretchInstance };
