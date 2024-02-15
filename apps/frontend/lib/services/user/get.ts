@@ -22,6 +22,7 @@ const initialData: UserSettings = {
     units: 'metric',
     dark_mode: 'system',
   },
+  id: '',
 };
 
 function useUserSettings({ enabled = true }: { enabled?: boolean } = {}) {
