@@ -4,12 +4,14 @@ import {
   userSettingsFromCosmos,
 } from '@repo/cosmosdb';
 import { StravaClient } from '@repo/strava';
-import { UserSettings } from '@repo/types';
+import { Activity, UserSettings } from '@repo/types';
 import {
   ActivityHandler,
   OrchestrationContext,
   OrchestrationHandler,
 } from 'durable-functions';
+
+import { cleanUpSummaryActivity } from '../lib/cleanup';
 
 const gatherData: OrchestrationHandler = function* (
   context: OrchestrationContext,
@@ -22,7 +24,7 @@ const gatherData: OrchestrationHandler = function* (
     userId,
   );
 
-  const activities = yield context.df.callActivity(
+  const activities: Activity[] = yield context.df.callActivity(
     'getActivities',
     userSettings,
   );
@@ -51,9 +53,17 @@ const getActivities: ActivityHandler = async (userSettings: UserSettings) => {
     strava_authentication: auth,
   });
 
-  return await stravaClient.getActivities({
+  const activities = await stravaClient.getActivities({
     after: latestActivityDate?.start_date,
   });
+
+  if (!activities || activities.length === 0) {
+    return [];
+  }
+
+  return activities.map((activity) =>
+    cleanUpSummaryActivity(activity, userSettings.id),
+  );
 };
 
 export { getUserSettings, gatherData, getActivities };

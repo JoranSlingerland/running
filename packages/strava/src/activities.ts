@@ -1,7 +1,11 @@
 import { createBasicWretchInstance } from '@repo/api';
 
 import { baseUrl } from './config';
-import { ActivitiesQuery, StravaAuthentication } from './types';
+import {
+  ActivitiesQuery,
+  StravaAuthentication,
+  SummaryActivity,
+} from './types';
 
 async function getActivities({
   auth,
@@ -11,7 +15,7 @@ async function getActivities({
   auth: StravaAuthentication;
   before?: number | string;
   after?: number | string;
-}) {
+}): Promise<SummaryActivity[] | undefined> {
   if (!auth) {
     throw new Error('Invalid authentication');
   }

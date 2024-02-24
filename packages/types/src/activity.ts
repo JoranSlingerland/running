@@ -3,7 +3,7 @@ interface Activity {
   achievement_count: number;
   athlete_count: number;
   average_speed: number;
-  average_watts: number;
+  average_watts: number | undefined;
   device_watts: boolean;
   distance: number;
   elapsed_time: number;
@@ -12,7 +12,7 @@ interface Activity {
   end_latlng: [number, number];
   external_id: string;
   gear_id: null | string;
-  kilojoules: number;
+  kilojoules: number | null;
   manual: boolean;
   map: {
     id: string;
@@ -20,7 +20,7 @@ interface Activity {
     summary_polyline: string;
   };
   max_speed: number;
-  max_watts: number;
+  max_watts: number | null | undefined;
   moving_time: number;
   name: string;
   sport_type: string;
@@ -33,30 +33,25 @@ interface Activity {
   type: string;
   upload_id: number;
   upload_id_str: string;
-  weighted_average_watts: number;
+  weighted_average_watts: number | null | undefined;
   workout_type: null | number;
   best_efforts: null | BestEfforts[];
   calories: null | number;
-  description: null | string;
+  description: null | string | undefined;
   device_name: null | string;
   embed_token: null | string;
-  gear: null;
   laps: null | Laps[];
   splits_metric: null | Splits[];
-  guid: null | string;
   utc_offset: number;
   location_city: null | string;
   location_state: null | string;
   location_country: null | string;
-  start_latitude: null | string;
-  start_longitude: null | string;
   pr_count: number;
   has_heartrate: boolean;
   average_heartrate: number;
   max_heartrate: number;
   average_cadence: number;
-  average_temp: null | number;
-  perceived_exertion: null | number;
+  perceived_exertion: null | number | undefined;
   userId: string;
   full_data: boolean;
   custom_fields_calculated: boolean;
@@ -79,26 +74,18 @@ interface Activity {
 }
 
 interface BestEfforts {
-  activity_id: null | number;
-  distance: number;
-  elapsed_time: number;
   id: number;
-  is_kom: null | boolean;
+  resource_state: number;
+  name: string;
+  elapsed_time: number;
+  moving_time: number;
   start_date: string;
   start_date_local: string;
-  average_cadence: null | number;
-  average_heartrate: null | number;
-  average_watts: null | number;
-  device_watts: null | boolean;
+  distance: number;
+  pr_rank: null;
+  achievements: [];
+  start_index: number;
   end_index: number;
-  hidden: null | boolean;
-  kom_rank: null | number;
-  max_heartrate: null | number;
-  moving_time: number;
-  name: string;
-  pr_rank: null | number;
-  segment: null | string;
-  start_index: string;
 }
 
 interface Laps {

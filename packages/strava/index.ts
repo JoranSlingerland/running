@@ -26,3 +26,4 @@ export {
   stravaConfig,
   StravaClient,
 };
+export * from './src/types';
