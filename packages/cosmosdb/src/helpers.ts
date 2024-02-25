@@ -75,6 +75,19 @@ async function containerFunctionWithBackOff(
   return { result, isError };
 }
 
+async function upsertWithBackOff<T>(
+  containerName: string,
+  item: T,
+): Promise<{
+  result: ItemResponse<ItemDefinition> | undefined;
+  isError: boolean;
+}> {
+  const container = cosmosContainer(containerName);
+  return await containerFunctionWithBackOff(async () => {
+    return await container.items.upsert(item);
+  });
+}
+
 function removeKeys<T>(
   obj: Record<string, unknown>,
   keys: string[] = ['_rid', '_self', '_etag', '_attachments', '_ts'],
@@ -93,4 +106,5 @@ export {
   cosmosContainer,
   containerFunctionWithBackOff,
   removeKeys,
+  upsertWithBackOff,
 };

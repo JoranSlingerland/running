@@ -24,14 +24,25 @@ const gatherData: OrchestrationHandler = function* (
     userId,
   );
 
+  console.info('Step 2: Fetching user activities');
   const activities: Activity[] = yield context.df.callActivity(
     'getActivities',
     userSettings,
   );
 
-  console.info('Step 2: Fetching user activities');
+  console.info('Step 3: Outputting data to CosmosDB');
+  const id = 0;
+  const childId = `${context.df.instanceId}:${id}`;
+  const provisioningTask = context.df.callSubOrchestrator(
+    'subOrchOutputToCosmosDb',
+    {
+      activities: activities,
+    },
+    childId,
+  );
+  yield context.df.Task.all([provisioningTask]);
 
-  return activities;
+  return 'done';
 };
 
 const getUserSettings: ActivityHandler = async (id: string) => {

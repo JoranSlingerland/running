@@ -1,15 +1,6 @@
-import {
-  activitiesFromCosmos,
-  getLastActivityFromCosmos,
-} from './src/activities';
-import { cosmosContainer, removeKeys } from './src/helpers';
-import { upsertUserSettingsToCosmos, userSettingsFromCosmos } from './src/user';
+import { cosmosContainer, removeKeys, upsertWithBackOff } from './src/helpers';
 
-export {
-  activitiesFromCosmos,
-  userSettingsFromCosmos,
-  upsertUserSettingsToCosmos,
-  removeKeys,
-  cosmosContainer,
-  getLastActivityFromCosmos,
-};
+export { removeKeys, cosmosContainer, upsertWithBackOff };
+
+export * from './src/activities';
+export * from './src/user';
