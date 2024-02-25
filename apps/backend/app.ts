@@ -4,7 +4,12 @@ import { app } from '@azure/functions';
 import * as df from 'durable-functions';
 
 import { orchestratorStart } from './api/orchestrator';
-import { gatherData, getActivities, getUserSettings } from './app/gatherData';
+import {
+  addActivityToEnrichmentQueue,
+  gatherData,
+  getActivities,
+  getUserSettings,
+} from './app/gatherData';
 import {
   outputToCosmosDb,
   subOrchOutputToCosmosDb,
@@ -26,3 +31,6 @@ df.app.orchestration('subOrchOutputToCosmosDb', subOrchOutputToCosmosDb);
 df.app.activity('getUserSettings', { handler: getUserSettings });
 df.app.activity('getActivities', { handler: getActivities });
 df.app.activity('outputToCosmosDb', { handler: outputToCosmosDb });
+df.app.activity('addActivityToEnrichmentQueue', {
+  handler: addActivityToEnrichmentQueue,
+});

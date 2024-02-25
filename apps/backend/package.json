@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@azure/functions": "^4.0.0",
+    "@azure/storage-queue": "12.16.0",
     "@repo/cosmosdb": "*",
     "@repo/jwt": "*",
     "@repo/strava": "*",

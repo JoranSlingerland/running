@@ -12,6 +12,7 @@ import {
 } from 'durable-functions';
 
 import { cleanUpSummaryActivity } from '../lib/cleanup';
+import { addActivitiesToQueue } from '../lib/queueHelpers';
 
 const gatherData: OrchestrationHandler = function* (
   context: OrchestrationContext,
@@ -41,6 +42,12 @@ const gatherData: OrchestrationHandler = function* (
     childId,
   );
   yield context.df.Task.all([provisioningTask]);
+
+  console.info('Step 4: Adding activity id to enrichment queue');
+  yield context.df.callActivity('addActivityToEnrichmentQueue', [
+    'enrichment-queue',
+    activities,
+  ]);
 
   return 'done';
 };
@@ -77,4 +84,18 @@ const getActivities: ActivityHandler = async (userSettings: UserSettings) => {
   );
 };
 
-export { getUserSettings, gatherData, getActivities };
+const addActivityToEnrichmentQueue: ActivityHandler = async (
+  payload: [string, Activity[]],
+) => {
+  const queueName = payload[0];
+  const activities = payload[1];
+
+  return await addActivitiesToQueue(queueName, activities);
+};
+
+export {
+  getUserSettings,
+  gatherData,
+  getActivities,
+  addActivityToEnrichmentQueue,
+};
