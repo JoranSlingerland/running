@@ -111,6 +111,11 @@ interface Laps {
   start_date_local: string;
   start_index: number;
   total_elevation_gain: number;
+  average_heartrate: number | null;
+  hr_reserve: number | null;
+  pace_reserve: number | null;
+  hr_trimp: number | null;
+  pace_trimp: number | null;
 }
 
 interface Splits {

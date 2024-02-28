@@ -69,7 +69,16 @@ function cleanupDetailedActivity(
     description: activity.description,
     device_name: activity.device_name,
     embed_token: activity.embed_token,
-    laps: activity.laps,
+    laps: activity.laps.map((lap) => {
+      return {
+        ...lap,
+        hr_reserve: null,
+        average_heartrate: null,
+        pace_reserve: null,
+        hr_trimp: null,
+        pace_trimp: null,
+      };
+    }),
     splits_metric: activity.splits_metric,
     utc_offset: activity.utc_offset,
     location_city: activity.location_city,
