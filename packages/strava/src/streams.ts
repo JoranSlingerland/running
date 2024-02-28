@@ -1,9 +1,9 @@
 import { createBasicWretchInstance } from '@repo/api';
 
 import { baseUrl } from './config';
-import { Stream, StreamQuery } from './types';
+import { StreamQuery, Streams } from './types';
 
-async function getStream({ auth, id, keys }: StreamQuery): Promise<Stream> {
+async function getStream({ auth, id, keys }: StreamQuery): Promise<Streams> {
   if (!auth) {
     throw new Error('Invalid authentication');
   }
@@ -27,7 +27,7 @@ async function getStream({ auth, id, keys }: StreamQuery): Promise<Stream> {
     .catch((error) => {
       console.error('Error fetching activity', error);
       throw new Error('Error fetching activity');
-    })) as Stream;
+    })) as Streams;
 }
 
 export { getStream };

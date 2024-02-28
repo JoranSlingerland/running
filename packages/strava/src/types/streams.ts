@@ -26,3 +26,7 @@ export type StreamQuery = {
   id: number;
   keys: StreamType[];
 };
+
+export type Streams = {
+  [key in StreamType]: Stream;
+};

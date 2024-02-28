@@ -201,12 +201,6 @@ type Laps = {
   end_index: number;
   total_elevation_gain: number;
   average_cadence: number;
-  average_watts?: number;
-  weighted_average_watts?: number;
-  max_watts?: number;
-  device_watts: boolean;
-  average_heartrate: number;
-  max_heartrate: number;
   pace_zone: number;
 };
 
