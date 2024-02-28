@@ -121,45 +121,7 @@ function calculateCustomFields(
   userSettings: UserSettings,
 ): Activity {
   if (activity.has_heartrate) {
-    let totalTime = 0;
-
-    if (activity.laps) {
-      for (let i = 0; i < activity.laps.length; i++) {
-        const lap = activity.laps[i];
-        const startTime = totalTime;
-        const elapsed_time = lap.elapsed_time;
-        totalTime += elapsed_time;
-
-        lap.start_index = bisectLeft(stream.time.data, startTime);
-        lap.end_index = bisectLeft(stream.time.data, totalTime);
-
-        const heartRateData = stream.heartrate.data.slice(
-          lap.start_index,
-          lap.end_index,
-        );
-
-        const averageHeartRate = Math.round(
-          heartRateData.reduce((a, b) => a + b, 0) / heartRateData.length,
-        );
-        const heartRateReserve = calculateHrReserve(
-          averageHeartRate,
-          userSettings.heart_rate.resting,
-          userSettings.heart_rate.max,
-        );
-
-        activity.laps[i].average_heartrate = averageHeartRate;
-        activity.laps[i].hr_reserve = heartRateReserve;
-
-        if (userSettings.gender) {
-          activity.laps[i].hr_trimp = calculateHrTrimp(
-            lap.moving_time,
-            heartRateReserve,
-            userSettings.gender,
-            true,
-          );
-        }
-      }
-    }
+    activity.laps = calculateLapsHrData(activity.laps, stream, userSettings);
 
     activity.hr_reserve = calculateHrReserve(
       activity.average_heartrate,
@@ -194,27 +156,7 @@ function calculateCustomFields(
   }
 
   if (activity.type.toLowerCase() === 'run') {
-    if (activity.laps) {
-      for (let i = 0; i < activity.laps.length; i++) {
-        const lap = activity.laps[i];
-
-        const paceReserve = calculatePaceReserve(
-          lap.average_speed,
-          userSettings.pace.threshold,
-        );
-
-        activity.laps[i].pace_reserve = paceReserve;
-
-        if (userSettings.gender) {
-          activity.laps[i].pace_trimp = calculatePaceTrimp(
-            lap.moving_time,
-            paceReserve,
-            userSettings.gender,
-            true,
-          );
-        }
-      }
-    }
+    activity.laps = calculateLapsPaceData(activity.laps, userSettings);
 
     const paceReserve = calculatePaceReserve(
       activity.average_speed,
@@ -235,6 +177,83 @@ function calculateCustomFields(
   activity.custom_fields_calculated = true;
 
   return activity;
+}
+
+function calculateLapsPaceData(
+  laps: Activity['laps'] | null,
+  userSettings: UserSettings,
+): Activity['laps'] | null {
+  if (!laps) {
+    return null;
+  }
+  for (let i = 0; i < laps.length; i++) {
+    const lap = laps[i];
+
+    const paceReserve = calculatePaceReserve(
+      lap.average_speed,
+      userSettings.pace.threshold,
+    );
+
+    laps[i].pace_reserve = paceReserve;
+
+    if (userSettings.gender) {
+      laps[i].pace_trimp = calculatePaceTrimp(
+        lap.moving_time,
+        paceReserve,
+        userSettings.gender,
+        true,
+      );
+    }
+  }
+  return laps;
+}
+
+function calculateLapsHrData(
+  laps: Activity['laps'] | null,
+  stream: Streams,
+  userSettings: UserSettings,
+): Activity['laps'] | null {
+  if (!laps) {
+    return null;
+  }
+  let totalTime = 0;
+
+  for (let i = 0; i < laps.length; i++) {
+    const lap = laps[i];
+    const startTime = totalTime;
+    const elapsed_time = lap.elapsed_time;
+    totalTime += elapsed_time;
+
+    lap.start_index = bisectLeft(stream.time.data, startTime);
+    lap.end_index = bisectLeft(stream.time.data, totalTime);
+
+    const heartRateData = stream.heartrate.data.slice(
+      lap.start_index,
+      lap.end_index,
+    );
+
+    const averageHeartRate = Math.round(
+      heartRateData.reduce((a, b) => a + b, 0) / heartRateData.length,
+    );
+    const heartRateReserve = calculateHrReserve(
+      averageHeartRate,
+      userSettings.heart_rate.resting,
+      userSettings.heart_rate.max,
+    );
+
+    laps[i].average_heartrate = averageHeartRate;
+    laps[i].hr_reserve = heartRateReserve;
+
+    if (userSettings.gender) {
+      laps[i].hr_trimp = calculateHrTrimp(
+        lap.moving_time,
+        heartRateReserve,
+        userSettings.gender,
+        true,
+      );
+    }
+  }
+  return laps;
 }
 
 function bisectLeft(arr: number[], value: number, lo = 0, hi = arr.length) {
