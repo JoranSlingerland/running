@@ -4,6 +4,7 @@ import { app } from '@azure/functions';
 import * as df from 'durable-functions';
 
 import { orchestratorStart } from './api/orchestrator';
+import { enrichActivity } from './app/enrichData';
 import {
   addActivityToEnrichmentQueue,
   gatherData,
@@ -14,6 +15,7 @@ import {
   outputToCosmosDb,
   subOrchOutputToCosmosDb,
 } from './app/outputToCosmosDb';
+import { handlePoisonQueue } from './app/poisonQueue';
 
 // Register http triggers
 app.http('orchestratorStart', {
@@ -33,4 +35,18 @@ df.app.activity('getActivities', { handler: getActivities });
 df.app.activity('outputToCosmosDb', { handler: outputToCosmosDb });
 df.app.activity('addActivityToEnrichmentQueue', {
   handler: addActivityToEnrichmentQueue,
+});
+
+// Register queue triggers
+app.storageQueue('enrichActivity', {
+  queueName: 'enrichment-queue',
+  connection: 'AzureWebJobsStorage',
+  handler: enrichActivity,
+});
+
+// Register poison queue handler
+app.storageQueue('handlePoisonQueue', {
+  queueName: 'enrichment-queue-poison',
+  connection: 'AzureWebJobsStorage',
+  handler: handlePoisonQueue,
 });

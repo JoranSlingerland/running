@@ -1,7 +1,9 @@
 import { getActivities } from './src/activities';
+import { getActivity } from './src/activity';
 import { checkAuth, initialAuth, refreshAuth } from './src/authentication';
 import { StravaClient } from './src/client';
 import { authUrl, baseUrl } from './src/config';
+import { getStream } from './src/streams';
 
 // TODO: Remove default export
 const strava = {
@@ -9,6 +11,8 @@ const strava = {
   refreshAuth,
   checkAuth,
   getActivities,
+  getActivity,
+  getStream,
   StravaClient,
 };
 
@@ -23,6 +27,8 @@ export {
   refreshAuth,
   checkAuth,
   getActivities,
+  getActivity,
+  getStream,
   stravaConfig,
   StravaClient,
 };

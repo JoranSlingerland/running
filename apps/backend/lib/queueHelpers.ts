@@ -16,8 +16,8 @@ async function addActivitiesToQueue(queueName: string, activities: Activity[]) {
   for (const activity of activities) {
     const response = await queueClient.sendMessage(
       jsonToBase64({
-        activity_id: activity.id,
-        user_id: activity.userId,
+        activityId: activity.id,
+        userId: activity.userId,
       }),
     );
 

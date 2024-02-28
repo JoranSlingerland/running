@@ -1,6 +1,8 @@
 import { getActivities } from './activities';
+import { getActivity } from './activity';
 import { checkAuth } from './authentication';
-import { StravaAuthentication } from './types';
+import { getStream } from './streams';
+import { StravaAuthentication, StreamType } from './types';
 
 class StravaClient {
   private auth: StravaAuthentication;
@@ -35,6 +37,23 @@ class StravaClient {
       auth: auth,
       before,
       after,
+    });
+  }
+
+  async getActivity({ id }: { id: number }) {
+    const auth = await this.validateAuth();
+    return getActivity({
+      auth: auth,
+      id,
+    });
+  }
+
+  async getStream({ id, keys }: { id: number; keys: StreamType[] }) {
+    const auth = await this.validateAuth();
+    return getStream({
+      auth: auth,
+      id,
+      keys,
     });
   }
 }
