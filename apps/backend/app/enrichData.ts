@@ -120,8 +120,6 @@ function calculateCustomFields(
   stream: Streams,
   userSettings: UserSettings,
 ): Activity {
-  // Calculate Reserves
-
   if (activity.has_heartrate) {
     let totalTime = 0;
 
@@ -143,13 +141,23 @@ function calculateCustomFields(
         const averageHeartRate = Math.round(
           heartRateData.reduce((a, b) => a + b, 0) / heartRateData.length,
         );
-
-        activity.laps[i].average_heartrate = averageHeartRate;
-        activity.laps[i].hr_reserve = calculateHrReserve(
+        const heartRateReserve = calculateHrReserve(
           averageHeartRate,
           userSettings.heart_rate.resting,
           userSettings.heart_rate.max,
         );
+
+        activity.laps[i].average_heartrate = averageHeartRate;
+        activity.laps[i].hr_reserve = heartRateReserve;
+
+        if (userSettings.gender) {
+          activity.laps[i].hr_trimp = calculateHrTrimp(
+            lap.moving_time,
+            heartRateReserve,
+            userSettings.gender,
+            true,
+          );
+        }
       }
     }
 
@@ -158,44 +166,8 @@ function calculateCustomFields(
       userSettings.heart_rate.resting,
       userSettings.heart_rate.max,
     );
-  }
 
-  if (activity.type.toLowerCase() === 'run') {
-    if (activity.laps) {
-      for (let i = 0; i < activity.laps.length; i++) {
-        const lap = activity.laps[i];
-        activity.laps[i].pace_reserve = calculatePaceReserve(
-          lap.average_speed,
-          userSettings.pace.threshold,
-        );
-      }
-    }
-
-    activity.pace_reserve = calculatePaceReserve(
-      activity.average_speed,
-      userSettings.pace.threshold,
-    );
-  }
-
-  // Calculate TRIMP
-  if (activity.has_heartrate && userSettings.gender) {
-    if (activity.laps) {
-      for (let i = 0; i < activity.laps.length; i++) {
-        const lap = activity.laps[i];
-        if (!lap.hr_reserve) {
-          console.warn('Skipping lap because of missing hr_reserve');
-          continue;
-        }
-        activity.laps[i].hr_trimp = calculateHrTrimp(
-          lap.moving_time,
-          lap.hr_reserve,
-          userSettings.gender,
-          true,
-        );
-      }
-    }
-
-    if (activity.hr_reserve) {
+    if (userSettings.gender) {
       activity.hr_trimp = calculateHrTrimp(
         activity.moving_time,
         activity.hr_reserve,
@@ -203,38 +175,7 @@ function calculateCustomFields(
         true,
       );
     }
-  }
 
-  if (activity.type.toLowerCase() === 'run' && userSettings.gender) {
-    if (activity.laps) {
-      for (let i = 0; i < activity.laps.length; i++) {
-        const lap = activity.laps[i];
-        if (!lap.pace_reserve) {
-          console.warn('Skipping lap because of missing pace_reserve');
-          continue;
-        }
-        activity.laps[i].pace_trimp = calculatePaceTrimp(
-          lap.moving_time,
-          lap.pace_reserve,
-          userSettings.gender,
-          true,
-        );
-      }
-    }
-
-    if (activity.pace_reserve) {
-      activity.pace_trimp = calculatePaceTrimp(
-        activity.moving_time,
-        activity.pace_reserve,
-        userSettings.gender,
-        true,
-      );
-    }
-  }
-
-  // Calculate Vo2Max
-
-  if (activity.has_heartrate) {
     activity.hr_max_percentage = calculateHrMaxPercentage(
       activity.average_heartrate,
       userSettings.heart_rate.max,
@@ -250,6 +191,45 @@ function calculateCustomFields(
       vo2_max_percentage: vo2max.vo2MaxPercentage,
       estimated_vo2_max: vo2max.estimatedVo2Max,
     };
+  }
+
+  if (activity.type.toLowerCase() === 'run') {
+    if (activity.laps) {
+      for (let i = 0; i < activity.laps.length; i++) {
+        const lap = activity.laps[i];
+
+        const paceReserve = calculatePaceReserve(
+          lap.average_speed,
+          userSettings.pace.threshold,
+        );
+
+        activity.laps[i].pace_reserve = paceReserve;
+
+        if (userSettings.gender) {
+          activity.laps[i].pace_trimp = calculatePaceTrimp(
+            lap.moving_time,
+            paceReserve,
+            userSettings.gender,
+            true,
+          );
+        }
+      }
+    }
+
+    const paceReserve = calculatePaceReserve(
+      activity.average_speed,
+      userSettings.pace.threshold,
+    );
+
+    activity.pace_reserve = paceReserve;
+    if (userSettings.gender) {
+      activity.pace_trimp = calculatePaceTrimp(
+        activity.moving_time,
+        paceReserve,
+        userSettings.gender,
+        true,
+      );
+    }
   }
 
   activity.custom_fields_calculated = true;
