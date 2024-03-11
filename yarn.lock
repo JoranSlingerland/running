@@ -3512,7 +3512,7 @@ __metadata:
     dayjs: "npm:^1.11.10"
     eslint: "npm:^8"
     isomorphic-unfetch: "npm:^4.0.2"
-    lucide-react: "npm:^0.312.0"
+    lucide-react: "npm:^0.354.0"
     next: "npm:^14.0.4"
     next-auth: "npm:^4.24.5"
     next-themes: "npm:^0.2.1"
@@ -4518,12 +4518,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:^0.312.0":
-  version: 0.312.0
-  resolution: "lucide-react@npm:0.312.0"
+"lucide-react@npm:^0.354.0":
+  version: 0.354.0
+  resolution: "lucide-react@npm:0.354.0"
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/491b3403f51a1740c8cb0a558c4151c28eb175fc386099dbf9eaa63a314bb941ecb5cf6434b233ef6708e2af51ebaf8362987cc59958584990c1d1b5f34d4237
+  checksum: 10c0/743fd42855df964aa1afc4b2db294754777802bde818ec0cf1f67db2790be22e53dfd431051ffeb6e875209ca4d0652c93f5e61f9682032a030cf183aba468e0
   languageName: node
   linkType: hard
 
