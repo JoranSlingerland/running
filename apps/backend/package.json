@@ -20,7 +20,7 @@
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
     "@types/node": "^18.x",
-    "typescript": "^4.0.0"
+    "typescript": "^5.4.3"
   },
   "main": "dist/app.js"
 }
