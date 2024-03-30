@@ -10,7 +10,7 @@ type Input = {
 };
 
 const subOrchOutputToCosmosDb: OrchestrationHandler = function* (
-  context: OrchestrationContext,
+  context: OrchestrationContext
 ) {
   const data = context.df.getInput() as Input;
 
@@ -46,7 +46,7 @@ const outputToCosmosDb: ActivityHandler = async (input: [string, unknown]) => {
     return;
   }
 
-  for (const item of items) {
+  for (const item of items as Array<Record<string, unknown>>) {
     await upsertWithBackOff(container_name, item);
   }
 };

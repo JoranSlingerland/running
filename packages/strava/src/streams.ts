@@ -1,4 +1,4 @@
-import { createBasicWretchInstance } from '@repo/api';
+import { WretchError, createBasicWretchInstance } from '@repo/api';
 
 import { baseUrl } from './config';
 import { StreamQuery, Streams } from './types';
@@ -24,7 +24,7 @@ async function getStream({ auth, id, keys }: StreamQuery): Promise<Streams> {
       throw new Error('Rate limited');
     })
     .json()
-    .catch((error) => {
+    .catch((error: WretchError) => {
       console.error('Error fetching activity', error);
       throw new Error('Error fetching activity');
     })) as Streams;
