@@ -33,7 +33,7 @@ function handleStravaAuthentication(router: ReturnType<typeof useRouter>) {
   }
 
   router.push(
-    `${stravaConfig.authUrl}?client_id=${process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID}&redirect_uri=${callback_url}&response_type=code&%20response_type=force&scope=${scope}`,
+    `${stravaConfig.authUrl}?client_id=${process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID}&redirect_uri=${callback_url}&response_type=code&%20response_type=force&scope=${scope}`
   );
 }
 
@@ -42,7 +42,7 @@ const buttonRow = (
   title: string,
   description: string,
   onClick: () => void,
-  buttonText: string,
+  buttonText: string
 ) => (
   <div className="grid grid-cols-2 grid-rows-2">
     <Title variant="h4">{title}</Title>
@@ -64,23 +64,23 @@ const Actions = (router: ReturnType<typeof useRouter>) => (
         () => {
           startOrchestrator({
             query: {
-              functionName: 'orch_gather_data',
+              functionName: 'gatherData',
             },
           });
         },
-        'Refresh',
+        'Refresh'
       )}
       {buttonRow(
         'Clear local storage',
         'This will clear all cached data in the local storage of the browser.',
         () => handleSessionStorageClearClick,
-        'Clear',
+        'Clear'
       )}
       {buttonRow(
         'Authenticate Strava',
         'This will authenticate strava again or for the first time.',
         () => handleStravaAuthentication(router),
-        'Authenticate',
+        'Authenticate'
       )}
     </div>
   </div>

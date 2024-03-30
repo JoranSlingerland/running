@@ -3,7 +3,12 @@
 import { app } from '@azure/functions';
 import * as df from 'durable-functions';
 
-import { orchestratorStart } from './api/orchestrator';
+import {
+  orchestratorList,
+  orchestratorPurge,
+  orchestratorStart,
+  orchestratorTerminate,
+} from './api/orchestrator';
 import { enrichActivity } from './app/enrichData';
 import {
   addActivityToEnrichmentQueue,
@@ -23,6 +28,24 @@ app.http('orchestratorStart', {
   extraInputs: [df.input.durableClient()],
   handler: orchestratorStart,
   methods: ['POST'],
+});
+app.http('orchestratorTerminate', {
+  route: 'orchestrator/terminate',
+  extraInputs: [df.input.durableClient()],
+  handler: orchestratorTerminate,
+  methods: ['POST'],
+});
+app.http('orchestratorList', {
+  route: 'orchestrator/list',
+  extraInputs: [df.input.durableClient()],
+  handler: orchestratorList,
+  methods: ['GET'],
+});
+app.http('orchestratorPurge', {
+  route: 'orchestrator/purge',
+  extraInputs: [df.input.durableClient()],
+  handler: orchestratorPurge,
+  methods: ['DELETE'],
 });
 
 // Register orchestrations
