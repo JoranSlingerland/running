@@ -52,7 +52,7 @@ function createWretchInstance<Query, Body>({
 
 function addBearerTokenToWretchInstance(
   bearerToken: string | undefined,
-  wretchInstance: WretchInstance
+  wretchInstance: WretchInstance,
 ) {
   if (bearerToken) {
     return wretchInstance.auth(`Bearer ${bearerToken}`);

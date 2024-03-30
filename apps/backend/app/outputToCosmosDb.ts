@@ -10,7 +10,7 @@ type Input = {
 };
 
 const subOrchOutputToCosmosDb: OrchestrationHandler = function* (
-  context: OrchestrationContext
+  context: OrchestrationContext,
 ) {
   const data = context.df.getInput() as Input;
 

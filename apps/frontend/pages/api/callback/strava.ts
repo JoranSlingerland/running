@@ -3,7 +3,7 @@ import {
   upsertUserSettingsToCosmos,
   userSettingsFromCosmos,
 } from '@repo/cosmosdb';
-import strava from '@repo/strava';
+import { initialAuth } from '@repo/strava';
 import type { NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 
@@ -56,7 +56,7 @@ async function handleGet(
     return;
   }
 
-  const authResponse = await strava.initialAuth(code);
+  const authResponse = await initialAuth(code);
 
   if (!authResponse) {
     res.status(500).json({ message: 'Failed to authenticate with Strava' });

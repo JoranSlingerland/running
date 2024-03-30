@@ -1,74 +1,62 @@
 {
-    "$schema": "http://json.schemastore.org/eslintrc",
-    "extends": [
-        "prettier",
-        "eslint-config-turbo",
-        "eslint:recommended",
-        "plugin:import/recommended",
-        "plugin:import/typescript",
-        "plugin:sonarjs/recommended",
-        "plugin:tailwindcss/recommended",
-        "plugin:@typescript-eslint/recommended"
+  "$schema": "http://json.schemastore.org/eslintrc",
+  "extends": [
+    "prettier",
+    "eslint-config-turbo",
+    "eslint:recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "plugin:sonarjs/recommended",
+    "plugin:tailwindcss/recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "plugins": ["prettier", "@typescript-eslint", "import", "sonarjs"],
+  "rules": {
+    "prettier/prettier": [
+      "warn",
+      {
+        "endOfLine": "auto",
+        "trailingComma": "all"
+      }
     ],
-    "plugins": [
-        "prettier",
-        "@typescript-eslint",
-        "import",
-        "sonarjs"
+    "turbo/no-undeclared-env-vars": "off",
+    "sort-imports": [
+      "error",
+      {
+        "ignoreCase": false,
+        "ignoreDeclarationSort": true,
+        "ignoreMemberSort": false,
+        "memberSyntaxSortOrder": ["none", "all", "multiple", "single"],
+        "allowSeparatedGroups": true
+      }
     ],
-    "rules": {
-        "prettier/prettier": [
-            "warn",
-            {
-                "endOfLine": "auto"
-            }
+    "import/no-unresolved": "off",
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          ["parent", "sibling"],
+          "index"
         ],
-        "turbo/no-undeclared-env-vars": "off",
-        "sort-imports": [
-            "error",
-            {
-                "ignoreCase": false,
-                "ignoreDeclarationSort": true,
-                "ignoreMemberSort": false,
-                "memberSyntaxSortOrder": [
-                    "none",
-                    "all",
-                    "multiple",
-                    "single"
-                ],
-                "allowSeparatedGroups": true
-            }
-        ],
-        "import/no-unresolved": "off",
-        "import/order": [
-            "error",
-            {
-                "groups": [
-                    "builtin",
-                    "external",
-                    "internal",
-                    [
-                        "parent",
-                        "sibling"
-                    ],
-                    "index"
-                ],
-                "newlines-between": "always",
-                "alphabetize": {
-                    "order": "asc",
-                    "caseInsensitive": true
-                }
-            }
-        ],
-        "import/no-named-as-default": "off",
-        "no-undef": "off",
-        "no-unused-vars": "off",
-        "no-redeclare": "off",
-        "require-yield": "off",
-        "no-prototype-builtins": "off",
-        "sonarjs/no-small-switch": "off",
-        "tailwindcss/no-custom-classname": "off"
-    },
-    "parser": "@typescript-eslint/parser",
-    "root": true
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ],
+    "import/no-named-as-default": "off",
+    "no-undef": "off",
+    "no-unused-vars": "off",
+    "no-redeclare": "off",
+    "require-yield": "off",
+    "no-prototype-builtins": "off",
+    "sonarjs/no-small-switch": "off",
+    "tailwindcss/no-custom-classname": "off"
+  },
+  "parser": "@typescript-eslint/parser",
+  "root": true
 }

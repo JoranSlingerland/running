@@ -9,7 +9,7 @@ import * as df from 'durable-functions';
 
 export const orchestratorStart: HttpHandler = async (
   request: HttpRequest,
-  context: InvocationContext
+  context: InvocationContext,
 ): Promise<HttpResponse> => {
   const client = df.getClient(context);
   const functionName = request.query.get('functionName');
@@ -41,7 +41,7 @@ export const orchestratorStart: HttpHandler = async (
   });
 
   context.log(
-    `Started orchestration ${functionName} with ID = '${instanceId}'.`
+    `Started orchestration ${functionName} with ID = '${instanceId}'.`,
   );
 
   return client.createCheckStatusResponse(request, instanceId);
@@ -49,7 +49,7 @@ export const orchestratorStart: HttpHandler = async (
 
 export const orchestratorTerminate: HttpHandler = async (
   request: HttpRequest,
-  context: InvocationContext
+  context: InvocationContext,
 ): Promise<HttpResponse> => {
   const client = df.getClient(context);
   const instanceId = request.query.get('instanceId');
@@ -119,7 +119,7 @@ export const orchestratorTerminate: HttpHandler = async (
 
 export const orchestratorPurge: HttpHandler = async (
   request: HttpRequest,
-  context: InvocationContext
+  context: InvocationContext,
 ): Promise<HttpResponse> => {
   const client = df.getClient(context);
   const instanceId = request.query.get('instanceId');
@@ -178,7 +178,7 @@ export const orchestratorPurge: HttpHandler = async (
 
 export const orchestratorList: HttpHandler = async (
   request: HttpRequest,
-  context: InvocationContext
+  context: InvocationContext,
 ): Promise<HttpResponse> => {
   const client = df.getClient(context);
   let days = request.query.get('days');
@@ -206,7 +206,7 @@ export const orchestratorList: HttpHandler = async (
     startDate,
     endDate,
     client,
-    jwt.id
+    jwt.id,
   );
   // Sort orchestrations by createdTime
   orchestrations.sort((a, b) => {
@@ -225,7 +225,7 @@ async function getOrchestrations(
   startDate: Date,
   endDate: Date,
   client: df.DurableClient,
-  userId: string
+  userId: string,
 ) {
   const instances = await client.getStatusBy({
     createdTimeFrom: startDate,
