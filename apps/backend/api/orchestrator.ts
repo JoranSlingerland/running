@@ -4,8 +4,9 @@ import {
   HttpResponse,
   InvocationContext,
 } from '@azure/functions';
-import { decryptJwt } from '@repo/jwt';
 import * as df from 'durable-functions';
+
+import { getAuthorization } from '../lib/authorization';
 
 export const orchestratorStart: HttpHandler = async (
   request: HttpRequest,
@@ -13,10 +14,9 @@ export const orchestratorStart: HttpHandler = async (
 ): Promise<HttpResponse> => {
   const client = df.getClient(context);
   const functionName = request.query.get('functionName');
-  const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-  const jwt = decryptJwt(token, { secret: process.env.API_SHARED_KEY });
+  const { authorized, userId } = getAuthorization(request);
 
-  if (!jwt || !jwt.id) {
+  if (!authorized) {
     return new HttpResponse({
       status: 401,
       jsonBody: {
@@ -37,7 +37,7 @@ export const orchestratorStart: HttpHandler = async (
   }
 
   const instanceId: string = await client.startNew(functionName, {
-    input: { id: jwt.id },
+    input: { id: userId },
   });
 
   context.log(
@@ -53,10 +53,9 @@ export const orchestratorTerminate: HttpHandler = async (
 ): Promise<HttpResponse> => {
   const client = df.getClient(context);
   const instanceId = request.query.get('instanceId');
-  const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-  const jwt = decryptJwt(token, { secret: process.env.API_SHARED_KEY });
+  const { authorized, userId } = getAuthorization(request);
 
-  if (!jwt || !jwt.id) {
+  if (!authorized) {
     return new HttpResponse({
       status: 401,
       jsonBody: {
@@ -78,8 +77,8 @@ export const orchestratorTerminate: HttpHandler = async (
   const input = status.input || {
     id: null,
   };
-  // Check if input is an object with an id property
-  if (typeof input === 'object' && 'id' in input && input.id !== jwt.id) {
+
+  if (typeof input === 'object' && 'id' in input && input.id !== userId) {
     return new HttpResponse({
       status: 401,
       jsonBody: {
@@ -123,10 +122,9 @@ export const orchestratorPurge: HttpHandler = async (
 ): Promise<HttpResponse> => {
   const client = df.getClient(context);
   const instanceId = request.query.get('instanceId');
-  const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-  const jwt = decryptJwt(token, { secret: process.env.API_SHARED_KEY });
+  const { authorized, userId } = getAuthorization(request);
 
-  if (!jwt || !jwt.id) {
+  if (!authorized) {
     return new HttpResponse({
       status: 401,
       jsonBody: {
@@ -149,7 +147,7 @@ export const orchestratorPurge: HttpHandler = async (
     id: null,
   };
   // Check if input is an object with an id property
-  if (typeof input === 'object' && 'id' in input && input.id !== jwt.id) {
+  if (typeof input === 'object' && 'id' in input && input.id !== userId) {
     return new HttpResponse({
       status: 401,
       jsonBody: {
@@ -182,10 +180,9 @@ export const orchestratorList: HttpHandler = async (
 ): Promise<HttpResponse> => {
   const client = df.getClient(context);
   let days = request.query.get('days');
-  const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-  const jwt = decryptJwt(token, { secret: process.env.API_SHARED_KEY });
+  const { authorized, userId } = getAuthorization(request);
 
-  if (!jwt || !jwt.id) {
+  if (!authorized) {
     return new HttpResponse({
       status: 401,
       jsonBody: {
@@ -206,7 +203,7 @@ export const orchestratorList: HttpHandler = async (
     startDate,
     endDate,
     client,
-    jwt.id,
+    userId,
   );
   // Sort orchestrations by createdTime
   orchestrations.sort((a, b) => {
@@ -214,7 +211,7 @@ export const orchestratorList: HttpHandler = async (
       new Date(b.createdTime).getTime() - new Date(a.createdTime).getTime()
     );
   });
-  console.log(orchestrations);
+
   return new HttpResponse({
     status: 200,
     jsonBody: orchestrations,
@@ -225,7 +222,7 @@ async function getOrchestrations(
   startDate: Date,
   endDate: Date,
   client: df.DurableClient,
-  userId: string,
+  userId: string | null,
 ) {
   const instances = await client.getStatusBy({
     createdTimeFrom: startDate,
