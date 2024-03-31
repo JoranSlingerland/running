@@ -1,19 +1,21 @@
 import { HttpRequest } from '@azure/functions';
-import { decryptJwt } from '@repo/jwt';
+import { decryptAndVerifyPayload } from '@repo/jwt';
 
-function getAuthorization(request: HttpRequest) {
+async function getAuthorization(request: HttpRequest) {
   const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-  const jwt = decryptJwt(token, { secret: process.env.API_SHARED_KEY });
-  const currentUnixTimeStamps = Math.floor(Date.now() / 1000);
 
-  // eslint-disable-next-line sonarjs/prefer-single-boolean-return
-  if (
-    !jwt ||
-    !jwt.id ||
-    !jwt.exp ||
-    typeof jwt.exp !== 'number' ||
-    jwt.exp < currentUnixTimeStamps
-  ) {
+  if (!token) {
+    return {
+      authorized: false,
+      userId: null,
+    };
+  }
+
+  const jwt = await decryptAndVerifyPayload(token, {
+    secret: process.env.API_SHARED_KEY || '',
+  });
+
+  if (!jwt || !jwt.id || typeof jwt.id !== 'string') {
     return {
       authorized: false,
       userId: null,

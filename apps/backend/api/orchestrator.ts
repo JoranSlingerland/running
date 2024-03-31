@@ -14,7 +14,7 @@ export const orchestratorStart: HttpHandler = async (
 ): Promise<HttpResponse> => {
   const client = df.getClient(context);
   const functionName = request.query.get('functionName');
-  const { authorized, userId } = getAuthorization(request);
+  const { authorized, userId } = await getAuthorization(request);
 
   if (!authorized) {
     return new HttpResponse({
@@ -53,7 +53,7 @@ export const orchestratorTerminate: HttpHandler = async (
 ): Promise<HttpResponse> => {
   const client = df.getClient(context);
   const instanceId = request.query.get('instanceId');
-  const { authorized, userId } = getAuthorization(request);
+  const { authorized, userId } = await getAuthorization(request);
 
   if (!authorized) {
     return new HttpResponse({
@@ -122,7 +122,7 @@ export const orchestratorPurge: HttpHandler = async (
 ): Promise<HttpResponse> => {
   const client = df.getClient(context);
   const instanceId = request.query.get('instanceId');
-  const { authorized, userId } = getAuthorization(request);
+  const { authorized, userId } = await getAuthorization(request);
 
   if (!authorized) {
     return new HttpResponse({
@@ -180,7 +180,7 @@ export const orchestratorList: HttpHandler = async (
 ): Promise<HttpResponse> => {
   const client = df.getClient(context);
   let days = request.query.get('days');
-  const { authorized, userId } = getAuthorization(request);
+  const { authorized, userId } = await getAuthorization(request);
 
   if (!authorized) {
     return new HttpResponse({

@@ -1,5 +1,5 @@
 import { WretchError, createWretchInstance } from '@repo/api';
-import { encryptJwt } from '@repo/jwt';
+import { signAndEncryptPayload } from '@repo/jwt';
 import type { NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 
@@ -43,7 +43,10 @@ export default async function handler(
   let isError = false;
   let statusCode = 200;
   let error: unknown;
-  const jwt = encryptJwt(token, { secret: process.env.API_SHARED_KEY });
+  const jwt = await signAndEncryptPayload(token, {
+    secret: process.env.API_SHARED_KEY,
+    issuer: process.env.NEXTAUTH_URL,
+  });
   const url = `${process.env.AZURE_FUNCTION_URL}${urlPath.replace('/api', '')}`;
   const query = {
     code: process.env.AZURE_FUNCTION_KEY,
