@@ -5,7 +5,6 @@ import {
   compactDecrypt,
   jwtVerify,
 } from 'jose';
-import { JwtPayload } from 'jsonwebtoken';
 
 interface Options {
   secret?: string;
@@ -40,7 +39,7 @@ async function signAndEncryptPayload(
 async function decryptAndVerifyPayload(
   jwe: string,
   options: Options,
-): Promise<JwtPayload | undefined> {
+): Promise<JWTPayload | undefined> {
   const secret = validateAndEncodeSecret(options.secret);
 
   const { plaintext: jwt } = await compactDecrypt(jwe, secret.slice(0, 32));
