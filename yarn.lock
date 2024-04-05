@@ -1770,12 +1770,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.x":
-  version: 18.19.14
-  resolution: "@types/node@npm:18.19.14"
+"@types/node@npm:^20.x":
+  version: 20.12.4
+  resolution: "@types/node@npm:20.12.4"
   dependencies:
     undici-types: "npm:~5.26.4"
-  checksum: 10c0/a614e85d3d75e9bb73c1155f77843804506806629d20774e0479e88678efd64ab57f7bb2ba290b226fe732b6aead037ac181db04851a2f37e1c2a14744ffdb96
+  checksum: 10c0/9b142fcd839a48c348d6b9acfc753dfa4b3fb1f3e23ed67e8952bee9b2dfdaffdddfbcf0e4701557b88631591a5f9968433910027532ef847759f8682e27ffe7
   languageName: node
   linkType: hard
 
@@ -2347,7 +2347,7 @@ __metadata:
     "@repo/strava": "npm:*"
     "@repo/types": "npm:*"
     "@repo/typescript-config": "npm:*"
-    "@types/node": "npm:^18.x"
+    "@types/node": "npm:^20.x"
     durable-functions: "npm:3.0.0-alpha.5"
   languageName: unknown
   linkType: soft
