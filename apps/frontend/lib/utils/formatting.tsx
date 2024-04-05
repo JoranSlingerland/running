@@ -104,11 +104,9 @@ function formatDateTime(date: string) {
 function formatMinute(seconds: number) {
   const [minutes, remainingSeconds] =
     convertSecondsToMinutesAndRemainder(seconds);
-  const formattedTime = `${minutes
+  return `${minutes
     .toString()
     .padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-
-  return formattedTime;
 }
 
 // Pace and speed functions
@@ -124,18 +122,13 @@ function formatPace({
   const value = formatMinute(
     convertSpeedToPaceInSeconds(metersPerSecond, units),
   );
-  const formattedValue = addUnit
-    ? `${value} ${unitMapper(units, 'pace')}`
-    : value;
-
-  return formattedValue;
+  return addUnit ? `${value} ${unitMapper(units, 'pace')}` : value;
 }
 
 // Misc functions
 function formatHeartRate(heartRate: number, addUnit = true) {
   const value = heartRate.toFixed(0);
-  const formattedValue = addUnit ? `${value} bpm` : value;
-  return formattedValue;
+  return addUnit ? `${value} bpm` : value;
 }
 
 function formatNumber({
@@ -148,8 +141,7 @@ function formatNumber({
   if (number === undefined) {
     return '';
   }
-  const formattedNumber = number.toFixed(decimals);
-  return formattedNumber;
+  return number.toFixed(decimals);
 }
 
 const sportIcon = (sport: string): JSX.Element => {

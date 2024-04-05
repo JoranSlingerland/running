@@ -111,7 +111,7 @@ export default function Calendar({
   const Loading = <Skeleton className="h-36" />;
 
   const Header = (
-    <div className="space-x-2 mt-4 flex flex-row">
+    <div className="mt-4 flex flex-row space-x-2">
       <Select
         value={currentDay.year().toString()}
         onValueChange={(newYear) => {
@@ -183,7 +183,7 @@ export default function Calendar({
     <div className="grid grid-cols-8">
       {daysOfWeek.map((day, index) => (
         <Title
-          className={`text-center my-2 ${
+          className={`my-2 text-center ${
             index === daysOfWeek.length - 1 ? 'ml-4' : ''
           }`}
           key={index}
@@ -203,14 +203,14 @@ export default function Calendar({
         return (
           <React.Fragment key={index}>
             <Card
-              className={`rounded-none hover:bg-gray-100 dark:hover:bg-gray-800 h-full ${
+              className={`h-full rounded-none hover:bg-gray-100 dark:hover:bg-gray-800 ${
                 inThePast ? 'brightness-95 dark:brightness-75' : ''
               }`}
             >
               <CardHeader>
                 <CardTitle
                   className={`rounded-full p-1 ${
-                    isToday ? 'font-bold border-2 ' : ''
+                    isToday ? 'border-2 font-bold ' : ''
                   }`}
                 >
                   {titlePrefix && titlePrefix(day)}
@@ -226,7 +226,7 @@ export default function Calendar({
             </Card>
             {day.day() === 0 && (
               <div className="pl-4">
-                <Card className="rounded-none h-full pt-2">
+                <Card className="h-full rounded-none pt-2">
                   <CardContent className="min-h-[10rem]">
                     {isLoading && Loading}
                     {!isLoading && metaCellRenderer && metaCellRenderer(day)}

@@ -1,12 +1,13 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { accountForm } from '@repo/schemas';
+import type { AccountForm } from '@repo/schemas';
 import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useDeepCompareEffect } from 'rooks';
-import * as z from 'zod';
 
 import { heartRateZoneColumns } from '@elements/columns/heartRateZoneColumns';
 import { paceZoneColumns } from '@elements/columns/paceZoneColumns';
 import { DataTable } from '@elements/shadcnTable';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useProps } from '@hooks/useProps';
 import { addUserData } from '@services/user/post';
 import { Button } from '@ui/button';
@@ -26,20 +27,6 @@ import {
 } from '@utils/convert';
 import { formatPace } from '@utils/formatting';
 
-// Constants
-const paceRegex = /^(\d{1,3}):(\d{1,2})$/;
-
-const formSchema = z.object({
-  gender: z.union([z.literal('male'), z.literal('female')]),
-  hr_max: z.number().min(0).max(300),
-  hr_rest: z.number().min(0).max(300),
-  hr_threshold: z.number().min(0).max(300),
-  pace_threshold: z.string().refine((v) => paceRegex.test(v), {
-    message:
-      'Pace threshold must be in the format MM:SS, where leading zeros are optional.',
-  }),
-});
-
 // Helper functions
 function calculatePaceZones(threshold: string, units: Units) {
   const zonePercentages = {
@@ -56,24 +43,24 @@ function calculatePaceZones(threshold: string, units: Units) {
     units,
   );
   const zones = Object.keys(zonePercentages);
-  let result = {
+  const result = {
     speedInMetersPerSeconds: [] as { name: string; min: number; max: number }[],
     pace: [] as { name: string; min: string; max: string }[],
   };
   zones.map((name) => {
     const percentage = zonePercentages[name as keyof typeof zonePercentages];
-    let minSpeed: number = speed * percentage[0];
+    const minSpeed: number = speed * percentage[0];
     let maxSpeed: number = speed * percentage[1];
 
     if (name === 'Zone 5C: Anaerobic Capacity') {
       maxSpeed = 27.5;
     }
 
-    let minPace = formatPace({
+    const minPace = formatPace({
       metersPerSecond: minSpeed,
       units: units,
     });
-    let maxPace = formatPace({
+    const maxPace = formatPace({
       metersPerSecond: maxSpeed,
       units: units,
     });
@@ -105,9 +92,9 @@ function calculateHeartRateZones({ threshold }: { threshold: number }) {
 
   const zones = Object.keys(zonePercentages);
 
-  const zonesWithValues = zones.map((name) => {
+  return zones.map((name) => {
     const percentage = zonePercentages[name as keyof typeof zonePercentages];
-    let min = threshold * percentage[0];
+    const min = threshold * percentage[0];
     let max = threshold * percentage[1];
 
     if (name === 'Zone 5C: Anaerobic Capacity') {
@@ -120,15 +107,13 @@ function calculateHeartRateZones({ threshold }: { threshold: number }) {
       max,
     };
   });
-
-  return zonesWithValues;
 }
 
 // Component
 export function AccountForm() {
   const { userSettings } = useProps();
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<AccountForm>({
+    resolver: zodResolver(accountForm),
     defaultValues: {
       gender: userSettings?.data?.gender,
       hr_max: userSettings?.data?.heart_rate?.max,
@@ -141,11 +126,11 @@ export function AccountForm() {
       }),
     },
   });
-  let paceZones = calculatePaceZones(
+  const paceZones = calculatePaceZones(
     form.watch('pace_threshold'),
     userSettings?.data?.preferences.units || 'metric',
   );
-  let heartRateZones = calculateHeartRateZones({
+  const heartRateZones = calculateHeartRateZones({
     threshold: form.watch('hr_threshold'),
   });
 
@@ -165,7 +150,7 @@ export function AccountForm() {
     }
   }, [userSettings, form]);
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: AccountForm) {
     if (!userSettings?.data) return;
     const newSettings = {
       ...userSettings?.data,
@@ -322,7 +307,7 @@ export function AccountForm() {
           <Button disabled={userSettings?.isLoading} type="submit">
             Save
             {userSettings?.isLoading && (
-              <Loader2 className="animate-spin ml-2" size={16} />
+              <Loader2 className="ml-2 animate-spin" size={16} />
             )}
           </Button>
         </div>

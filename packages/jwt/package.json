@@ -1,0 +1,25 @@
+{
+  "name": "@repo/jwt",
+  "version": "0.0.0",
+  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "ts-coverage": "typescript-coverage-report --threshold 100",
+    "lint": "npx eslint . --ext .ts --ignore-pattern 'node_modules/*'",
+    "fix": "npx eslint . --ext .ts --fix --ignore-pattern 'node_modules/*'",
+    "preinstall": "npx only-allow yarn"
+  },
+  "dependencies": {
+    "jose": "^5.2.3"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
+    "@types/jsonwebtoken": "^9"
+  },
+  "main": "dist/index.js"
+}

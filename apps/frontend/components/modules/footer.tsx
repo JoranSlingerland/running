@@ -6,7 +6,7 @@ import { Link, Text } from '@ui/typography';
 
 function FooterLinks() {
   return (
-    <div className="flex justify-center items-center h-5">
+    <div className="flex h-5 items-center justify-center">
       <Link
         target="_blank"
         href="https://github.com/JoranSlingerland/running-backend/blob/main/LICENSE"
@@ -21,8 +21,8 @@ function FooterLinks() {
         target="_blank"
         type="muted"
       >
-        <div className="flex text-xs items-center">
-          <Github className="mr-1 w-5 h-5" /> API
+        <div className="flex items-center text-xs">
+          <Github className="mr-1 size-5" /> API
         </div>
       </Link>
       <Separator orientation="vertical" />
@@ -32,7 +32,7 @@ function FooterLinks() {
         type="muted"
       >
         <span className="flex items-center text-xs">
-          <Github className="mr-1 w-5 h-5" />
+          <Github className="mr-1 size-5" />
           Frontend
         </span>
       </Link>
@@ -40,12 +40,12 @@ function FooterLinks() {
   );
 }
 
-function Footer({}: {}): JSX.Element {
+function Footer(): JSX.Element {
   return (
     <div className="mt-auto">
       <Separator />
-      <div className="flex justify-center mb-4">
-        <div className="w-full flex flex-col space-y-2 items-center  justify-center max-w-7xl">
+      <div className="mb-4 flex justify-center">
+        <div className="flex w-full max-w-7xl flex-col items-center  justify-center space-y-2">
           <Text className="text-xs" type="muted">
             Running by Joran Slingerland
           </Text>
