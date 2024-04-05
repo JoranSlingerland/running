@@ -54,7 +54,6 @@ interface Activity {
   perceived_exertion: null | number | undefined;
   userId: string;
   full_data: boolean;
-  custom_fields_calculated: boolean;
   hr_reserve: null | number;
   pace_reserve: null | number;
   hr_trimp: null | number;
@@ -69,6 +68,8 @@ interface Activity {
     include_in_vo2max_estimate: boolean;
     tags: string[];
     notes: string;
+    race: boolean;
+    workout_type: string;
   };
   streams?: null | streams;
 }

@@ -8,7 +8,7 @@ async function getActivity({
   id,
 }: {
   auth: StravaAuthentication;
-  id: number;
+  id: number | string;
 }): Promise<DetailedActivity> {
   if (!auth) {
     throw new Error('Invalid authentication');
@@ -20,17 +20,20 @@ async function getActivity({
     controller: new AbortController(),
   });
 
-  return (await wretchInstance
-    .get()
-    .error(429, () => {
-      console.error('Rate limited');
-      throw new Error('Rate limited');
-    })
-    .json()
-    .catch((error: WretchError) => {
-      console.error('Error fetching activity', error);
-      throw new Error('Error fetching activity');
-    })) as DetailedActivity;
+  return (
+    (await wretchInstance
+      .get()
+      // TODO: Throw different error for overall rate limit
+      .error(429, () => {
+        console.error('Rate limited');
+        throw new Error('Rate limited');
+      })
+      .json()
+      .catch((error: WretchError) => {
+        console.error('Error fetching activity', error);
+        throw new Error('Error fetching activity');
+      })) as DetailedActivity
+  );
 }
 
 export { getActivity };

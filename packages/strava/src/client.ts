@@ -40,7 +40,7 @@ class StravaClient {
     });
   }
 
-  async getActivity({ id }: { id: number }) {
+  async getActivity({ id }: { id: number | string }) {
     const auth = await this.validateAuth();
     return getActivity({
       auth: auth,
@@ -48,7 +48,7 @@ class StravaClient {
     });
   }
 
-  async getStream({ id, keys }: { id: number; keys: StreamType[] }) {
+  async getStream({ id, keys }: { id: number | string; keys: StreamType[] }) {
     const auth = await this.validateAuth();
     return getStream({
       auth: auth,

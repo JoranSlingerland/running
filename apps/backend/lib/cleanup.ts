@@ -5,7 +5,6 @@ import { formatISO } from 'date-fns';
 function cleanupDetailedActivity(
   activity: DetailedActivity,
   userId: string,
-  customFieldsCalculated: boolean,
 ): Activity {
   activity.start_date = formatISO(new Date(activity.start_date));
   activity.start_date_local = formatISO(new Date(activity.start_date_local));
@@ -15,14 +14,13 @@ function cleanupDetailedActivity(
     lap.start_date_local = formatISO(new Date(lap.start_date_local));
   }
 
-  for (const effort of activity.best_efforts) {
-    effort.start_date = formatISO(new Date(effort.start_date));
-    effort.start_date_local = formatISO(new Date(effort.start_date_local));
-  }
-
-  for (const effort of activity.best_efforts) {
-    delete effort['athlete' as keyof typeof effort];
-    delete effort['activity' as keyof typeof effort];
+  if (activity.best_efforts) {
+    for (const effort of activity.best_efforts) {
+      effort.start_date = formatISO(new Date(effort.start_date));
+      effort.start_date_local = formatISO(new Date(effort.start_date_local));
+    }
+  } else {
+    activity.best_efforts = [];
   }
 
   const numberActivityId = activity.id.toString();
@@ -92,7 +90,6 @@ function cleanupDetailedActivity(
     perceived_exertion: activity.perceived_exertion,
     userId: userId,
     full_data: true,
-    custom_fields_calculated: customFieldsCalculated,
     hr_reserve: null,
     pace_reserve: null,
     hr_trimp: null,
@@ -106,6 +103,8 @@ function cleanupDetailedActivity(
     user_input: {
       include_in_vo2max_estimate: true,
       tags: [],
+      race: false,
+      workout_type: 'easy',
       notes: '',
     },
     streams: null,
@@ -178,7 +177,6 @@ function cleanUpSummaryActivity(
     perceived_exertion: null,
     userId: userId,
     full_data: false,
-    custom_fields_calculated: false,
     hr_reserve: null,
     pace_reserve: null,
     hr_trimp: null,
@@ -191,6 +189,8 @@ function cleanUpSummaryActivity(
     },
     user_input: {
       include_in_vo2max_estimate: true,
+      race: false,
+      workout_type: 'easy',
       tags: [],
       notes: '',
     },

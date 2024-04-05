@@ -27,7 +27,7 @@ async function enrichActivity(queueItem: unknown): Promise<void> {
     typeof queueItem !== 'object' ||
     !('activityId' in queueItem) ||
     !('userId' in queueItem) ||
-    typeof queueItem.activityId !== 'number' ||
+    typeof queueItem.activityId !== 'string' ||
     typeof queueItem.userId !== 'string'
   ) {
     console.warn('Invalid queue item:', queueItem);
@@ -55,6 +55,8 @@ async function enrichActivity(queueItem: unknown): Promise<void> {
 
   calculatedActivity.id.toString();
 
+  activity.full_data = true;
+
   await upsertWithBackOff('activities', calculatedActivity);
   await upsertWithBackOff('streams', {
     ...stream,
@@ -64,7 +66,7 @@ async function enrichActivity(queueItem: unknown): Promise<void> {
 }
 
 async function getActivityAndStream(
-  activityId: number,
+  activityId: string,
   userSettings: UserSettings,
 ) {
   let activity: DetailedActivity;
@@ -106,11 +108,7 @@ async function getActivityAndStream(
     throw new Error('Error fetching activity');
   }
 
-  const cleanedActivity = cleanupDetailedActivity(
-    activity,
-    userSettings.id,
-    false,
-  );
+  const cleanedActivity = cleanupDetailedActivity(activity, userSettings.id);
 
   return { activity: cleanedActivity, stream };
 }
@@ -173,8 +171,6 @@ function calculateCustomFields(
       );
     }
   }
-
-  activity.custom_fields_calculated = true;
 
   return activity;
 }

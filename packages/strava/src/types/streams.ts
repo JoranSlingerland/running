@@ -23,7 +23,7 @@ export type StreamType =
 
 export type StreamQuery = {
   auth: StravaAuthentication;
-  id: number;
+  id: number | string;
   keys: StreamType[];
 };
 

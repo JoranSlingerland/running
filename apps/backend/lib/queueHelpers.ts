@@ -12,6 +12,12 @@ function createQueueClient(queueName: string) {
 
 async function addActivitiesToQueue(queueName: string, activities: Activity[]) {
   const queueClient = createQueueClient(queueName);
+  activities.sort((a, b) => {
+    return new Date(b.start_date).getTime() - new Date(a.start_date).getTime();
+  });
+
+  let visibilityTimeout = 0;
+  let count = 0;
 
   for (const activity of activities) {
     const response = await queueClient.sendMessage(
@@ -19,6 +25,9 @@ async function addActivitiesToQueue(queueName: string, activities: Activity[]) {
         activityId: activity.id,
         userId: activity.userId,
       }),
+      {
+        visibilityTimeout: visibilityTimeout,
+      },
     );
 
     if (response._response.status < 200 || response._response.status >= 300) {
@@ -26,6 +35,14 @@ async function addActivitiesToQueue(queueName: string, activities: Activity[]) {
         `Failed to add activity to queue: ${response._response.status}`,
       );
     }
+    if (count % 45 === 0) {
+      visibilityTimeout += 60 * 15;
+      console.log(
+        'Messages will now start processing at:',
+        new Date(Date.now() + visibilityTimeout * 1000),
+      );
+    }
+    count++;
   }
 
   return {

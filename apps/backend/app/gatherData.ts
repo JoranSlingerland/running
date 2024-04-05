@@ -71,8 +71,13 @@ const getActivities: ActivityHandler = async (userSettings: UserSettings) => {
     strava_authentication: auth,
   });
 
+  let epochStartDate = 0;
+  if (latestActivityDate?.start_date) {
+    epochStartDate = new Date(latestActivityDate.start_date).getTime() / 1000;
+  }
+
   const activities = await stravaClient.getActivities({
-    after: latestActivityDate?.start_date,
+    after: epochStartDate,
   });
 
   if (!activities || activities.length === 0) {
