@@ -1458,6 +1458,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@repo/queue-helpers@npm:*, @repo/queue-helpers@workspace:packages/queue-helpers":
+  version: 0.0.0-use.local
+  resolution: "@repo/queue-helpers@workspace:packages/queue-helpers"
+  dependencies:
+    "@azure/storage-queue": "npm:12.16.0"
+    "@repo/eslint-config": "npm:*"
+    "@repo/typescript-config": "npm:*"
+  languageName: unknown
+  linkType: soft
+
 "@repo/schemas@npm:*, @repo/schemas@workspace:packages/schemas":
   version: 0.0.0-use.local
   resolution: "@repo/schemas@workspace:packages/schemas"
@@ -2330,10 +2340,10 @@ __metadata:
   resolution: "backend@workspace:apps/backend"
   dependencies:
     "@azure/functions": "npm:^4.0.0"
-    "@azure/storage-queue": "npm:12.16.0"
     "@repo/cosmosdb": "npm:*"
     "@repo/eslint-config": "npm:*"
     "@repo/jwt": "npm:*"
+    "@repo/queue-helpers": "npm:*"
     "@repo/strava": "npm:*"
     "@repo/types": "npm:*"
     "@repo/typescript-config": "npm:*"

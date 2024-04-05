@@ -3,6 +3,7 @@ import {
   upsertUserSettingsToCosmos,
   userSettingsFromCosmos,
 } from '@repo/cosmosdb';
+import { addActivitiesToQueue } from '@repo/queue-helpers';
 import { StravaClient } from '@repo/strava';
 import { Activity, UserSettings } from '@repo/types';
 import {
@@ -12,7 +13,6 @@ import {
 } from 'durable-functions';
 
 import { cleanUpSummaryActivity } from '../lib/cleanup';
-import { addActivitiesToQueue } from '../lib/queueHelpers';
 
 const gatherData: OrchestrationHandler = function* (
   context: OrchestrationContext,
@@ -49,7 +49,7 @@ const gatherData: OrchestrationHandler = function* (
     activities,
   ]);
 
-  return 'done';
+  return { status: 'success', ActivitiesAdded: activities.length };
 };
 
 const getUserSettings: ActivityHandler = async (id: string) => {

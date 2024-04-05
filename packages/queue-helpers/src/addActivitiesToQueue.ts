@@ -1,14 +1,6 @@
-import { QueueServiceClient } from '@azure/storage-queue';
 import { Activity } from '@repo/types';
 
-function createQueueClient(queueName: string) {
-  const connStr = process.env.AzureWebJobsStorage;
-  if (!connStr) {
-    throw new Error('Environment variable AzureWebJobsStorage is missing');
-  }
-  const queueServiceClient = QueueServiceClient.fromConnectionString(connStr);
-  return queueServiceClient.getQueueClient(queueName);
-}
+import { createQueueClient, jsonToBase64 } from './helpers';
 
 async function addActivitiesToQueue(queueName: string, activities: Activity[]) {
   const queueClient = createQueueClient(queueName);
@@ -17,9 +9,22 @@ async function addActivitiesToQueue(queueName: string, activities: Activity[]) {
   });
 
   let visibilityTimeout = 0;
-  let count = 0;
+  let count = 1;
+  const fifteenMinuteRateLimit =
+    (Number(process.env.STRAVA_15MIN_LIMIT) - 2) / 2 || 49;
+  const dailyLimit = Number(process.env.STRAVA_DAILY_LIMIT) || 1000;
 
   for (const activity of activities) {
+    if (count > dailyLimit) {
+      console.error('Daily limit reached');
+      return {
+        status: 'error',
+        message: 'Daily limit reached',
+        ActivitiesAdded: count - 1,
+        activitiesTotal: activities.length,
+      };
+    }
+
     const response = await queueClient.sendMessage(
       jsonToBase64({
         activityId: activity.id,
@@ -35,7 +40,7 @@ async function addActivitiesToQueue(queueName: string, activities: Activity[]) {
         `Failed to add activity to queue: ${response._response.status}`,
       );
     }
-    if (count % 45 === 0) {
+    if (count % fifteenMinuteRateLimit === 0) {
       visibilityTimeout += 60 * 15;
       console.log(
         'Messages will now start processing at:',
@@ -48,12 +53,9 @@ async function addActivitiesToQueue(queueName: string, activities: Activity[]) {
   return {
     status: 'success',
     message: 'Activities added to queue successfully.',
+    ActivitiesAdded: activities.length,
+    activitiesTotal: activities.length,
   };
 }
 
-function jsonToBase64(jsonObj: object) {
-  const jsonString = JSON.stringify(jsonObj);
-  return Buffer.from(jsonString).toString('base64');
-}
-
-export { createQueueClient, addActivitiesToQueue };
+export { addActivitiesToQueue };
