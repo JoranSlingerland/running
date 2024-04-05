@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AccountForm, accountForm } from '@repo/schemas';
+import { accountForm } from '@repo/schemas';
+import type { AccountForm } from '@repo/schemas';
 import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useDeepCompareEffect } from 'rooks';
