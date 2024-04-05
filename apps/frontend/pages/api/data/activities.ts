@@ -1,8 +1,8 @@
+import { activitiesFromCosmos } from '@repo/cosmosdb';
 import type { NextApiResponse } from 'next';
-import { NextApiRequestUnknown } from '@pages/api/types';
 import { getToken } from 'next-auth/jwt';
-import { cosmosContainer, removeKeys } from '@utils/database/helpers';
-import { Container } from '@azure/cosmos';
+
+import { NextApiRequestUnknown } from '@pages/api/types';
 import { getQueryParam } from '@utils/api';
 
 export default async function handler(
@@ -15,11 +15,9 @@ export default async function handler(
     return;
   }
 
-  const container = cosmosContainer('activities');
-
   switch (req.method) {
     case 'GET':
-      await handleGet(res, req, container, token.id as string);
+      await handleGet(res, req, token.id as string);
       break;
     default:
       res.setHeader('Allow', 'GET');
@@ -30,36 +28,15 @@ export default async function handler(
 async function handleGet(
   res: NextApiResponse,
   req: NextApiRequestUnknown,
-  container: Container,
   id: string,
 ) {
-  let queryStr = 'SELECT * FROM c WHERE c.userId = @id';
   const startDate = getQueryParam(req.query, 'startDate') || '';
   const endDate = getQueryParam(req.query, 'endDate') || '';
+  const activities = await activitiesFromCosmos({
+    id,
+    startDate,
+    endDate,
+  });
 
-  if (startDate) {
-    queryStr += ' AND c.start_date >= @startDate';
-  }
-  if (endDate) {
-    queryStr += ' AND c.start_date <= @endDate';
-  }
-
-  const { resources: activities } = await container.items
-    .query({
-      query: queryStr,
-      parameters: [
-        { name: '@id', value: id },
-        { name: '@startDate', value: startDate },
-        { name: '@endDate', value: endDate },
-      ],
-    })
-    .fetchAll();
-
-  const cleanActivities = activities.map(
-    (activity: Record<string, unknown>) => {
-      return removeKeys(activity);
-    },
-  );
-
-  return res.status(200).json(cleanActivities);
+  return res.status(200).json(activities);
 }

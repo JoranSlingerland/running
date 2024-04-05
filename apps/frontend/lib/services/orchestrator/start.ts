@@ -1,7 +1,7 @@
 import { regularFetch } from '@utils/api';
 
 interface StartOrchestratorQuery {
-  functionName: 'orch_gather_data';
+  functionName: 'gatherData';
 }
 
 function startOrchestrator({ query }: { query: StartOrchestratorQuery }) {

@@ -1,11 +1,7 @@
+import { WretchError, createWretchInstance } from '@repo/api';
 import hash from 'object-hash';
 import { toast } from 'sonner';
-import wretch, { Wretch, WretchResponseChain } from 'wretch';
-import AbortAddon, { AbortResolver, AbortWretch } from 'wretch/addons/abort';
-import QueryStringAddon, {
-  QueryStringAddon as QueryStringAddonType,
-} from 'wretch/addons/queryString';
-import { WretchError } from 'wretch/resolver';
+
 import { NextApiRequestUnknown } from '@pages/api/types';
 
 const MILLISECONDS_IN_HOUR = 1000 * 60 * 60;
@@ -26,16 +22,6 @@ type CacheSettings = {
   useStartEndDates?: boolean;
   deDupeKey?: string;
 };
-
-type WretchInstance = QueryStringAddonType &
-  AbortWretch &
-  Wretch<AbortWretch & QueryStringAddonType, AbortResolver, undefined>;
-type WretchResponse = AbortResolver &
-  WretchResponseChain<
-    AbortWretch & QueryStringAddonType,
-    AbortResolver,
-    undefined
-  >;
 
 // Helper functions
 function setWithExpiry<T>(
@@ -114,16 +100,13 @@ function newKey<Query, Body>(
   return hash(url + body_string + query_string + method);
 }
 
-function deDupeData<T>(data: T[], deDupeKey: string) {
-  const seen = new Set();
-  // type-coverage:ignore-next-line
-  return data.filter((item: any) => {
-    // type-coverage:ignore-next-line
+function deDupeData<T>(data: T[], deDupeKey: keyof T): T[] {
+  const seen = new Set<T[keyof T]>();
+  return data.filter((item) => {
     const duplicate = seen.has(item[deDupeKey]);
-    // type-coverage:ignore-next-line
     seen.add(item[deDupeKey]);
     return !duplicate;
-  });
+  }) as T[];
 }
 
 function mergeStartEndDates(
@@ -194,7 +177,10 @@ function handleCacheSet<Query, Response>({
     const { startDate, endDate } = query;
     const cachedData = cachedResponse?.value || [];
     const newData = (cachedData as Response[]).concat(response);
-    const deDupedData = deDupeData(newData, cache.deDupeKey || 'id');
+    const deDupedData = deDupeData(
+      newData,
+      (cache.deDupeKey as keyof Response) || ('id' as keyof Response),
+    );
 
     if (!cachedResponse?.start_end_dates) {
       start_end_dates = [[startDate, endDate]];
@@ -218,46 +204,10 @@ function handleCacheSet<Query, Response>({
   );
 }
 
-function createWretchInstance<Query, Body>({
-  url,
-  method,
-  query,
-  body,
-  controller,
-}: {
-  url: string;
-  method: 'GET' | 'POST' | 'DELETE';
-  controller: AbortController;
-  query?: Query;
-  body?: Body;
-}) {
-  let wretchInstance: WretchInstance | WretchResponse = wretch()
-    .url(url)
-    .addon(AbortAddon())
-    .addon(QueryStringAddon)
-    .signal(controller)
-    .query(query || {});
-
-  switch (method) {
-    case 'GET':
-      wretchInstance = wretchInstance.get();
-      break;
-    case 'POST':
-      wretchInstance = wretchInstance.json(body || {}).post();
-      break;
-    case 'DELETE':
-      wretchInstance = wretchInstance.json(body || {}).delete();
-      break;
-    default:
-      throw new Error('Invalid method');
-  }
-  return wretchInstance;
-}
-
 function processCachedResponse<Query, Response>(
   cachedResponse: CachedResponse<Response> | null,
   messageEnabled: boolean,
-  sendSuccessMessage: Function,
+  sendSuccessMessage: () => void,
   cache: CacheSettings | undefined,
   query: Query,
   isError: boolean,
@@ -268,46 +218,67 @@ function processCachedResponse<Query, Response>(
   }
 
   if (messageEnabled) sendSuccessMessage();
-  if (cache?.useStartEndDates) {
-    if (
-      !query ||
-      typeof query !== 'object' ||
-      !('startDate' in query) ||
-      !('endDate' in query) ||
-      typeof query.startDate !== 'string' ||
-      typeof query.endDate !== 'string'
-    ) {
-      console.warn(
-        'Invalid query. Query must be an object with startDate and endDate as strings for useStartEndDates',
-      );
-      return;
-    }
-    const { startDate, endDate } = query;
-    var fallsWithin = false;
 
-    if (Array.isArray(cachedResponse.start_end_dates)) {
-      for (const [
-        cache_start_date,
-        cache_end_date,
-      ] of cachedResponse.start_end_dates) {
-        if (
-          new Date(startDate) >= new Date(cache_start_date) &&
-          new Date(endDate) <= new Date(cache_end_date)
-        ) {
-          fallsWithin = true;
-          break;
-        }
+  if (!cache?.useStartEndDates) {
+    return { response: cachedResponse.value, isError, error };
+  }
+
+  if (
+    !query ||
+    typeof query !== 'object' ||
+    !('startDate' in query) ||
+    !('endDate' in query) ||
+    typeof query.startDate !== 'string' ||
+    typeof query.endDate !== 'string'
+  ) {
+    console.warn(
+      'Invalid query. Query must be an object with startDate and endDate as strings for useStartEndDates',
+    );
+    return;
+  }
+  const { startDate, endDate } = query;
+  let fallsWithin = false;
+
+  if (Array.isArray(cachedResponse.start_end_dates)) {
+    for (const [
+      cache_start_date,
+      cache_end_date,
+    ] of cachedResponse.start_end_dates) {
+      if (
+        new Date(startDate) >= new Date(cache_start_date) &&
+        new Date(endDate) <= new Date(cache_end_date)
+      ) {
+        fallsWithin = true;
+        break;
       }
     }
-    if (fallsWithin) {
-      return { response: cachedResponse.value, isError, error };
-    }
-  } else {
+  }
+  if (fallsWithin) {
     return { response: cachedResponse.value, isError, error };
   }
 }
 
+function showMessage(
+  errorMessage: string | undefined,
+  successMessage: string | undefined,
+) {
+  // Define message functions
+  const sendErrorMessage = () => {
+    toast.dismiss();
+    toast.error(errorMessage);
+  };
+
+  const sendSuccessMessage = () => {
+    toast.dismiss();
+    toast.success(successMessage);
+  };
+
+  // Return the message functions so they can be used outside this function
+  return { sendErrorMessage, sendSuccessMessage };
+}
+
 // main functions
+// eslint-disable-next-line sonarjs/cognitive-complexity
 async function regularFetch<Query, Body, Response>({
   url,
   method,
@@ -358,15 +329,10 @@ async function regularFetch<Query, Body, Response>({
   };
 
   // Define message functions
-  const sendErrorMessage = () => {
-    toast.dismiss();
-    toast.error(errorMessage);
-  };
-
-  const sendSuccessMessage = () => {
-    toast.dismiss();
-    toast.success(successMessage);
-  };
+  const { sendErrorMessage, sendSuccessMessage } = showMessage(
+    errorMessage,
+    successMessage,
+  );
 
   // Start main logic
   if (messageEnabled) {
@@ -446,4 +412,4 @@ function getQueryParam(query: NextApiRequestUnknown['query'], param: string) {
   return Array.isArray(value) ? undefined : value;
 }
 
-export { regularFetch, getQueryParam, createWretchInstance };
+export { regularFetch, getQueryParam };

@@ -3,8 +3,8 @@
   "tasks": [
     {
       "type": "shell",
-      "label": "yarn: dev",
-      "command": "yarn dev",
+      "label": "yarn: dev (frontend)",
+      "command": "yarn dev --filter=frontend",
       "problemMatcher": [],
       "isBackground": true,
       "presentation": {
@@ -15,12 +15,12 @@
         "clear": false
       },
       "dependsOn": [
-        "yarn: install"
+        "yarn watch"
       ]
     },
     {
       "type": "shell",
-      "label": "yarn: install",
+      "label": "yarn install",
       "command": "yarn install",
       "problemMatcher": [],
       "presentation": {
@@ -50,17 +50,45 @@
       "command": "host start",
       "problemMatcher": "$func-node-watch",
       "isBackground": true,
-      "dependsOn":[ "yarn build (backend)", "azurite"],
+      "dependsOn": [
+        "yarn watch",
+        "azurite"
+      ],
       "options": {
         "cwd": "${workspaceFolder}/apps\\backend"
       }
     },
     {
+      "label": "yarn watch",
       "type": "shell",
-      "label": "yarn build (backend)",
-      "command": "yarn build --filter=backend",
-      "dependsOn": "yarn: install",
-      "problemMatcher": "$tsc",
+      "command": "yarn watch",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "watch",
+        "pattern": [
+          {
+            "regexp": ".*",
+            "file": 1,
+            "line": 2,
+            "message": 3
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".* - Starting compilation in watch mode...",
+          "endsPattern": ".* - Found \\d+ errors?\\. Watching for file changes\\."
+        }
+      },
+      "presentation": {
+        "reveal": "never",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false
+      },
+      "dependsOn": [
+        "yarn install"
+      ]
     },
     {
       "label": "azurite",

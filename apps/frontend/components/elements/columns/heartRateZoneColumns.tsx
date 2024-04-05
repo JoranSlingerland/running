@@ -1,4 +1,5 @@
 import { ColumnDef } from '@tanstack/react-table';
+
 import { formatHeartRate } from '@utils/formatting';
 
 type HeartRateZoneData = {

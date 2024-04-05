@@ -1,19 +1,15 @@
 /* eslint-disable @next/next/no-title-in-document-head */
-import Document, { Html, Head, Main, NextScript } from 'next/document';
+import Document, { Head, Html, Main, NextScript } from 'next/document';
 
 class MyDocument extends Document {
   render() {
     return (
       <Html>
         <Head>
-          <link rel="manifest" href="/manifest.json" />
-          <link rel="apple-touch-icon" href="/icon.png"></link>
           <link
             href="https://fonts.googleapis.com/icon?family=Material+Icons"
             rel="stylesheet"
           />
-          <meta name="theme-color" content="#fff" />
-          <title>Running</title>
         </Head>
         <body>
           <Main />

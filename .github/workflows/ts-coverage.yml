@@ -23,12 +23,26 @@ jobs:
       - name: Output to summary
         if: always()
         run: |
-          workspaces=("./apps/frontend")
+          # Read the list of workspaces from `yarn workspaces list`, extracting the second column after the colon
+          workspaces=$(yarn workspaces list | awk -F ': ' '{print $2}')
 
-          for workspace in "${workspaces[@]}"
+          # Initialize an empty array to store workspaces
+          workspaces_array=()
+
+          # Read each line of the string and append it to the array
+          while IFS= read -r line; do
+              workspaces_array+=("$line")
+          done <<< "$workspaces"
+
+          # Remove the first and last entry from the workspaces array
+          unset "workspaces_array[0]"
+          unset "workspaces_array[-1]"
+
+          # Iterate over the workspaces array and generate a markdown summary of the coverage report
+          for workspace in "${workspaces_array[@]}"
           do
-              echo "# $workspace" >> $GITHUB_STEP_SUMMARY
-              echo "" >> $GITHUB_STEP_SUMMARY
-              html2markdown --ignore-links $workspace/coverage-ts/index.html | sed '/# TypeScript coverage report/d' >> $GITHUB_STEP_SUMMARY
+              echo "# $workspace" >> "$GITHUB_STEP_SUMMARY"
+              echo "" >> "$GITHUB_STEP_SUMMARY"
+              html2markdown --ignore-links "$workspace"/coverage-ts/index.html | sed '/# TypeScript coverage report/d' >> "$GITHUB_STEP_SUMMARY"
           done
 
