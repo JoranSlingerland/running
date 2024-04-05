@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { PreferencesForm, preferencesForm } from '@repo/schemas';
+import { preferencesForm } from '@repo/schemas';
+import type { PreferencesForm } from '@repo/schemas';
 import { Loader2 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useForm } from 'react-hook-form';
