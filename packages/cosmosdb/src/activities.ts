@@ -59,4 +59,24 @@ async function getLastActivityFromCosmos(userId: string) {
   return response.resources[0] as Activity;
 }
 
-export { activitiesFromCosmos, getLastActivityFromCosmos };
+async function getNonFullDataActivitiesFromCosmos(userId: string) {
+  const container = cosmosContainer('activities');
+
+  const response = await container.items
+    .query({
+      query: 'SELECT * from c where c.userId = @id and c.full_data = false',
+      parameters: [{ name: '@id', value: userId }],
+    })
+    .fetchAll();
+  if (!response.resources || response.resources.length === 0) {
+    return undefined;
+  }
+
+  return response.resources as Activity[];
+}
+
+export {
+  activitiesFromCosmos,
+  getLastActivityFromCosmos,
+  getNonFullDataActivitiesFromCosmos,
+};

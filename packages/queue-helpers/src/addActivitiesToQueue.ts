@@ -20,7 +20,7 @@ async function addActivitiesToQueue(queueName: string, activities: Activity[]) {
       return {
         status: 'error',
         message: 'Daily limit reached',
-        ActivitiesAdded: count - 1,
+        activitiesAdded: count - 1,
         activitiesTotal: activities.length,
       };
     }
@@ -53,7 +53,7 @@ async function addActivitiesToQueue(queueName: string, activities: Activity[]) {
   return {
     status: 'success',
     message: 'Activities added to queue successfully.',
-    ActivitiesAdded: activities.length,
+    activitiesAdded: activities.length,
     activitiesTotal: activities.length,
   };
 }

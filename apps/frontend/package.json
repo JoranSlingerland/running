@@ -28,6 +28,7 @@
     "@repo/api": "*",
     "@repo/cosmosdb": "*",
     "@repo/jwt": "*",
+    "@repo/queue-helpers": "*",
     "@repo/schemas": "*",
     "@repo/strava": "*",
     "@tanstack/react-table": "^8.11.6",

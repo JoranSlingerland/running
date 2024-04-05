@@ -9,6 +9,7 @@ import { DataTable } from '@elements/shadcnTable';
 import useSessionStorageState from '@hooks/useSessionStorageState';
 import { useListOrchestrator } from '@services/orchestrator/list';
 import { startOrchestrator } from '@services/orchestrator/start';
+import { queueNonFullData } from '@services/queue/nonFullData';
 import { Button } from '@ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/tabs';
 import { Text, Title } from '@ui/typography';
@@ -59,8 +60,8 @@ const Actions = (router: ReturnType<typeof useRouter>) => (
   <div className="flex flex-col items-center">
     <div className="w-full columns-1 space-y-4 px-2">
       {buttonRow(
-        'Refresh data',
-        'This will Refresh all the data from scratch.',
+        'Get activities',
+        'This will get all new activities from Strava ',
         () => {
           startOrchestrator({
             query: {
@@ -71,14 +72,22 @@ const Actions = (router: ReturnType<typeof useRouter>) => (
         'Refresh',
       )}
       {buttonRow(
+        'Queue Incomplete Activities',
+        'This will queue all activities that still need data from Strava',
+        () => {
+          queueNonFullData();
+        },
+        'Queue',
+      )}
+      {buttonRow(
         'Clear local storage',
-        'This will clear all cached data in the local storage of the browser.',
+        'This will clear all cached data in the local storage of the browser',
         () => handleSessionStorageClearClick,
         'Clear',
       )}
       {buttonRow(
         'Authenticate Strava',
-        'This will authenticate strava again or for the first time.',
+        'This will authenticate strava again or for the first time',
         () => handleStravaAuthentication(router),
         'Authenticate',
       )}

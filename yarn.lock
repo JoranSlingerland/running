@@ -3794,6 +3794,7 @@ __metadata:
     "@repo/cosmosdb": "npm:*"
     "@repo/eslint-config": "npm:*"
     "@repo/jwt": "npm:*"
+    "@repo/queue-helpers": "npm:*"
     "@repo/schemas": "npm:*"
     "@repo/strava": "npm:*"
     "@repo/types": "npm:*"
