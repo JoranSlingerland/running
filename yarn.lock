@@ -3717,12 +3717,12 @@ __metadata:
   linkType: hard
 
 "follow-redirects@npm:^1.14.0":
-  version: 1.15.5
-  resolution: "follow-redirects@npm:1.15.5"
+  version: 1.15.6
+  resolution: "follow-redirects@npm:1.15.6"
   peerDependenciesMeta:
     debug:
       optional: true
-  checksum: 10c0/418d71688ceaf109dfd6f85f747a0c75de30afe43a294caa211def77f02ef19865b547dfb73fde82b751e1cc507c06c754120b848fe5a7400b0a669766df7615
+  checksum: 10c0/9ff767f0d7be6aa6870c82ac79cf0368cd73e01bbc00e9eb1c2a16fbb198ec105e3c9b6628bb98e9f3ac66fe29a957b9645bcb9a490bb7aa0d35f908b6b85071
   languageName: node
   linkType: hard
 
@@ -3810,7 +3810,7 @@ __metadata:
     clsx: "npm:^2.1.0"
     dayjs: "npm:^1.11.10"
     isomorphic-unfetch: "npm:^4.0.2"
-    lucide-react: "npm:^0.312.0"
+    lucide-react: "npm:^0.365.0"
     next: "npm:^14.0.4"
     next-auth: "npm:^4.24.5"
     next-themes: "npm:^0.3.0"
@@ -4819,12 +4819,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:^0.312.0":
-  version: 0.312.0
-  resolution: "lucide-react@npm:0.312.0"
+"lucide-react@npm:^0.365.0":
+  version: 0.365.0
+  resolution: "lucide-react@npm:0.365.0"
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/491b3403f51a1740c8cb0a558c4151c28eb175fc386099dbf9eaa63a314bb941ecb5cf6434b233ef6708e2af51ebaf8362987cc59958584990c1d1b5f34d4237
+  checksum: 10c0/8f71ba540a338fda75fb904aa5cf10cfa6056f7f002f11aed686c5193af8debd01db31481536b88b4315a68c5cf929eac38a817e0888d195a547b4538b19ad10
   languageName: node
   linkType: hard
 
