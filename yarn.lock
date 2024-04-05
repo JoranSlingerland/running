@@ -1439,7 +1439,7 @@ __metadata:
     eslint-config-turbo: "npm:^1.11.3"
     eslint-plugin-import: "npm:^2.29.1"
     eslint-plugin-prettier: "npm:^5.1.3"
-    eslint-plugin-sonarjs: "npm:^0.23.0"
+    eslint-plugin-sonarjs: "npm:^0.25.1"
     eslint-plugin-tailwindcss: "npm:^3.14.2"
     prettier: "npm:^3"
     tailwindcss: "npm:^3.4.1"
@@ -3416,12 +3416,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-sonarjs@npm:^0.23.0":
-  version: 0.23.0
-  resolution: "eslint-plugin-sonarjs@npm:0.23.0"
+"eslint-plugin-sonarjs@npm:^0.25.1":
+  version: 0.25.1
+  resolution: "eslint-plugin-sonarjs@npm:0.25.1"
   peerDependencies:
     eslint: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
-  checksum: 10c0/251f699f2ccce2a751aa0408db8cd08328777c56b670e21561e417c9d542d6b3ef5dde4808e5c61838eaa25d6f24af7eeb21071043c72047b731b975a60f1a73
+  checksum: 10c0/41bb79da06a0a8d33936a1a2d0b8d46f5e63b86652f9310a7740cc6586bd1e3f8ef8b4fd0175af4c431e69fff31ea57661ba657e3bf31d9f9462a15b23537c11
   languageName: node
   linkType: hard
 
