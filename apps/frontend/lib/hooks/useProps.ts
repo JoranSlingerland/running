@@ -3,7 +3,7 @@ import { createContext, useContext } from 'react';
 import { UseFetchResult } from '@hooks/useFetch';
 
 interface Props {
-  userSettings: UseFetchResult<UserSettings, undefined> | undefined;
+  userSettings: UseFetchResult<UserSettings> | undefined;
 }
 
 export const PropsContext = createContext<Props>({

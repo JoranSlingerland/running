@@ -14,13 +14,18 @@
     "preinstall": "npx only-allow yarn"
   },
   "dependencies": {
-    "@azure/functions": "^4.0.0"
+    "@azure/functions": "^4.0.0",
+    "@repo/cosmosdb": "*",
+    "@repo/jwt": "*",
+    "@repo/queue-helpers": "*",
+    "@repo/strava": "*",
+    "durable-functions": "3.0.0-alpha.5"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
+    "@repo/types": "*",
     "@repo/typescript-config": "*",
-    "@types/node": "^18.x",
-    "typescript": "^4.0.0"
+    "@types/node": "^18.x"
   },
   "main": "dist/app.js"
 }

@@ -1,12 +1,13 @@
-import type { NextApiResponse } from 'next';
-import { NextApiRequestUnknown } from '@pages/api/types';
-import { getToken } from 'next-auth/jwt';
-import { removeKeys } from '@utils/database/helpers';
 import {
-  userSettingsFromCosmos,
+  removeKeys,
   upsertUserSettingsToCosmos,
-} from '@utils/database/user';
-import strava from '@utils/strava';
+  userSettingsFromCosmos,
+} from '@repo/cosmosdb';
+import { initialAuth } from '@repo/strava';
+import type { NextApiResponse } from 'next';
+import { getToken } from 'next-auth/jwt';
+
+import { NextApiRequestUnknown } from '@pages/api/types';
 import { getQueryParam } from '@utils/api';
 
 export default async function handler(
@@ -55,7 +56,7 @@ async function handleGet(
     return;
   }
 
-  const authResponse = await strava.initialAuth(code);
+  const authResponse = await initialAuth(code);
 
   if (!authResponse) {
     res.status(500).json({ message: 'Failed to authenticate with Strava' });
@@ -71,21 +72,10 @@ async function handleGet(
     },
   };
 
-  const result = await upsertUserSettingsToCosmos(id, userSettingsWithAuth);
+  const result = await upsertUserSettingsToCosmos(userSettingsWithAuth);
 
   if (!result.isError && result.result) {
-    return res
-      .status(200)
-      .json(
-        removeKeys(result.result.resource || {}, [
-          '_rid',
-          '_self',
-          '_etag',
-          '_attachments',
-          '_ts',
-          'id',
-        ]),
-      );
+    return res.status(200).json(removeKeys(result.result.resource || {}));
   }
 
   return res

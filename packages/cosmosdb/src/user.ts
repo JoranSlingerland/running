@@ -1,6 +1,7 @@
-import { cosmosContainer } from '@utils/database/helpers';
-import { containerFunctionWithBackOff } from '@utils/database/helpers';
-import { userSettingsSchema } from '@utils/zodSchema';
+import { userSettingsSchema } from '@repo/schemas';
+import { UserSettings } from '@repo/types';
+
+import { containerFunctionWithBackOff, cosmosContainer } from './helpers';
 
 async function userSettingsFromCosmos(id: string) {
   const container = cosmosContainer('users');
@@ -18,21 +19,18 @@ async function userSettingsFromCosmos(id: string) {
   return response.resources[0] as UserSettings;
 }
 
-async function upsertUserSettingsToCosmos(id: string, body: unknown) {
+async function upsertUserSettingsToCosmos(body: unknown) {
   const container = cosmosContainer('users');
   const validated = userSettingsSchema.safeParse(body);
   if (!validated.success) {
     return { result: undefined, isError: true };
   }
 
-  const result = await containerFunctionWithBackOff(async () => {
+  return await containerFunctionWithBackOff(async () => {
     return await container.items.upsert({
-      id,
       ...validated.data,
     });
   });
-
-  return result;
 }
 
 export { userSettingsFromCosmos, upsertUserSettingsToCosmos };

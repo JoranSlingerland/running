@@ -1,6 +1,7 @@
+import crypto from 'crypto';
+
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
-import crypto from 'crypto';
 
 declare module 'next-auth' {
   interface User {

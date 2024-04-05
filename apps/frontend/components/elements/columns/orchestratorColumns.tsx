@@ -1,10 +1,10 @@
+import { ColumnDef } from '@tanstack/react-table';
 import { CheckCircle2, Loader2, MoreHorizontal, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { ListOrchestratorData } from '@services/orchestrator/list';
 import { purgeOrchestrator } from '@services/orchestrator/purge';
 import { terminateOrchestrator } from '@services/orchestrator/terminate';
-import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@ui/badge';
 import { Button } from '@ui/button';
 import {
@@ -25,14 +25,14 @@ export const orchestratorColumns: ColumnDef<ListOrchestratorData>[] = [
         case 'Completed':
           return (
             <Badge variant="success" className="text-xs">
-              <CheckCircle2 className="h-4 w-4 mr-1" />
+              <CheckCircle2 className="mr-1 size-4" />
               {value}
             </Badge>
           );
         case 'Failed':
           return (
             <Badge variant="error" className="text-xs">
-              <XCircle className="h-4 w-4 mr-1" />
+              <XCircle className="mr-1 size-4" />
               {value}
             </Badge>
           );
@@ -40,7 +40,7 @@ export const orchestratorColumns: ColumnDef<ListOrchestratorData>[] = [
         case 'Terminated':
           return (
             <Badge variant="warning" className="text-xs">
-              <XCircle className="h-4 w-4 mr-1" />
+              <XCircle className="mr-1 size-4" />
               {value}
             </Badge>
           );
@@ -48,7 +48,7 @@ export const orchestratorColumns: ColumnDef<ListOrchestratorData>[] = [
         case 'Pending':
           return (
             <Badge variant="processing" className="text-xs">
-              <Loader2 className="h-4 w-4 animate-spin mr-1" />
+              <Loader2 className="mr-1 size-4 animate-spin" />
               {value}
             </Badge>
           );
@@ -82,9 +82,9 @@ export const orchestratorColumns: ColumnDef<ListOrchestratorData>[] = [
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button variant="ghost" className="size-8 p-0">
               <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
+              <MoreHorizontal className="size-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">

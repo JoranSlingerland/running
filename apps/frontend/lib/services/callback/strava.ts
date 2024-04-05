@@ -16,18 +16,12 @@ function useStravaCallback({
   query?: StravaCallbackQuery;
   enabled?: boolean;
 }) {
-  const fetchResult = useFetch<
-    undefined,
-    StravaCallbackQuery,
-    StravaCallbackData
-  >({
+  return useFetch<undefined, StravaCallbackQuery, StravaCallbackData>({
     url: '/api/callback/strava',
     method: 'GET',
     query,
     enabled,
   });
-
-  return fetchResult;
 }
 
 export { useStravaCallback };

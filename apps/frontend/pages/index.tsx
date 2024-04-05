@@ -1,6 +1,7 @@
-import { useSession, signIn, signOut } from 'next-auth/react';
-import { Text, Title } from '@ui/typography';
+import { signIn, signOut, useSession } from 'next-auth/react';
+
 import { Button } from '@ui/button';
+import { Text, Title } from '@ui/typography';
 import { cn } from '@utils/shadcn';
 
 function Layout({
@@ -17,7 +18,7 @@ function Layout({
         ClassName,
       )}
     >
-      <div className="max-w-5xl text-center space-y-5">{children}</div>
+      <div className="max-w-5xl space-y-5 text-center">{children}</div>
     </div>
   );
 }
