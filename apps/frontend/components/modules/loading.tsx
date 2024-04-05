@@ -1,5 +1,5 @@
 import { Loader2 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const loadingMessages = [
   'Putting on your virtual running shoes...',
@@ -54,8 +54,8 @@ export default function FullScreenLoader({ active }: { active: boolean }) {
   }, [active]);
 
   return active ? (
-    <div className="absolute inset-0 flex flex-col items-center justify-center min-h-screen bg-background">
-      <Loader2 className="animate-spin mb-4" />
+    <div className="absolute inset-0 flex min-h-screen flex-col items-center justify-center bg-background">
+      <Loader2 className="mb-4 animate-spin" />
       <p>{randomMessage}</p>
     </div>
   ) : null;

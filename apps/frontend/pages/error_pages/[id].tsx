@@ -18,9 +18,9 @@ export async function getStaticProps(context: { params: { id: string } }) {
 
 export default function DynamicPage(errorcode: { errorcode: string }) {
   return (
-    <div className="flex flex-row items-center justify-center w-full h-screen">
+    <div className="flex h-screen w-full flex-row items-center justify-center">
       <Title variant="h1">{errorcode.errorcode}</Title>
-      <Separator orientation="vertical" className="h-16 mx-4" />
+      <Separator orientation="vertical" className="mx-4 h-16" />
       <Text size="large">{errorText(errorcode)}</Text>
     </div>
   );

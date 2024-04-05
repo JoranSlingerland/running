@@ -1,3 +1,4 @@
+import { stravaConfig } from '@repo/strava';
 import { useRouter } from 'next/router';
 import { toast } from 'sonner';
 
@@ -8,10 +9,10 @@ import { DataTable } from '@elements/shadcnTable';
 import useSessionStorageState from '@hooks/useSessionStorageState';
 import { useListOrchestrator } from '@services/orchestrator/list';
 import { startOrchestrator } from '@services/orchestrator/start';
+import { queueNonFullData } from '@services/queue/nonFullData';
 import { Button } from '@ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/tabs';
 import { Text, Title } from '@ui/typography';
-import { authUrl } from '@utils/strava/config';
 
 // handle click functions
 function handleSessionStorageClearClick() {
@@ -33,7 +34,7 @@ function handleStravaAuthentication(router: ReturnType<typeof useRouter>) {
   }
 
   router.push(
-    `${authUrl}?client_id=${process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID}&redirect_uri=${callback_url}&response_type=code&%20response_type=force&scope=${scope}`,
+    `${stravaConfig.authUrl}?client_id=${process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID}&redirect_uri=${callback_url}&response_type=code&%20response_type=force&scope=${scope}`,
   );
 }
 
@@ -57,28 +58,36 @@ const buttonRow = (
 
 const Actions = (router: ReturnType<typeof useRouter>) => (
   <div className="flex flex-col items-center">
-    <div className="w-full px-2 columns-1 space-y-4">
+    <div className="w-full columns-1 space-y-4 px-2">
       {buttonRow(
-        'Refresh data',
-        'This will Refresh all the data from scratch.',
+        'Get activities',
+        'This will get all new activities from Strava ',
         () => {
           startOrchestrator({
             query: {
-              functionName: 'orch_gather_data',
+              functionName: 'gatherData',
             },
           });
         },
         'Refresh',
       )}
       {buttonRow(
+        'Queue Incomplete Activities',
+        'This will queue all activities that still need data from Strava',
+        () => {
+          queueNonFullData();
+        },
+        'Queue',
+      )}
+      {buttonRow(
         'Clear local storage',
-        'This will clear all cached data in the local storage of the browser.',
+        'This will clear all cached data in the local storage of the browser',
         () => handleSessionStorageClearClick,
         'Clear',
       )}
       {buttonRow(
         'Authenticate Strava',
-        'This will authenticate strava again or for the first time.',
+        'This will authenticate strava again or for the first time',
         () => handleStravaAuthentication(router),
         'Authenticate',
       )}
@@ -103,9 +112,9 @@ export default function Settings() {
       <Title variant="h2" className="flex items-center justify-center p-5">
         Settings
       </Title>
-      <div className="mx-auto max-w-screen-xl w-full px-4">
+      <div className="mx-auto w-full max-w-screen-xl px-4">
         <Tabs onValueChange={(value) => setTab(value)} value={tab}>
-          <div className="flex mt-2 justify-center ">
+          <div className="mt-2 flex justify-center ">
             <TabsList>
               <TabsTrigger value="account">Account</TabsTrigger>
               <TabsTrigger value="preferences">Preferences</TabsTrigger>

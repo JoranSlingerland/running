@@ -42,6 +42,14 @@
     },
     "ts-coverage": {
       "cache": false
+    },
+    "watch": {
+      "dotEnv": [
+        ".env.production.local",
+        ".env.local",
+        ".env.production",
+        ".env"
+      ]
     }
   }
 }

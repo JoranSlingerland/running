@@ -2,17 +2,5 @@
     "extends": [
         "./main.json",
         "next/core-web-vitals"
-    ],
-    "plugins": [
-        "prettier"
-    ],
-    "rules": {
-        "prettier/prettier": [
-            "warn",
-            {
-                "endOfLine": "auto"
-            }
-        ],
-        "turbo/no-undeclared-env-vars": "off"
-    }
+    ]
 }

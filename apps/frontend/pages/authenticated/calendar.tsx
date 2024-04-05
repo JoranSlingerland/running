@@ -1,17 +1,19 @@
 import 'dayjs/locale/en';
 
+import type { Activity } from '@repo/types';
+import { SparkBarChart } from '@tremor/react';
 import dayjs from 'dayjs';
+import type { Dayjs } from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import dayLocaleData from 'dayjs/plugin/localeData';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import utc from 'dayjs/plugin/utc';
 import { useEffect, useState } from 'react';
-import useSessionStorageState from '@hooks/useSessionStorageState';
 
 import Calendar from '@elements/calendar';
 import { useProps } from '@hooks/useProps';
+import useSessionStorageState from '@hooks/useSessionStorageState';
 import { GetActivitiesQuery, useActivities } from '@services/data/activities';
-import { SparkBarChart } from '@tremor/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
 import {
   Select,
@@ -37,8 +39,6 @@ import {
 import { getPreferredTss } from '@utils/tss/helpers';
 import { isNotNullOrZero } from '@utils/utils';
 
-import type { Dayjs } from 'dayjs';
-import type { Activity } from '@services/data/activities';
 dayjs.extend(isBetween);
 dayjs.extend(dayLocaleData);
 dayjs.extend(updateLocale);
@@ -85,7 +85,7 @@ function CalendarItem({
     item,
   );
   return (
-    <Card className="my-2 h-full brightness-125 transform hover:scale-105 transition-transform duration-200">
+    <Card className="my-2 h-full brightness-125 transition-transform duration-200 hover:scale-105">
       <CardHeader>
         <CardTitle>
           <div className="flex items-center space-x-1">
@@ -94,7 +94,7 @@ function CalendarItem({
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col text-left ml-2">
+      <CardContent className="ml-2 flex flex-col text-left">
         {isNotNullOrZero(item.elapsed_time) && (
           <Text>
             {formatTime({
@@ -207,12 +207,12 @@ function MetaItem({
             }
             value={chartTab}
           >
-            <TabsList className="my-2 w-full flex">
+            <TabsList className="my-2 flex w-full">
               {Object.keys(tabValues).map((value) => (
                 <TabsTrigger
                   key={value}
                   value={value}
-                  className="text-xs w-full truncate"
+                  className="w-full truncate text-xs"
                 >
                   {tabValues[value as keyof typeof tabValues]}
                 </TabsTrigger>
@@ -224,7 +224,7 @@ function MetaItem({
                   data={chartData.totals}
                   categories={[value]}
                   index={'start_date'}
-                  className="w-full h-8"
+                  className="h-8 w-full"
                 />
               </TabsContent>
             ))}
@@ -295,7 +295,7 @@ function MetaItem({
                             data={chartData[item.sport]}
                             categories={[value]}
                             index={'start_date'}
-                            className="w-full h-8"
+                            className="h-8 w-full"
                           />
                         </TabsContent>
                       ))}
@@ -316,10 +316,11 @@ export default function App() {
   });
 
   // Constants
+  const dateFormat = 'YYYY-MM-DD';
   const [currentDay, setCurrentDay] = useState(dayjs());
   const [query, setQuery] = useState<GetActivitiesQuery>({
-    startDate: getFirstMondayBeforeMonth(currentDay).format('YYYY-MM-DD'),
-    endDate: getFirstSundayAfterMonth(currentDay).format('YYYY-MM-DD'),
+    startDate: getFirstMondayBeforeMonth(currentDay).format(dateFormat),
+    endDate: getFirstSundayAfterMonth(currentDay).format(dateFormat),
   });
   const { data: activitiesData, isLoading: activitiesIsLoading } =
     useActivities({
@@ -335,20 +336,20 @@ export default function App() {
 
   function onDateChange(date: Dayjs) {
     setQuery({
-      startDate: getFirstMondayBeforeMonth(date).format('YYYY-MM-DD'),
-      endDate: getFirstSundayAfterMonth(date).format('YYYY-MM-DD'),
+      startDate: getFirstMondayBeforeMonth(date).format(dateFormat),
+      endDate: getFirstSundayAfterMonth(date).format(dateFormat),
     });
   }
 
   const dateCellRenderer = (value: Dayjs) => {
-    const date = value.format('YYYY-MM-DD');
+    const date = value.format(dateFormat);
     const filtered = activitiesData
       ? activitiesData
           .filter((item) => {
             const itemStartDate = dayjs
               .utc(item.start_date)
               .utcOffset(value.utcOffset())
-              .format('YYYY-MM-DD');
+              .format(dateFormat);
             return itemStartDate.includes(date);
           })
           .sort(
@@ -442,7 +443,7 @@ export default function App() {
     );
 
     // Get chart data
-    let chartData: ChartData = {
+    const chartData: ChartData = {
       totals: [],
     };
     sports.forEach((sport) => {
@@ -469,7 +470,7 @@ export default function App() {
       );
 
       chartData.totals.push({
-        start_date: date.format('YYYY-MM-DD'),
+        start_date: date.format(dateFormat),
         distance: totalsForDay.distance,
         moving_time: totalsForDay.time,
         tss: totalsForDay.tss,
@@ -492,7 +493,7 @@ export default function App() {
         );
 
         chartData[sport].push({
-          start_date: date.format('YYYY-MM-DD'),
+          start_date: date.format(dateFormat),
           distance: totalsForSport.distance,
           moving_time: totalsForSport.time,
           tss: totalsForSport.tss,

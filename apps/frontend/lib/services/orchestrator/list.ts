@@ -20,19 +20,13 @@ function useListOrchestrator({
   enabled?: boolean;
   background?: boolean;
 }) {
-  const fetchResult = useFetch<
-    undefined,
-    ListOrchestratorQuery,
-    ListOrchestratorData[]
-  >({
+  return useFetch<undefined, ListOrchestratorQuery, ListOrchestratorData[]>({
     url: '/api/orchestrator/list',
     method: 'GET',
     query,
     enabled,
     background,
   });
-
-  return fetchResult;
 }
 
 export { useListOrchestrator };

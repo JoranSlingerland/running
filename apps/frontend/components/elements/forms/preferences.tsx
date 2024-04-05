@@ -1,10 +1,11 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { preferencesForm } from '@repo/schemas';
+import type { PreferencesForm } from '@repo/schemas';
 import { Loader2 } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import { useForm } from 'react-hook-form';
 import { useDeepCompareEffect } from 'rooks';
-import * as z from 'zod';
-import { useTheme } from 'next-themes';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useProps } from '@hooks/useProps';
 import { addUserData } from '@services/user/post';
 import { Button } from '@ui/button';
@@ -17,21 +18,11 @@ import {
   SelectValue,
 } from '@ui/select';
 
-const formSchema = z.object({
-  dark_mode: z.union([
-    z.literal('light'),
-    z.literal('dark'),
-    z.literal('system'),
-  ]),
-  preferred_tss_type: z.union([z.literal('pace'), z.literal('hr')]),
-  units: z.union([z.literal('metric'), z.literal('imperial')]),
-});
-
 export function PreferencesForm() {
   const { userSettings } = useProps();
   const { setTheme } = useTheme();
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<PreferencesForm>({
+    resolver: zodResolver(preferencesForm),
     defaultValues: {
       dark_mode: undefined,
       preferred_tss_type:
@@ -52,7 +43,7 @@ export function PreferencesForm() {
 
   setTheme(form.watch('dark_mode'));
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: PreferencesForm) {
     if (!userSettings?.data) return;
 
     const newSettings: UserSettings = {
@@ -151,7 +142,7 @@ export function PreferencesForm() {
           <Button disabled={userSettings?.isLoading} type="submit">
             Save
             {userSettings?.isLoading && (
-              <Loader2 className="animate-spin ml-2" size={16} />
+              <Loader2 className="ml-2 animate-spin" size={16} />
             )}
           </Button>
         </div>
