@@ -1,11 +1,12 @@
-import type { NextApiResponse } from 'next';
-import { NextApiRequestUnknown } from '@pages/api/types';
-import { getToken } from 'next-auth/jwt';
-import { removeKeys } from '@utils/database/helpers';
 import {
-  userSettingsFromCosmos,
+  removeKeys,
   upsertUserSettingsToCosmos,
-} from '@utils/database/user';
+  userSettingsFromCosmos,
+} from '@repo/cosmosdb';
+import type { NextApiResponse } from 'next';
+import { getToken } from 'next-auth/jwt';
+
+import { NextApiRequestUnknown } from '@pages/api/types';
 
 export default async function handler(
   req: NextApiRequestUnknown,
@@ -22,7 +23,7 @@ export default async function handler(
       await handleGet(res, token.id as string);
       break;
     case 'POST':
-      await handlePost(req, res, token.id as string);
+      await handlePost(req, res);
       break;
     default:
       res.setHeader('Allow', 'GET, POST');
@@ -37,34 +38,15 @@ async function handleGet(res: NextApiResponse, id: string) {
     return;
   }
 
-  return res
-    .status(200)
-    .json(
-      removeKeys(user, ['_rid', '_self', '_etag', '_attachments', '_ts', 'id']),
-    );
+  return res.status(200).json(removeKeys(user));
 }
 
 // TODO: More descriptive error messages
-async function handlePost(
-  req: NextApiRequestUnknown,
-  res: NextApiResponse,
-  id: string,
-) {
-  const result = await upsertUserSettingsToCosmos(id, req.body);
+async function handlePost(req: NextApiRequestUnknown, res: NextApiResponse) {
+  const result = await upsertUserSettingsToCosmos(req.body);
 
   if (!result.isError && result.result) {
-    return res
-      .status(200)
-      .json(
-        removeKeys(result.result.resource || {}, [
-          '_rid',
-          '_self',
-          '_etag',
-          '_attachments',
-          '_ts',
-          'id',
-        ]),
-      );
+    return res.status(200).json(removeKeys(result.result.resource || {}));
   }
 
   return res

@@ -38,6 +38,7 @@ const userSettingsSchema = z.object({
     ]),
   }),
   gender: z.union([z.literal('male'), z.literal('female'), z.undefined()]),
+  id: z.string(),
 });
 
 export { userSettingsSchema };

@@ -5,9 +5,89 @@
 
 version: 2
 updates:
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  # Root
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "daily"
-    target-branch: "main"
+      interval: 'weekly'
+    target-branch: 'main'
     open-pull-requests-limit: 10
+
+  # Apps
+  - package-ecosystem: 'npm'
+    directory: '/apps/backend'
+    schedule:
+      interval: 'weekly'
+    target-branch: 'main'
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: 'npm'
+    directory: '/apps/frontend'
+    schedule:
+      interval: 'weekly'
+    target-branch: 'main'
+    open-pull-requests-limit: 10
+
+  # Packages
+  - package-ecosystem: 'npm'
+    directory: '/packages/api'
+    schedule:
+      interval: 'weekly'
+    target-branch: 'main'
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/cosmosdb'
+    schedule:
+      interval: 'weekly'
+    target-branch: 'main'
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/eslint-config'
+    schedule:
+      interval: 'weekly'
+    target-branch: 'main'
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/jwt'
+    schedule:
+      interval: 'weekly'
+    target-branch: 'main'
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/schemas'
+    schedule:
+      interval: 'weekly'
+    target-branch: 'main'
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/strava'
+    schedule:
+      interval: 'weekly'
+    target-branch: 'main'
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/types'
+    schedule:
+      interval: 'weekly'
+    target-branch: 'main'
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/typescript-config'
+    schedule:
+      interval: 'weekly'
+    target-branch: 'main'
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/queue-helpers'
+    schedule:
+      interval: 'weekly'
+    target-branch: 'main'
+    open-pull-requests-limit: 5

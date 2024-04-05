@@ -1,10 +1,75 @@
 // Entry point for the Azure Functions app
 
 import { app } from '@azure/functions';
-import { helloWorld } from '@api/helloWorld';
+import * as df from 'durable-functions';
+
+import {
+  orchestratorList,
+  orchestratorPurge,
+  orchestratorStart,
+  orchestratorTerminate,
+} from './api/orchestrator';
+import { enrichActivity } from './app/enrichData';
+import {
+  addActivityToEnrichmentQueue,
+  gatherData,
+  getActivities,
+  getUserSettings,
+} from './app/gatherData';
+import {
+  outputToCosmosDb,
+  subOrchOutputToCosmosDb,
+} from './app/outputToCosmosDb';
+import { handlePoisonQueue } from './app/poisonQueue';
 
 // Register http triggers
-app.http('helloWorld', {
-  methods: ['GET', 'POST'],
-  handler: helloWorld,
+app.http('orchestratorStart', {
+  route: 'orchestrator/start',
+  extraInputs: [df.input.durableClient()],
+  handler: orchestratorStart,
+  methods: ['POST'],
+});
+app.http('orchestratorTerminate', {
+  route: 'orchestrator/terminate',
+  extraInputs: [df.input.durableClient()],
+  handler: orchestratorTerminate,
+  methods: ['POST'],
+});
+app.http('orchestratorList', {
+  route: 'orchestrator/list',
+  extraInputs: [df.input.durableClient()],
+  handler: orchestratorList,
+  methods: ['GET'],
+});
+app.http('orchestratorPurge', {
+  route: 'orchestrator/purge',
+  extraInputs: [df.input.durableClient()],
+  handler: orchestratorPurge,
+  methods: ['DELETE'],
+});
+
+// Register orchestrations
+df.app.orchestration('gatherData', gatherData);
+df.app.orchestration('subOrchOutputToCosmosDb', subOrchOutputToCosmosDb);
+
+// Register activities
+df.app.activity('getUserSettings', { handler: getUserSettings });
+df.app.activity('getActivities', { handler: getActivities });
+df.app.activity('outputToCosmosDb', { handler: outputToCosmosDb });
+df.app.activity('addActivityToEnrichmentQueue', {
+  handler: addActivityToEnrichmentQueue,
+});
+
+// Register queue triggers
+app.storageQueue('enrichActivity', {
+  queueName: 'enrichment-queue',
+  connection: 'AzureWebJobsStorage',
+  handler: enrichActivity,
+});
+
+// Register poison queue handler
+app.storageQueue('handlePoisonQueue', {
+  queueName: 'enrichment-queue-poison',
+  connection: 'AzureWebJobsStorage',
+  handler: handlePoisonQueue,
 });

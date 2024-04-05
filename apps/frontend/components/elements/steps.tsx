@@ -38,12 +38,12 @@ export default function Steps({
                         : step.status === 'error'
                           ? 'bg-red-500'
                           : 'bg-gray-500'
-                  } w-8 h-8`}
+                  } size-8`}
                 >
                   {step.icon}
                 </div>
               </div>
-              <div className="flex flex-col ml-2">
+              <div className="ml-2 flex flex-col">
                 <Text>{step.title}</Text>
                 {step.description && (
                   <Text size="small" type="muted">
@@ -52,11 +52,11 @@ export default function Steps({
                 )}
               </div>
               {index !== steps.length - 1 && orientation === 'horizontal' && (
-                <Separator orientation="horizontal" className="w-8 mx-4" />
+                <Separator orientation="horizontal" className="mx-4 w-8" />
               )}
             </div>
             {index !== steps.length - 1 && orientation === 'vertical' && (
-              <Separator orientation="vertical" className="h-8 mx-4 my-2" />
+              <Separator orientation="vertical" className="mx-4 my-2 h-8" />
             )}
           </div>
         );
