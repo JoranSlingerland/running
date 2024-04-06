@@ -19,7 +19,7 @@
     "@repo/jwt": "*",
     "@repo/queue-helpers": "*",
     "@repo/strava": "*",
-    "durable-functions": "3.0.0-alpha.5"
+    "durable-functions": "3.1.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
