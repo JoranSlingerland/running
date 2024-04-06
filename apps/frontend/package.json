@@ -32,6 +32,7 @@
     "@repo/queue-helpers": "*",
     "@repo/schemas": "*",
     "@repo/strava": "*",
+    "@repo/weather": "*",
     "@tanstack/react-table": "^8.11.6",
     "@tremor/react": "^3.13.2",
     "@types/react-router-dom": "^5.3.3",
