@@ -36,6 +36,7 @@ const userSettingsSchema = z.object({
       z.literal('light'),
       z.literal('system'),
     ]),
+    enable_weather: z.boolean(),
   }),
   gender: z.union([z.literal('male'), z.literal('female'), z.undefined()]),
   id: z.string(),
