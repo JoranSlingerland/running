@@ -21,6 +21,7 @@ const initialData: UserSettings = {
     preferred_tss_type: 'pace',
     units: 'metric',
     dark_mode: 'system',
+    enable_weather: false,
   },
   id: '',
 };
