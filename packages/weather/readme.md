@@ -5,5 +5,6 @@ Wrapper for the OpenWeatherMap API.
 ## Usage
 
 ```typescript
-import { getWeather } from '@repo/weather';
+import { getDailyWeather } from '@repo/weather';
+import { getHourlyWeather } from '@repo/weather';
 ```

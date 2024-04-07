@@ -15,7 +15,7 @@ import Calendar from '@elements/calendar';
 import { useProps } from '@hooks/useProps';
 import useSessionStorageState from '@hooks/useSessionStorageState';
 import { GetActivitiesQuery, useActivities } from '@services/data/activities';
-import { useWeather } from '@services/data/weather';
+import { useDailyWeather } from '@services/data/weather';
 import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
 import {
   Select,
@@ -339,9 +339,9 @@ export default function App() {
   const geoLocation = useGeolocation({
     when: userSettings?.data?.preferences.enable_weather,
   });
-  const { data: weatherData, isLoading: weatherIsLoading } = useWeather({
+  const { data: weatherData, isLoading: weatherIsLoading } = useDailyWeather({
     query: {
-      days: 14,
+      forecast_days: 14,
       longitude: geoLocation?.lng || 0,
       latitude: geoLocation?.lat || 0,
     },

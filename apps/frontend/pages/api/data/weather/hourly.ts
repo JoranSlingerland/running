@@ -1,4 +1,4 @@
-import { getWeather } from '@repo/weather';
+import { getHourlyWeather } from '@repo/weather';
 import type { NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 
@@ -26,42 +26,19 @@ export default async function handler(
 }
 
 async function handleGet(res: NextApiResponse, req: NextApiRequestUnknown) {
-  const forecast_days = Number(getQueryParam(req.query, 'days') || '14');
+  const date = getQueryParam(req.query, 'date') || undefined;
   const longitude = getQueryParam(req.query, 'longitude') || undefined;
   const latitude = getQueryParam(req.query, 'latitude') || undefined;
 
-  if (!longitude || !latitude) {
+  if (!longitude || !latitude || !date) {
     res.status(400).json({ message: 'Missing required query parameters' });
     return;
   }
 
-  if (forecast_days < 1 || forecast_days > 16) {
-    res.status(400).json({ message: 'Invalid forecast_days parameter' });
-    return;
-  }
-
-  const daily = [
-    'weather_code',
-    'temperature_2m_max',
-    'temperature_2m_min',
-    'apparent_temperature_max',
-    'apparent_temperature_min',
-    'sunrise',
-    'sunset',
-    'daylight_duration',
-    'sunshine_duration',
-    'precipitation_sum',
-    'precipitation_probability_max',
-    'wind_speed_10m_max',
-    'wind_gusts_10m_max',
-    'wind_direction_10m_dominant',
-  ];
-
-  const response = await getWeather({
-    forecast_days,
+  const response = await getHourlyWeather({
     longitude,
     latitude,
-    dataFields: daily,
+    date,
   });
 
   return res.status(200).json(response);

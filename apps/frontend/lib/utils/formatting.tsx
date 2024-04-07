@@ -128,25 +128,18 @@ function formatPace({
 
 function formatSpeed({
   metersPerSecond,
-  kilometersPerHour,
-  milesPerHour,
   units,
   decimals = 2,
   addUnit = true,
 }: {
   metersPerSecond?: number;
-  kilometersPerHour?: number;
-  milesPerHour?: number;
   units: Units;
   decimals?: number;
   addUnit?: boolean;
 }) {
-  const value = convertSpeedToUnitsPerHour({
-    metersPerSecond,
-    kilometersPerHour,
-    milesPerHour,
-    units,
-  }).toFixed(decimals);
+  const value = convertSpeedToUnitsPerHour(metersPerSecond, units).toFixed(
+    decimals,
+  );
 
   return addUnit ? `${value} ${unitMapper(units, 'speed')}` : value;
 }

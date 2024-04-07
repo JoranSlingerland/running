@@ -52,30 +52,12 @@ function convertSecondsToMinutesAndRemainder(
   return [minutes, remainder];
 }
 
-function convertSpeedToUnitsPerHour({
-  metersPerSecond,
-  kilometersPerHour,
-  milesPerHour,
-  units,
-}: {
-  metersPerSecond?: number;
-  kilometersPerHour?: number;
-  milesPerHour?: number;
-  units: Units;
-}): number {
-  if (metersPerSecond) {
-    return units === 'metric'
-      ? metersPerSecond * 3.6
-      : metersPerSecond * 2.23694;
-  }
-  if (kilometersPerHour) {
-    return units === 'metric' ? kilometersPerHour : kilometersPerHour / 1.60934;
-  }
-  if (milesPerHour) {
-    return units === 'metric' ? milesPerHour * 1.60934 : milesPerHour;
-  }
-
-  return 0;
+function convertSpeedToUnitsPerHour(
+  metersPerSecond: number | undefined,
+  units: Units,
+): number {
+  if (!metersPerSecond) return 0;
+  return units === 'metric' ? metersPerSecond * 3.6 : metersPerSecond * 2.23694;
 }
 
 // Export

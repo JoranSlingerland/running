@@ -1,6 +1,6 @@
 import 'dayjs/locale/en';
 
-import { Weather, wmoCodes } from '@repo/weather';
+import { DailyWeather, wmoCodes } from '@repo/weather';
 import dayjs from 'dayjs';
 import dayLocaleData from 'dayjs/plugin/localeData';
 import updateLocale from 'dayjs/plugin/updateLocale';
@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight, MoveDown } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 
+import { useProps } from '@hooks/useProps';
 import { Button } from '@ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@ui/popover';
@@ -32,12 +33,13 @@ dayjs.extend(updateLocale);
 
 function WeatherBox(
   weather: {
-    weather?: Weather;
+    weather?: DailyWeather;
     isLoading: boolean;
     enabled: boolean;
   },
   index: number | undefined,
 ) {
+  const { userSettings } = useProps();
   const daily = weather.weather?.daily;
 
   if (
@@ -103,8 +105,8 @@ function WeatherBox(
           <div className="flex flex-row space-x-2">
             <Text bold>
               {formatSpeed({
-                kilometersPerHour: daily.wind_speed_10m_max[index],
-                units: 'metric',
+                metersPerSecond: daily.wind_speed_10m_max[index],
+                units: userSettings?.data?.preferences?.units || 'metric',
                 decimals: 0,
               })}
             </Text>
@@ -148,7 +150,7 @@ export default function Calendar({
   dateCellRenderer?: (date: dayjs.Dayjs) => JSX.Element;
   metaCellRenderer?: (date: dayjs.Dayjs) => JSX.Element;
   weather?: {
-    weather?: Weather;
+    weather?: DailyWeather;
     isLoading: boolean;
     enabled: boolean;
   };
