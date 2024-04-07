@@ -75,11 +75,11 @@ function WeatherBox(
       <PopoverContent className="p-2">
         <div className="grid grid-cols-2">
           <Text>Forecast</Text>
-          <Text>
+          <Text bold className="flex flex-row">
             {wmoCodes[`${daily.weather_code[index]}`]?.day.description}
           </Text>
           <Text>Temperature</Text>
-          <Text>
+          <Text bold>
             {formatNumber({
               number: daily.temperature_2m_max[index],
               decimals: 0,
@@ -92,7 +92,7 @@ function WeatherBox(
             °
           </Text>
           <Text>Precipitation</Text>
-          <Text>
+          <Text bold>
             {formatNumber({
               number: daily.precipitation_sum[index],
               decimals: 1,
@@ -101,7 +101,7 @@ function WeatherBox(
           </Text>
           <Text>Wind</Text>
           <div className="flex flex-row space-x-2">
-            <Text>
+            <Text bold>
               {formatSpeed({
                 kilometersPerHour: daily.wind_speed_10m_max[index],
                 units: 'metric',
@@ -116,7 +116,7 @@ function WeatherBox(
             />
           </div>
           <Text>Daylight</Text>
-          <Text>
+          <Text bold>
             {dayjs(daily.sunrise[index]).format('HH:mm')} -{' '}
             {dayjs(daily.sunset[index]).format('HH:mm')}
           </Text>
