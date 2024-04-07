@@ -4,12 +4,13 @@ import { Weather, wmoCodes } from '@repo/weather';
 import dayjs from 'dayjs';
 import dayLocaleData from 'dayjs/plugin/localeData';
 import updateLocale from 'dayjs/plugin/updateLocale';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MoveDown } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 
 import { Button } from '@ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
+import { Popover, PopoverContent, PopoverTrigger } from '@ui/popover';
 import {
   Select,
   SelectContent,
@@ -24,7 +25,7 @@ import {
   getFirstMondayBeforeMonth,
   getFirstSundayAfterMonth,
 } from '@utils/dateTimeHelpers';
-import { formatNumber } from '@utils/formatting';
+import { formatNumber, formatSpeed } from '@utils/formatting';
 
 dayjs.extend(dayLocaleData);
 dayjs.extend(updateLocale);
@@ -50,20 +51,78 @@ function WeatherBox(
   }
 
   return (
-    <>
-      <Image
-        src={wmoCodes[`${daily.weather_code[index]}`]?.day.image}
-        alt={wmoCodes[`${daily.weather_code[index]}`]?.day.description}
-        width={24}
-        height={24}
-      />
-      <Text size={'small'} type={'muted'}>
-        {formatNumber({ number: daily.temperature_2m_max[index], decimals: 0 })}
-        ° /{' '}
-        {formatNumber({ number: daily.temperature_2m_min[index], decimals: 0 })}
-        ° {wmoCodes[`${daily.weather_code[index]}`]?.day.description}
-      </Text>
-    </>
+    <Popover>
+      <PopoverTrigger className="flex flex-row">
+        <Image
+          src={wmoCodes[`${daily.weather_code[index]}`]?.day.image}
+          alt={wmoCodes[`${daily.weather_code[index]}`]?.day.description}
+          width={24}
+          height={24}
+        />
+        <Text size={'small'} type={'muted'}>
+          {formatNumber({
+            number: daily.temperature_2m_max[index],
+            decimals: 0,
+          })}
+          ° /{' '}
+          {formatNumber({
+            number: daily.temperature_2m_min[index],
+            decimals: 0,
+          })}
+          ° {wmoCodes[`${daily.weather_code[index]}`]?.day.description}
+        </Text>
+      </PopoverTrigger>
+      <PopoverContent className="p-2">
+        <div className="grid grid-cols-2">
+          <Text>Forecast</Text>
+          <Text>
+            {wmoCodes[`${daily.weather_code[index]}`]?.day.description}
+          </Text>
+          <Text>Temperature</Text>
+          <Text>
+            {formatNumber({
+              number: daily.temperature_2m_max[index],
+              decimals: 0,
+            })}
+            ° /{' '}
+            {formatNumber({
+              number: daily.temperature_2m_min[index],
+              decimals: 0,
+            })}
+            °
+          </Text>
+          <Text>Precipitation</Text>
+          <Text>
+            {formatNumber({
+              number: daily.precipitation_sum[index],
+              decimals: 1,
+            })}
+            mm
+          </Text>
+          <Text>Wind</Text>
+          <div className="flex flex-row space-x-2">
+            <Text>
+              {formatSpeed({
+                kilometersPerHour: daily.wind_speed_10m_max[index],
+                units: 'metric',
+                decimals: 0,
+              })}
+            </Text>
+            <MoveDown
+              style={{
+                transform: `rotate(${daily.wind_direction_10m_dominant[index]}deg)`,
+              }}
+              className="size-4"
+            />
+          </div>
+          <Text>Daylight</Text>
+          <Text>
+            {dayjs(daily.sunrise[index]).format('HH:mm')} -{' '}
+            {dayjs(daily.sunset[index]).format('HH:mm')}
+          </Text>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
 
