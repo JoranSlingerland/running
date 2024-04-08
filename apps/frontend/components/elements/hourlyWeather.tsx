@@ -6,7 +6,7 @@ import { useGeolocation } from 'rooks';
 import { useProps } from '@hooks/useProps';
 import useSessionStorageState from '@hooks/useSessionStorageState';
 import { useHourlyWeather } from '@services/data/weather';
-import { Chart } from '@ui/AreaChart';
+import { Chart } from '@ui/chart';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/tabs';
 import { Text } from '@ui/typography';
 import { formatSpeed } from '@utils/formatting';
@@ -95,7 +95,6 @@ function HourlyWeatherBlock({
                   },
                 },
               ]}
-              colors={['blue']}
               yAxis={[
                 {
                   tickFormatter(value) {
@@ -149,7 +148,6 @@ function HourlyWeatherBlock({
                   },
                 },
               ]}
-              colors={['blue']}
               yAxis={[
                 {
                   tickFormatter(value) {
@@ -209,10 +207,11 @@ function HourlyWeatherBlock({
                   animationDuration: 0,
                   useGradient: true,
                 },
+              ]}
+              lines={[
                 {
                   dataKey: 'Wind Gusts',
                   animationDuration: 0,
-                  useGradient: true,
                 },
               ]}
               xAxis={[
