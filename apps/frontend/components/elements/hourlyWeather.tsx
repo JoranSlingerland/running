@@ -114,14 +114,14 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
               xAxis={[
                 {
                   dataKey: 'Time',
-                  tickFormatter(value) {
+                  tickFormatter(value: string) {
                     return `${value}:00`;
                   },
                 },
               ]}
               yAxis={[
                 {
-                  tickFormatter(value) {
+                  tickFormatter(value: number) {
                     return `${value}°C`;
                   },
                   orientation: 'right',
@@ -129,10 +129,10 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
               ]}
               toolTip={{
                 enabled: true,
-                formatter(value) {
+                formatter(value: number) {
                   return `${value}°C`;
                 },
-                labelFormatter(label) {
+                labelFormatter(label: string) {
                   return `${label}:00`;
                 },
               }}
@@ -155,25 +155,25 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
               xAxis={[
                 {
                   dataKey: 'Time',
-                  tickFormatter(value) {
+                  tickFormatter(value: string) {
                     return `${value}:00`;
                   },
                 },
               ]}
               yAxis={[
                 {
-                  tickFormatter(value) {
-                    return `${value}mm`;
+                  tickFormatter(value: number) {
+                    return `${value} mm`;
                   },
                   orientation: 'right',
                 },
               ]}
               toolTip={{
                 enabled: true,
-                formatter(value) {
-                  return `${value}mm`;
+                formatter(value: number) {
+                  return `${value} mm`;
                 },
-                labelFormatter(label) {
+                labelFormatter(label: string) {
                   return `${label}:00`;
                 },
               }}
@@ -202,7 +202,7 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
               xAxis={[
                 {
                   dataKey: 'Time',
-                  tickFormatter(value) {
+                  tickFormatter(value: string) {
                     return `${value}:00`;
                   },
                 },
@@ -210,9 +210,9 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
               colors={['blue', 'teal']}
               yAxis={[
                 {
-                  tickFormatter(value) {
+                  tickFormatter(value: number) {
                     return formatSpeed({
-                      metersPerSecond: value as number,
+                      metersPerSecond: value,
                       units: userSettings?.data?.preferences.units || 'metric',
                       decimals: 0,
                     });
@@ -222,14 +222,14 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
               ]}
               toolTip={{
                 enabled: true,
-                formatter(value) {
+                formatter(value: number) {
                   return `${formatSpeed({
-                    metersPerSecond: value as number,
+                    metersPerSecond: value,
                     units: userSettings?.data?.preferences.units || 'metric',
                     decimals: 1,
                   })}`;
                 },
-                labelFormatter(label) {
+                labelFormatter(label: string) {
                   return `${label}:00`;
                 },
               }}

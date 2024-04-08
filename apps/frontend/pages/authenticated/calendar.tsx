@@ -15,8 +15,8 @@ import { useProps } from '@hooks/useProps';
 import useSessionStorageState from '@hooks/useSessionStorageState';
 import { GetActivitiesQuery, useActivities } from '@services/data/activities';
 import { useDailyWeather } from '@services/data/weather';
-import { Chart } from '@ui/chart';
 import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
+import { Chart } from '@ui/chart';
 import {
   Select,
   SelectContent,
