@@ -52,7 +52,6 @@ export function PreferencesForm() {
     if (!geoLocation) return;
     if (!form.watch('enable_weather')) return;
     if (geoLocation.isError) {
-      console.log('hit3');
       form.setValue('enable_weather', false);
       toast.error(
         'Failed to get your location, Please allow location access to enable weather forecasts.',
@@ -75,7 +74,6 @@ export function PreferencesForm() {
         enable_weather: values.enable_weather,
       },
     };
-    console.log(newSettings);
     await addUserData({
       body: newSettings,
     }).then(() => {
