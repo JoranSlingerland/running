@@ -38,6 +38,7 @@ export function Chart<T>({
   colors = chartColorsList,
   toolTip,
   isLoading = false,
+  dataIndexCallback,
 }: {
   data: T[];
   areas?: Areas[];
@@ -50,6 +51,7 @@ export function Chart<T>({
     enabled: boolean;
   };
   isLoading?: boolean;
+  dataIndexCallback?: (index: number) => void;
 }) {
   const { resolvedTheme } = useTheme();
   let keyCount = -1;
@@ -60,7 +62,14 @@ export function Chart<T>({
 
   return (
     <ResponsiveContainer className="size-full">
-      <ComposedChart data={data}>
+      <ComposedChart
+        data={data}
+        onMouseMove={(e) => {
+          if (dataIndexCallback) {
+            dataIndexCallback(e.activeTooltipIndex || 0);
+          }
+        }}
+      >
         {/* Setup Gradients */}
         <defs>
           {colors.map((color, index) => (
