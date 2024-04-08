@@ -34,7 +34,7 @@
     "@repo/schemas": "*",
     "@repo/strava": "*",
     "@repo/weather": "*",
-    "@tanstack/react-table": "^8.11.6",
+    "@tanstack/react-table": "^8.15.3",
     "@types/react-router-dom": "^5.3.3",
     "@types/recharts": "^1.8.29",
     "autoprefixer": "^10.4.16",
