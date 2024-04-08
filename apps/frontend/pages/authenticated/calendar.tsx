@@ -227,8 +227,13 @@ function MetaItem({
                   bars={[
                     {
                       dataKey: value,
+                      useGradient: true,
                     },
                   ]}
+                  gradient={{
+                    startOpacity: 1,
+                    endOpacity: 0.4,
+                  }}
                 />
               </TabsContent>
             ))}
@@ -304,8 +309,13 @@ function MetaItem({
                             bars={[
                               {
                                 dataKey: value,
+                                useGradient: true,
                               },
                             ]}
+                            gradient={{
+                              startOpacity: 1,
+                              endOpacity: 0.4,
+                            }}
                           />
                         </TabsContent>
                       ))}

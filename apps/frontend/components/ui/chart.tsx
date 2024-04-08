@@ -24,6 +24,10 @@ interface Areas extends AreaProps {
   useGradient?: boolean;
 }
 
+interface Bars extends BarProps {
+  useGradient?: boolean;
+}
+
 function textColor(theme: string | undefined) {
   return theme === 'light' ? 'hsl(240 10% 3.9)' : 'hsl(0 0% 98%)';
 }
@@ -38,11 +42,12 @@ export function Chart<T>({
   colors = chartColorsList,
   toolTip,
   isLoading = false,
+  gradient,
   dataIndexCallback,
 }: {
   data: T[];
   areas?: Areas[];
-  bars?: BarProps[];
+  bars?: Bars[];
   lines?: LineProps[];
   xAxis?: XAxisProps[];
   yAxis?: YAxisProps[];
@@ -52,9 +57,15 @@ export function Chart<T>({
   };
   isLoading?: boolean;
   dataIndexCallback?: (index: number) => void;
+  gradient?: {
+    startOpacity: number;
+    endOpacity: number;
+    uid?: string;
+  };
 }) {
   const { resolvedTheme } = useTheme();
   let keyCount = -1;
+  const uid = gradient?.uid || Math.random().toString(36).substring(2);
 
   if (isLoading) {
     return <Skeleton className="size-full" />;
@@ -75,7 +86,7 @@ export function Chart<T>({
           {colors.map((color, index) => (
             <linearGradient
               key={color}
-              id={index.toString()}
+              id={`${index.toString()}-${uid}`}
               x1="0"
               y1="0"
               x2="0"
@@ -84,12 +95,12 @@ export function Chart<T>({
               <stop
                 offset="5%"
                 stopColor={chartColorsMap[color]}
-                stopOpacity={0.8}
+                stopOpacity={gradient?.startOpacity || 0.8}
               />
               <stop
                 offset="95%"
                 stopColor={chartColorsMap[color]}
-                stopOpacity={0.2}
+                stopOpacity={gradient?.endOpacity || 0.2}
               />
             </linearGradient>
           ))}
@@ -153,7 +164,7 @@ export function Chart<T>({
               stroke={chartColorsMap[colors[keyCount % colors.length]]}
               fill={
                 area.useGradient
-                  ? `url(#${keyCount})`
+                  ? `url(#${[keyCount % colors.length]}-${uid})`
                   : chartColorsMap[colors[keyCount % colors.length]]
               }
               strokeOpacity={area.strokeOpacity || 1}
@@ -170,7 +181,11 @@ export function Chart<T>({
             <Bar
               key={keyCount}
               dataKey={bar.dataKey}
-              fill={chartColorsMap[colors[keyCount % colors.length]]}
+              fill={
+                bar.useGradient
+                  ? `url(#${[keyCount % colors.length]}-${uid})`
+                  : chartColorsMap[colors[keyCount % colors.length]]
+              }
               animationDuration={bar.animationDuration}
             />
           );
