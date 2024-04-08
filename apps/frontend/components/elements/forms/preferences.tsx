@@ -4,7 +4,8 @@ import type { PreferencesForm } from '@repo/schemas';
 import { Loader2 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useForm } from 'react-hook-form';
-import { useDeepCompareEffect } from 'rooks';
+import { useDeepCompareEffect, useGeolocation } from 'rooks';
+import { toast } from 'sonner';
 
 import { useProps } from '@hooks/useProps';
 import { addUserData } from '@services/user/post';
@@ -17,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@ui/select';
+import { Switch } from '@ui/switch';
 
 export function PreferencesForm() {
   const { userSettings } = useProps();
@@ -28,7 +30,11 @@ export function PreferencesForm() {
       preferred_tss_type:
         userSettings?.data?.preferences?.preferred_tss_type ?? 'pace',
       units: userSettings?.data?.preferences?.units ?? 'metric',
+      enable_weather: userSettings?.data?.preferences?.enable_weather ?? false,
     },
+  });
+  const geoLocation = useGeolocation({
+    when: form.watch('enable_weather'),
   });
 
   useDeepCompareEffect(() => {
@@ -37,9 +43,21 @@ export function PreferencesForm() {
         dark_mode: userSettings.data.preferences.dark_mode,
         preferred_tss_type: userSettings.data.preferences.preferred_tss_type,
         units: userSettings.data.preferences.units,
+        enable_weather: userSettings.data.preferences.enable_weather,
       });
     }
   }, [userSettings?.data, form]);
+
+  useDeepCompareEffect(() => {
+    if (!geoLocation) return;
+    if (!form.watch('enable_weather')) return;
+    if (geoLocation.isError) {
+      form.setValue('enable_weather', false);
+      toast.error(
+        'Failed to get your location, Please allow location access to enable weather forecasts.',
+      );
+    }
+  }, [geoLocation, form.watch('enable_weather')]);
 
   setTheme(form.watch('dark_mode'));
 
@@ -53,9 +71,9 @@ export function PreferencesForm() {
         preferred_tss_type: values.preferred_tss_type,
         units: values.units,
         dark_mode: values.dark_mode,
+        enable_weather: values.enable_weather,
       },
     };
-
     await addUserData({
       body: newSettings,
     }).then(() => {
@@ -135,6 +153,22 @@ export function PreferencesForm() {
                   <SelectItem value="imperial">Imperial</SelectItem>
                 </SelectContent>
               </Select>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="enable_weather"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Enable weather forecasts</FormLabel>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  disabled={userSettings?.isLoading}
+                />
+              </FormControl>
             </FormItem>
           )}
         />

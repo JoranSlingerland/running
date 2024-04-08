@@ -52,6 +52,14 @@ function convertSecondsToMinutesAndRemainder(
   return [minutes, remainder];
 }
 
+function convertSpeedToUnitsPerHour(
+  metersPerSecond: number | undefined,
+  units: Units,
+): number {
+  if (!metersPerSecond) return 0;
+  return units === 'metric' ? metersPerSecond * 3.6 : metersPerSecond * 2.23694;
+}
+
 // Export
 export {
   convertSpeedToPaceInSeconds,
@@ -60,4 +68,5 @@ export {
   convertPaceToSeconds,
   convertSecondsToTimeComponents,
   convertPaceToMetersPerSecond,
+  convertSpeedToUnitsPerHour,
 };

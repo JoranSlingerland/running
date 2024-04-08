@@ -8,6 +8,7 @@ const preferencesForm = z.object({
   ]),
   preferred_tss_type: z.union([z.literal('pace'), z.literal('hr')]),
   units: z.union([z.literal('metric'), z.literal('imperial')]),
+  enable_weather: z.boolean(),
 });
 
 type PreferencesForm = z.infer<typeof preferencesForm>;

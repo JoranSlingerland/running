@@ -1,13 +1,17 @@
 import 'dayjs/locale/en';
 
+import { DailyWeather, wmoCodes } from '@repo/weather';
 import dayjs from 'dayjs';
 import dayLocaleData from 'dayjs/plugin/localeData';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
 import React from 'react';
 
+import { HourlyWeatherBlock } from '@elements/hourlyWeather';
 import { Button } from '@ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
+import { Popover, PopoverContent, PopoverTrigger } from '@ui/popover';
 import {
   Select,
   SelectContent,
@@ -17,14 +21,62 @@ import {
   SelectValue,
 } from '@ui/select';
 import { Skeleton } from '@ui/skeleton';
-import { Title } from '@ui/typography';
+import { Text, Title } from '@ui/typography';
 import {
   getFirstMondayBeforeMonth,
   getFirstSundayAfterMonth,
 } from '@utils/dateTimeHelpers';
+import { formatNumber } from '@utils/formatting';
 
 dayjs.extend(dayLocaleData);
 dayjs.extend(updateLocale);
+
+function WeatherBox(
+  weather: {
+    weather?: DailyWeather;
+    isLoading: boolean;
+    enabled: boolean;
+  },
+  index: number | undefined,
+) {
+  const daily = weather.weather?.daily;
+
+  if (!weather.enabled || index === undefined || index === -1 || !daily) {
+    return null;
+  }
+
+  if (weather.isLoading) {
+    return <Skeleton className="h-6 w-10/12" />;
+  }
+
+  return (
+    <Popover>
+      <PopoverTrigger className="flex flex-row items-center">
+        <Image
+          src={wmoCodes[`${daily.weather_code[index]}`]?.day.image}
+          alt={wmoCodes[`${daily.weather_code[index]}`]?.day.description}
+          width={24}
+          height={24}
+        />
+        <Text size={'small'} type={'muted'}>
+          {formatNumber({
+            number: daily.temperature_2m_max[index],
+            decimals: 0,
+          })}
+          ° /{' '}
+          {formatNumber({
+            number: daily.temperature_2m_min[index],
+            decimals: 0,
+          })}
+          ° {wmoCodes[`${daily.weather_code[index]}`]?.day.description}
+        </Text>
+      </PopoverTrigger>
+      <PopoverContent className="w-[36rem] p-2">
+        <HourlyWeatherBlock date={dayjs(daily.time[index])} />
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 export default function Calendar({
   currentDay,
@@ -34,8 +86,11 @@ export default function Calendar({
   startOfWeekDay = 1,
   dateCellRenderer,
   metaCellRenderer,
-  titleAffix,
-  titlePrefix,
+  weather = {
+    weather: undefined,
+    isLoading: false,
+    enabled: false,
+  },
 }: {
   currentDay: dayjs.Dayjs;
   setCurrentDay: (month: dayjs.Dayjs) => void;
@@ -44,8 +99,11 @@ export default function Calendar({
   startOfWeekDay?: number;
   dateCellRenderer?: (date: dayjs.Dayjs) => JSX.Element;
   metaCellRenderer?: (date: dayjs.Dayjs) => JSX.Element;
-  titleAffix?: (date: dayjs.Dayjs) => JSX.Element;
-  titlePrefix?: (date: dayjs.Dayjs) => JSX.Element;
+  weather?: {
+    weather?: DailyWeather;
+    isLoading: boolean;
+    enabled: boolean;
+  };
 }): JSX.Element {
   // Dayjs locale
   dayjs.updateLocale('en', {
@@ -200,6 +258,10 @@ export default function Calendar({
       {daysInMonth.map((day, index) => {
         const isToday = dayjs().startOf('day').isSame(day.startOf('day'));
         const inThePast = dayjs().startOf('day').isAfter(day.startOf('day'));
+        const weatherIndex = weather.weather?.daily.time.findIndex(
+          (time) => time === day.format('YYYY-MM-DD'),
+        );
+
         return (
           <React.Fragment key={index}>
             <Card
@@ -209,14 +271,13 @@ export default function Calendar({
             >
               <CardHeader>
                 <CardTitle
-                  className={`rounded-full p-1 ${
+                  className={`flex flex-row space-x-1 rounded-full p-1 ${
                     isToday ? 'border-2 font-bold ' : ''
                   }`}
                 >
-                  {titlePrefix && titlePrefix(day)}
-                  {day.date() === 1 ? ` ${day.format('MMMM')} ` : ''}
-                  {day.format('D')}
-                  {titleAffix && titleAffix(day)}
+                  {day.date() === 1 ? <Text>{day.format('MMMM')}</Text> : null}
+                  <Text>{day.format('D')}</Text>
+                  {WeatherBox(weather, weatherIndex)}
                 </CardTitle>
               </CardHeader>
               <CardContent className="min-h-[10rem]">

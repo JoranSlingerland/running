@@ -6,16 +6,22 @@ type Type = 'default' | 'code' | 'muted' | 'blockquote';
 interface CustomTextProps extends React.HTMLAttributes<HTMLParagraphElement> {
   size?: Size;
   type?: Type;
+  italic?: boolean;
+  bold?: boolean;
 }
 
 interface CustomTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
   variant?: 'h1' | 'h2' | 'h3' | 'h4';
+  italic?: boolean;
+  bold?: boolean;
 }
 
 interface CustomLinkProps
   extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   size?: Size;
   type?: Type;
+  italic?: boolean;
+  bold?: boolean;
   children: React.ReactNode;
   href: string;
 }
@@ -47,18 +53,30 @@ function getTypeClass(type: Type): string {
 const Text: React.FC<CustomTextProps> = ({
   size = 'default',
   type = 'default',
+  italic = false,
+  bold = false,
   className = '',
   ...props
 }) => {
   const sizeClass = getSizeClass(size);
   const typeClass = getTypeClass(type);
+  const italicClass = italic ? 'italic' : '';
+  // eslint-disable-next-line sonarjs/no-duplicate-string
+  const boldClass = bold ? 'font-semibold' : '';
 
-  return <p className={`${sizeClass} ${typeClass} ${className}`} {...props} />;
+  return (
+    <p
+      className={`${sizeClass} ${typeClass} ${className} ${italicClass} ${boldClass} `}
+      {...props}
+    />
+  );
 };
 
 const Title: React.FC<CustomTitleProps> = ({
   variant = 'h1',
   className = '',
+  italic = false,
+  bold = false,
   ...props
 }) => {
   let componentClass = '';
@@ -79,26 +97,37 @@ const Title: React.FC<CustomTitleProps> = ({
       componentClass = 'scroll-m-20 text-xl font-semibold tracking-tight';
       break;
   }
+  const italicClass = italic ? 'italic' : '';
+  const boldClass = bold ? 'font-semibold' : '';
 
   const Component = variant;
 
-  return <Component className={`${className} ${componentClass}`} {...props} />;
+  return (
+    <Component
+      className={`${className} ${componentClass} ${italicClass} ${boldClass}`}
+      {...props}
+    />
+  );
 };
 
 const Link: React.FC<CustomLinkProps> = ({
   children,
   size = 'default',
   type = 'default',
+  italic = false,
+  bold = false,
   className = '',
   ...props
 }) => {
   const sizeClass = getSizeClass(size);
   const typeClass = getTypeClass(type);
   const linkClass = 'text-primary hover:text-blue-500';
+  const italicClass = italic ? 'italic' : '';
+  const boldClass = bold ? 'font-semibold' : '';
 
   return (
     <NextLink
-      className={`${className} ${sizeClass} ${typeClass} ${linkClass}`}
+      className={`${className} ${sizeClass} ${typeClass} ${linkClass} ${italicClass} ${boldClass}`}
       {...props}
     >
       {children}

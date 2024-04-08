@@ -91,3 +91,10 @@ updates:
       interval: 'weekly'
     target-branch: 'main'
     open-pull-requests-limit: 5
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/weather'
+    schedule:
+      interval: 'weekly'
+    target-branch: 'main'
+    open-pull-requests-limit: 5

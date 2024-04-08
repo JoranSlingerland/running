@@ -28,6 +28,7 @@ export type UserSettings = {
     preferred_tss_type: 'hr' | 'pace';
     units: Units;
     dark_mode: 'dark' | 'light' | 'system';
+    enable_weather: boolean;
   };
   gender: 'male' | 'female' | undefined;
   id: string;

@@ -1,7 +1,6 @@
 import 'dayjs/locale/en';
 
 import type { Activity } from '@repo/types';
-import { SparkBarChart } from '@tremor/react';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
@@ -9,12 +8,15 @@ import dayLocaleData from 'dayjs/plugin/localeData';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import utc from 'dayjs/plugin/utc';
 import { useEffect, useState } from 'react';
+import { useGeolocation } from 'rooks';
 
 import Calendar from '@elements/calendar';
 import { useProps } from '@hooks/useProps';
 import useSessionStorageState from '@hooks/useSessionStorageState';
 import { GetActivitiesQuery, useActivities } from '@services/data/activities';
+import { useDailyWeather } from '@services/data/weather';
 import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
+import { Chart } from '@ui/chart';
 import {
   Select,
   SelectContent,
@@ -219,12 +221,19 @@ function MetaItem({
               ))}
             </TabsList>
             {Object.keys(tabValues).map((value) => (
-              <TabsContent key={value} value={value}>
-                <SparkBarChart
+              <TabsContent key={value} value={value} className="h-16 w-full">
+                <Chart
                   data={chartData.totals}
-                  categories={[value]}
-                  index={'start_date'}
-                  className="h-8 w-full"
+                  bars={[
+                    {
+                      dataKey: value,
+                      useGradient: true,
+                    },
+                  ]}
+                  gradient={{
+                    startOpacity: 1,
+                    endOpacity: 0.4,
+                  }}
                 />
               </TabsContent>
             ))}
@@ -290,12 +299,23 @@ function MetaItem({
                       value={chartTab}
                     >
                       {Object.keys(tabValues).map((value) => (
-                        <TabsContent key={value} value={value}>
-                          <SparkBarChart
+                        <TabsContent
+                          key={value}
+                          value={value}
+                          className="h-16 w-full"
+                        >
+                          <Chart
                             data={chartData[item.sport]}
-                            categories={[value]}
-                            index={'start_date'}
-                            className="h-8 w-full"
+                            bars={[
+                              {
+                                dataKey: value,
+                                useGradient: true,
+                              },
+                            ]}
+                            gradient={{
+                              startOpacity: 1,
+                              endOpacity: 0.4,
+                            }}
                           />
                         </TabsContent>
                       ))}
@@ -322,10 +342,6 @@ export default function App() {
     startDate: getFirstMondayBeforeMonth(currentDay).format(dateFormat),
     endDate: getFirstSundayAfterMonth(currentDay).format(dateFormat),
   });
-  const { data: activitiesData, isLoading: activitiesIsLoading } =
-    useActivities({
-      query: query,
-    });
   const { userSettings } = useProps();
   const [selectedSport, setSelectedSport] = useSessionStorageState<
     string | null
@@ -333,6 +349,22 @@ export default function App() {
   const [chartTab, setChartTab] = useSessionStorageState<
     'tss' | 'distance' | 'moving_time'
   >('calendarChartTab', 'tss');
+
+  const { data: activitiesData, isLoading: activitiesIsLoading } =
+    useActivities({
+      query: query,
+    });
+  const geoLocation = useGeolocation({
+    when: userSettings?.data?.preferences.enable_weather,
+  });
+  const { data: weatherData, isLoading: weatherIsLoading } = useDailyWeather({
+    query: {
+      forecast_days: 14,
+      longitude: geoLocation?.lng || 0,
+      latitude: geoLocation?.lat || 0,
+    },
+    enabled: geoLocation?.isError === false,
+  });
 
   function onDateChange(date: Dayjs) {
     setQuery({
@@ -529,6 +561,11 @@ export default function App() {
       dateCellRenderer={dateCellRenderer}
       isLoading={activitiesIsLoading}
       metaCellRenderer={MetaCellRenderer}
+      weather={{
+        weather: weatherData,
+        isLoading: weatherIsLoading,
+        enabled: userSettings?.data?.preferences.enable_weather || false,
+      }}
     />
   );
 }

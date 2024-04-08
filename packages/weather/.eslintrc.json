@@ -1,0 +1,9 @@
+{
+    "root": true,
+    "extends": [
+        "@repo/eslint-config/main.json"
+    ],
+    "parserOptions": {
+        "project": true
+    }
+}

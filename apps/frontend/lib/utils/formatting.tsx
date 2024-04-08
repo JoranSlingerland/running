@@ -9,6 +9,7 @@ import {
   convertSecondsToMinutesAndRemainder,
   convertSecondsToTimeComponents,
   convertSpeedToPaceInSeconds,
+  convertSpeedToUnitsPerHour,
 } from './convert';
 
 dayjs.extend(utc);
@@ -104,9 +105,9 @@ function formatDateTime(date: string) {
 function formatMinute(seconds: number) {
   const [minutes, remainingSeconds] =
     convertSecondsToMinutesAndRemainder(seconds);
-  return `${minutes
+  return `${minutes.toString().padStart(2, '0')}:${remainingSeconds
     .toString()
-    .padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    .padStart(2, '0')}`;
 }
 
 // Pace and speed functions
@@ -123,6 +124,24 @@ function formatPace({
     convertSpeedToPaceInSeconds(metersPerSecond, units),
   );
   return addUnit ? `${value} ${unitMapper(units, 'pace')}` : value;
+}
+
+function formatSpeed({
+  metersPerSecond,
+  units,
+  decimals = 2,
+  addUnit = true,
+}: {
+  metersPerSecond?: number;
+  units: Units;
+  decimals?: number;
+  addUnit?: boolean;
+}) {
+  const value = convertSpeedToUnitsPerHour(metersPerSecond, units).toFixed(
+    decimals,
+  );
+
+  return addUnit ? `${value} ${unitMapper(units, 'speed')}` : value;
 }
 
 // Misc functions
@@ -180,4 +199,5 @@ export {
   sportIcon,
   formatDateTime,
   unitMapper,
+  formatSpeed,
 };
