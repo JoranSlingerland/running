@@ -1,13 +1,14 @@
 import { HourlyWeather } from '@repo/weather';
 import dayjs, { Dayjs } from 'dayjs';
 import { MoveDown } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useGeolocation } from 'rooks';
 
 import { useProps } from '@hooks/useProps';
 import useSessionStorageState from '@hooks/useSessionStorageState';
 import { useHourlyWeather } from '@services/data/weather';
 import { Chart } from '@ui/chart';
+import { Skeleton } from '@ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/tabs';
 import { Text } from '@ui/typography';
 import { formatSpeed } from '@utils/formatting';
@@ -21,6 +22,15 @@ type WeatherData = {
   'Wind Speed': number;
   'Wind Gusts': number;
   'Wind Direction': number;
+};
+
+type TextLoadingProps = {
+  children: React.ReactNode;
+  isLoading: boolean;
+};
+
+const TextLoading: React.FC<TextLoadingProps> = ({ children, isLoading }) => {
+  return isLoading ? <Skeleton className="h-4 w-12" /> : children;
 };
 
 function HourlyWeatherBlock({ date }: { date: Dayjs }) {
@@ -46,44 +56,55 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
   const hourlyWeatherData = hourlyWeather.data?.hourly;
 
   const tableData = convertData(hourlyWeather.data);
-
   return (
     <>
       <div className="grid grid-cols-3 grid-rows-1 items-center justify-center py-2">
         <div className="flex flex-row items-baseline justify-center space-x-1">
-          <Text bold size="large">
-            {hourlyWeatherData?.temperature_2m[dataIndex]}°
-          </Text>
+          <TextLoading isLoading={hourlyWeather.isLoading}>
+            <Text bold size="large">
+              {hourlyWeatherData?.temperature_2m[dataIndex]}°
+            </Text>
+          </TextLoading>
         </div>
         <div className="flex flex-row items-baseline justify-center space-x-1">
-          <Text bold size="large">
-            {hourlyWeatherData?.precipitation[dataIndex]} mm
-          </Text>
-          <Text type={'muted'}>
-            {hourlyWeatherData?.precipitation_probability[dataIndex]}%
-          </Text>
+          <TextLoading isLoading={hourlyWeather.isLoading}>
+            <Text bold size="large">
+              {hourlyWeatherData?.precipitation[dataIndex]} mm
+            </Text>
+          </TextLoading>
+          <TextLoading isLoading={hourlyWeather.isLoading}>
+            <Text type={'muted'}>
+              {hourlyWeatherData?.precipitation_probability[dataIndex]}%
+            </Text>
+          </TextLoading>
         </div>
         <div className="flex flex-row items-baseline justify-center space-x-1">
-          <Text bold size="large">
-            {formatSpeed({
-              metersPerSecond: hourlyWeatherData?.wind_speed_10m[dataIndex],
-              units: userSettings?.data?.preferences.units || 'metric',
-              decimals: 1,
-            })}
-          </Text>
-          <Text type={'muted'}>
-            {formatSpeed({
-              metersPerSecond: hourlyWeatherData?.wind_gusts_10m[dataIndex],
-              units: userSettings?.data?.preferences.units || 'metric',
-              decimals: 1,
-            })}
-          </Text>
-          <MoveDown
-            style={{
-              transform: `rotate(${hourlyWeatherData?.wind_direction_10m[dataIndex]}deg)`,
-            }}
-            className="size-4"
-          />
+          <TextLoading isLoading={hourlyWeather.isLoading}>
+            <Text bold size="large">
+              {formatSpeed({
+                metersPerSecond: hourlyWeatherData?.wind_speed_10m[dataIndex],
+                units: userSettings?.data?.preferences.units || 'metric',
+                decimals: 1,
+              })}
+            </Text>
+          </TextLoading>
+          <TextLoading isLoading={hourlyWeather.isLoading}>
+            <Text type={'muted'}>
+              {formatSpeed({
+                metersPerSecond: hourlyWeatherData?.wind_gusts_10m[dataIndex],
+                units: userSettings?.data?.preferences.units || 'metric',
+                decimals: 1,
+              })}
+            </Text>
+          </TextLoading>
+          <TextLoading isLoading={hourlyWeather.isLoading}>
+            <MoveDown
+              style={{
+                transform: `rotate(${hourlyWeatherData?.wind_direction_10m[dataIndex]}deg)`,
+              }}
+              className="size-4"
+            />
+          </TextLoading>
         </div>
       </div>
       <Tabs
