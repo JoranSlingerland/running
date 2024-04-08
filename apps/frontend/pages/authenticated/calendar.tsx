@@ -1,7 +1,6 @@
 import 'dayjs/locale/en';
 
 import type { Activity } from '@repo/types';
-import { SparkBarChart } from '@tremor/react';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
@@ -16,6 +15,7 @@ import { useProps } from '@hooks/useProps';
 import useSessionStorageState from '@hooks/useSessionStorageState';
 import { GetActivitiesQuery, useActivities } from '@services/data/activities';
 import { useDailyWeather } from '@services/data/weather';
+import { Chart } from '@ui/AreaChart';
 import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
 import {
   Select,
@@ -221,12 +221,14 @@ function MetaItem({
               ))}
             </TabsList>
             {Object.keys(tabValues).map((value) => (
-              <TabsContent key={value} value={value}>
-                <SparkBarChart
+              <TabsContent key={value} value={value} className="h-16 w-full">
+                <Chart
                   data={chartData.totals}
-                  categories={[value]}
-                  index={'start_date'}
-                  className="h-8 w-full"
+                  bars={[
+                    {
+                      dataKey: value,
+                    },
+                  ]}
                 />
               </TabsContent>
             ))}
@@ -292,12 +294,18 @@ function MetaItem({
                       value={chartTab}
                     >
                       {Object.keys(tabValues).map((value) => (
-                        <TabsContent key={value} value={value}>
-                          <SparkBarChart
+                        <TabsContent
+                          key={value}
+                          value={value}
+                          className="h-16 w-full"
+                        >
+                          <Chart
                             data={chartData[item.sport]}
-                            categories={[value]}
-                            index={'start_date'}
-                            className="h-8 w-full"
+                            bars={[
+                              {
+                                dataKey: value,
+                              },
+                            ]}
                           />
                         </TabsContent>
                       ))}
