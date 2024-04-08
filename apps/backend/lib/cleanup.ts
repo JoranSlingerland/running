@@ -1,23 +1,23 @@
 import { DetailedActivity, SummaryActivity } from '@repo/strava';
 import { Activity } from '@repo/types';
-import { formatISO } from 'date-fns';
+import dayjs from 'dayjs';
 
 function cleanupDetailedActivity(
   activity: DetailedActivity,
   userId: string,
 ): Activity {
-  activity.start_date = formatISO(new Date(activity.start_date));
-  activity.start_date_local = formatISO(new Date(activity.start_date_local));
+  activity.start_date = dayjs(activity.start_date).toISOString();
+  activity.start_date_local = dayjs(activity.start_date_local).toISOString();
 
   for (const lap of activity.laps) {
-    lap.start_date = formatISO(new Date(lap.start_date));
-    lap.start_date_local = formatISO(new Date(lap.start_date_local));
+    lap.start_date = dayjs(lap.start_date).toISOString();
+    lap.start_date_local = dayjs(lap.start_date_local).toISOString();
   }
 
   if (activity.best_efforts) {
     for (const effort of activity.best_efforts) {
-      effort.start_date = formatISO(new Date(effort.start_date));
-      effort.start_date_local = formatISO(new Date(effort.start_date_local));
+      effort.start_date = dayjs(effort.start_date).toISOString();
+      effort.start_date_local = dayjs(effort.start_date_local).toISOString();
     }
   } else {
     activity.best_efforts = [];
@@ -116,8 +116,8 @@ function cleanUpSummaryActivity(
   activity: SummaryActivity,
   userId: string,
 ): Activity {
-  activity.start_date = formatISO(new Date(activity.start_date));
-  activity.start_date_local = formatISO(new Date(activity.start_date_local));
+  activity.start_date = dayjs(activity.start_date).toISOString();
+  activity.start_date_local = dayjs(activity.start_date_local).toISOString();
 
   const numberActivityId = activity.id.toString();
 
