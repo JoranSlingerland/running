@@ -1,13 +1,10 @@
-/* eslint-disable sonarjs/no-duplicate-string */
 import type { Config } from 'tailwindcss';
 
 const config = {
   content: [
     './**/*.{js,ts,jsx,tsx}',
     // './components/**/*.{js,ts,jsx,tsx}',
-    './node_modules/@tremor/**/*.{js,ts,jsx,tsx}', // Tremor module
   ],
-  // prefix: '',
   theme: {
     container: {
       center: true,
