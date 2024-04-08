@@ -1,6 +1,7 @@
-import { DailyWeather, HourlyWeather } from '@repo/weather';
+import { HourlyWeather } from '@repo/weather';
 import dayjs, { Dayjs } from 'dayjs';
 import { MoveDown } from 'lucide-react';
+import { useState } from 'react';
 import { useGeolocation } from 'rooks';
 
 import { useProps } from '@hooks/useProps';
@@ -22,18 +23,7 @@ type WeatherData = {
   'Wind Direction': number;
 };
 
-function HourlyWeatherBlock({
-  date,
-  weather,
-}: {
-  date: Dayjs;
-  weather: {
-    weather?: DailyWeather;
-    isLoading: boolean;
-    enabled: boolean;
-    index: number;
-  };
-}) {
+function HourlyWeatherBlock({ date }: { date: Dayjs }) {
   const { userSettings } = useProps();
   const geoLocation = useGeolocation({
     when: userSettings?.data?.preferences.enable_weather,
@@ -42,6 +32,7 @@ function HourlyWeatherBlock({
     'hourlyWeatherBlockSelectedTab',
     'temperature',
   );
+  const [dataIndex, setDataIndex] = useState<number>(0);
 
   const hourlyWeather = useHourlyWeather({
     query: {
@@ -52,10 +43,49 @@ function HourlyWeatherBlock({
     enabled: geoLocation?.isError === false,
   });
 
+  const hourlyWeatherData = hourlyWeather.data?.hourly;
+
   const tableData = convertData(hourlyWeather.data);
 
   return (
     <>
+      <div className="grid grid-cols-3 grid-rows-1 items-center justify-center py-2">
+        <div className="flex flex-row items-baseline justify-center space-x-1">
+          <Text bold size="large">
+            {hourlyWeatherData?.temperature_2m[dataIndex]}°
+          </Text>
+        </div>
+        <div className="flex flex-row items-baseline justify-center space-x-1">
+          <Text bold size="large">
+            {hourlyWeatherData?.precipitation[dataIndex]} mm
+          </Text>
+          <Text type={'muted'}>
+            {hourlyWeatherData?.precipitation_probability[dataIndex]}%
+          </Text>
+        </div>
+        <div className="flex flex-row items-baseline justify-center space-x-1">
+          <Text bold size="large">
+            {formatSpeed({
+              metersPerSecond: hourlyWeatherData?.wind_speed_10m[dataIndex],
+              units: userSettings?.data?.preferences.units || 'metric',
+              decimals: 1,
+            })}
+          </Text>
+          <Text type={'muted'}>
+            {formatSpeed({
+              metersPerSecond: hourlyWeatherData?.wind_gusts_10m[dataIndex],
+              units: userSettings?.data?.preferences.units || 'metric',
+              decimals: 1,
+            })}
+          </Text>
+          <MoveDown
+            style={{
+              transform: `rotate(${hourlyWeatherData?.wind_direction_10m[dataIndex]}deg)`,
+            }}
+            className="size-4"
+          />
+        </div>
+      </div>
       <Tabs
         onValueChange={(value) => setSelectedTab(value)}
         value={selectedTab}
@@ -69,16 +99,10 @@ function HourlyWeatherBlock({
           </TabsList>
         </div>
         <TabsContent value="temperature" className="pt-2">
-          <div className="flex flex-row items-baseline space-x-1">
-            <Text size="large">
-              {weather.weather?.daily.temperature_2m_max[weather.index]}°
-            </Text>
-            <Text type="muted">
-              {weather.weather?.daily.temperature_2m_min[weather.index]}°
-            </Text>
-          </div>
+          <div className="flex flex-row items-baseline space-x-1"></div>
           <div className="h-48">
             <Chart
+              dataIndexCallback={(index) => setDataIndex(index)}
               data={tableData}
               areas={[
                 {
@@ -117,21 +141,9 @@ function HourlyWeatherBlock({
           </div>
         </TabsContent>
         <TabsContent value="precipitation">
-          <div className="flex flex-row items-baseline space-x-1">
-            <Text size="large">
-              {weather.weather?.daily.precipitation_sum[weather.index]} mm
-            </Text>
-            <Text type="muted">
-              {
-                weather.weather?.daily.precipitation_probability_max[
-                  weather.index
-                ]
-              }
-              %
-            </Text>
-          </div>
           <div className="h-48">
             <Chart
+              dataIndexCallback={(index) => setDataIndex(index)}
               data={tableData}
               areas={[
                 {
@@ -170,36 +182,9 @@ function HourlyWeatherBlock({
           </div>
         </TabsContent>
         <TabsContent value="wind">
-          <div className="flex flex-row items-baseline space-x-1">
-            <Text size="large">
-              {formatSpeed({
-                metersPerSecond:
-                  weather.weather?.daily.wind_speed_10m_max[weather.index],
-                units: userSettings?.data?.preferences.units || 'metric',
-                decimals: 1,
-              })}
-            </Text>
-            <Text type="muted">
-              {formatSpeed({
-                metersPerSecond:
-                  weather.weather?.daily.wind_gusts_10m_max[weather.index],
-                units: userSettings?.data?.preferences.units || 'metric',
-                decimals: 1,
-              })}
-            </Text>
-            <MoveDown
-              style={{
-                transform: `rotate(${
-                  weather.weather?.daily.wind_direction_10m_dominant[
-                    weather.index
-                  ]
-                }deg)`,
-              }}
-              className="size-4"
-            />
-          </div>
           <div className="h-48">
             <Chart
+              dataIndexCallback={(index) => setDataIndex(index)}
               data={tableData}
               areas={[
                 {
