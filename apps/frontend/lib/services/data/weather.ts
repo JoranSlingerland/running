@@ -12,7 +12,7 @@ function useDailyWeather({
   enabled = true,
   background = false,
 }: {
-  query?: DailyWeatherQuery;
+  query: DailyWeatherQuery;
   enabled?: boolean;
   background?: boolean;
 }) {
