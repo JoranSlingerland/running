@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "@azure/cosmos": "^4.0.0",
-    "@repo/schemas": "*"
+    "@repo/schemas": "*",
+    "@repo/strava": "*"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",

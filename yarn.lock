@@ -1443,6 +1443,7 @@ __metadata:
     "@azure/cosmos": "npm:^4.0.0"
     "@repo/eslint-config": "npm:*"
     "@repo/schemas": "npm:*"
+    "@repo/strava": "npm:*"
     "@repo/types": "npm:*"
     "@repo/typescript-config": "npm:*"
   languageName: unknown
