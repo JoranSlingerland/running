@@ -30,7 +30,7 @@ async function handleGet(
   req: NextApiRequestUnknown,
   id: string,
 ) {
-  const activityId = getQueryParam(req.query, 'activityId') || 'latest';
+  const activityId = getQueryParam(req.query, 'id') || 'latest';
 
   if (activityId === 'latest') {
     const activity = await getLastStreamFromCosmos(id);
