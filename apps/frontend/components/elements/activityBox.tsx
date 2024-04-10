@@ -1,6 +1,6 @@
 import { Streams } from '@repo/strava';
 import bbox from '@turf/bbox';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Map, { Layer, Source } from 'react-map-gl';
 import WebMercatorViewport from 'viewport-mercator-project';
 
@@ -9,16 +9,18 @@ import { useActivity } from '@services/data/activity';
 import { useStreams } from '@services/data/streams';
 import { Chart } from '@ui/chart';
 import { chartColorsMap } from '@ui/colors';
-import { formatDistance } from '@utils/formatting';
+import { formatDistance, formatPace } from '@utils/formatting';
+
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 // Data to implement:
 
 // Map should interact with the charts - Implemented
 
-// Charts:
+// Charts - Implemented
 // Pace
 // HeartRate
-// cadence?
+// Altitude
 
 // Tables:
 // Splits
@@ -53,6 +55,8 @@ function calculateTickInterval(streams: Streams | undefined) {
   );
 }
 
+const viewport = new WebMercatorViewport({ width: 1100, height: 300 });
+
 export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
   const { userSettings } = useProps();
   const { data: activity, isLoading: activityIsLoading } = useActivity({
@@ -75,34 +79,48 @@ export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
     return () => window.cancelAnimationFrame(animation);
   }, [streams, activeIndex]);
 
+  const routeCoordinates = useMemo(() => {
+    return streams?.latlng.data.map(([lat, lng]) => [lng, lat]) || [];
+  }, [streams?.latlng.data]);
+
+  const routeBbox = useMemo(() => {
+    return bbox({ type: 'LineString', coordinates: routeCoordinates });
+  }, [routeCoordinates]);
+
+  const chartData = useMemo(() => {
+    return (
+      streams?.distance.data.map((value, index) => ({
+        Distance: value,
+        Heartrate: streams.heartrate.data[index],
+        Cadence: streams.cadence.data[index],
+        Altitude: streams.altitude.data[index],
+        Pace: streams.velocity_smooth.data[index],
+      })) || []
+    );
+  }, [streams]);
+  console.log(chartData);
+  const tickInterval = useMemo(() => {
+    return calculateTickInterval(streams);
+  }, [streams]);
+
   if (activityIsLoading || streamsIsLoading) {
     return <div>Loading...</div>;
   }
 
-  const routeCoordinates =
-    streams?.latlng.data.map(([lat, lng]) => [lng, lat]) || [];
-  const routeBbox = bbox({ type: 'LineString', coordinates: routeCoordinates });
-
-  const viewport = new WebMercatorViewport({ width: 1100, height: 300 });
   const { longitude, latitude, zoom } = viewport.fitBounds([
     [routeBbox[0], routeBbox[1]],
     [routeBbox[2], routeBbox[3]],
   ]);
 
-  const chartData = streams?.distance.data.map((value, index) => ({
-    distance: value,
-    heartrate: streams.heartrate.data[index],
-    cadence: streams.cadence.data[index],
-    altitude: streams.altitude.data[index],
-    velocity_smooth: streams.velocity_smooth.data[index],
-  }));
-
-  const tickInterval = calculateTickInterval(streams);
-
   return (
-    <div>
-      <div className="h-96 pb-16">
-        {/* TODO: Move to seperate component */}
+    <div className="flex flex-col space-y-2">
+      {/* 
+        - Move to separate component
+        - switch to different map library
+        - Hide point when not hovered over chart
+        - Add zoom buttons
+      */}
+      <div className="h-96">
         <Map
           mapLib={import('mapbox-gl')}
           initialViewState={{
@@ -121,8 +139,7 @@ export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
               properties: {},
               geometry: {
                 type: 'LineString',
-                coordinates:
-                  streams?.latlng.data.map(([lat, lng]) => [lng, lat]) || [],
+                coordinates: routeCoordinates,
               },
             }}
           />
@@ -163,21 +180,25 @@ export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
         </Map>
       </div>
       <div className="h-64">
-        {/* 
-        - Data selection
-        - Grid lines
-        */}
         <Chart
           data={chartData || []}
-          dataIndexCallback={(index) => setActiveIndex(index)}
+          dataIndexCallback={(value) => setActiveIndex(value)}
           isLoading={streamsIsLoading}
-          lines={[]}
           areas={[
             {
-              dataKey: 'heartrate',
+              dataKey: 'Pace',
+              useGradient: true,
+            },
+            {
+              dataKey: 'Heartrate',
+              useGradient: true,
+            },
+            {
+              dataKey: 'Altitude',
               useGradient: true,
             },
           ]}
+          toggle={{ type: 'single', enabled: true, initial: ['Heartrate'] }}
           toolTip={{
             enabled: true,
             formatter(value: number) {
@@ -193,7 +214,7 @@ export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
           }}
           xAxis={[
             {
-              dataKey: 'distance',
+              dataKey: 'Distance',
               tickFormatter(value: number) {
                 return formatDistance({
                   meters: value,
@@ -207,9 +228,30 @@ export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
           yAxis={[
             {
               tickFormatter(value: number) {
+                return formatPace({
+                  metersPerSecond: value,
+                  units: userSettings?.data?.preferences.units || 'metric',
+                });
+              },
+              orientation: 'left',
+              dataKey: 'Pace',
+              toolTipFormatDataKeys: ['Pace'],
+            },
+            {
+              tickFormatter(value: number) {
                 return `${value} bpm`;
               },
               orientation: 'left',
+              dataKey: 'Heartrate',
+              toolTipFormatDataKeys: ['Heartrate'],
+            },
+            {
+              tickFormatter(value: number) {
+                return `${value} m`;
+              },
+              orientation: 'left',
+              dataKey: 'Altitude',
+              toolTipFormatDataKeys: ['Altitude'],
             },
           ]}
         />

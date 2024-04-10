@@ -21,7 +21,7 @@
     ],
     "turbo/no-undeclared-env-vars": "off",
     "sort-imports": [
-      "error",
+      "warn",
       {
         "ignoreCase": false,
         "ignoreDeclarationSort": true,
@@ -32,7 +32,7 @@
     ],
     "import/no-unresolved": "off",
     "import/order": [
-      "error",
+      "warn",
       {
         "groups": [
           "builtin",
@@ -55,6 +55,7 @@
     "require-yield": "off",
     "no-prototype-builtins": "off",
     "sonarjs/no-small-switch": "off",
+    "sonarjs/no-duplicate-string": ["warn", { "threshold": 5 }],
     "tailwindcss/no-custom-classname": "off"
   },
   "parser": "@typescript-eslint/parser",

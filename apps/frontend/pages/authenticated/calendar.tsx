@@ -34,6 +34,7 @@ import {
   SelectValue,
 } from '@ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/tabs';
+import { ToggleGroup, ToggleGroupItem } from '@ui/toggle-group';
 import { Text } from '@ui/typography';
 import {
   getFirstMondayBeforeMonth,
@@ -145,6 +146,11 @@ function CalendarItem({
                 })}
               </Text>
             )}
+            <ToggleGroup type="single">
+              <ToggleGroupItem value="a">A</ToggleGroupItem>
+              <ToggleGroupItem value="b">B</ToggleGroupItem>
+              <ToggleGroupItem value="c">C</ToggleGroupItem>
+            </ToggleGroup>
           </CardContent>
         </Card>
       </DialogTrigger>
