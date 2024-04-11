@@ -1,6 +1,4 @@
-import bbox from '@turf/bbox';
 import { useEffect, useMemo, useState } from 'react';
-import WebMercatorViewport from 'viewport-mercator-project';
 
 import { Icon } from '@elements/icon';
 import { useProps } from '@hooks/useProps';
@@ -38,7 +36,6 @@ import { DataTable } from './shadcnTable';
 // Best efforts
 // Format y-axis on whole minutes
 
-const viewport = new WebMercatorViewport({ width: 1100, height: 300 });
 const dataSmoothing = 10;
 
 export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
@@ -71,10 +68,6 @@ export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
   const routeCoordinates = useMemo(() => {
     return streams?.latlng.data.map(([lat, lng]) => [lng, lat]) || [];
   }, [streams?.latlng.data]);
-
-  const routeBbox = useMemo(() => {
-    return bbox({ type: 'LineString', coordinates: routeCoordinates });
-  }, [routeCoordinates]);
 
   const lapsData = useMemo(() => {
     if (!activity?.laps) {
@@ -143,11 +136,6 @@ export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
     return <div>Loading...</div>;
   }
 
-  const { longitude, latitude, zoom } = viewport.fitBounds([
-    [routeBbox[0], routeBbox[1]],
-    [routeBbox[2], routeBbox[3]],
-  ]);
-
   return (
     <div className="flex flex-col space-y-4">
       <div className="flex space-x-4">
@@ -212,9 +200,9 @@ export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
         - Add animation to point
       */}
       <Map
-        initialViewState={{
-          center: [longitude, latitude],
-          zoom,
+        boundingBox={{
+          type: 'LineString',
+          coordinates: routeCoordinates,
         }}
         className="h-96"
         sources={[
