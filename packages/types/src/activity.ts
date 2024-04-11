@@ -40,8 +40,8 @@ interface Activity {
   description: null | string | undefined;
   device_name: null | string;
   embed_token: null | string;
-  laps: null | Laps[];
-  splits_metric: null | Splits[];
+  laps: Laps[] | undefined;
+  splits_metric: null | Split[];
   utc_offset: number;
   location_city: null | string;
   location_state: null | string;
@@ -89,7 +89,7 @@ interface BestEfforts {
   end_index: number;
 }
 
-interface Laps {
+export interface Laps {
   activity: {
     id: number;
   };
@@ -119,7 +119,7 @@ interface Laps {
   pace_trimp: number | null;
 }
 
-interface Splits {
+export interface Split {
   average_speed: number;
   distance: number;
   elapsed_time: number;

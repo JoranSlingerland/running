@@ -145,9 +145,9 @@ function formatSpeed({
 }
 
 // Misc functions
-function formatHeartRate(heartRate: number, addUnit = true) {
-  const value = heartRate.toFixed(0);
-  return addUnit ? `${value} bpm` : value;
+function formatHeartRate(heartRate: number | undefined, addUnit = true) {
+  const value = heartRate?.toFixed(0);
+  return addUnit ? `${value} bpm` : `${value}`;
 }
 
 function formatNumber({
@@ -189,6 +189,13 @@ const sportIcon = (sport: string): JSX.Element => {
       return <></>;
   }
 };
+function formatCadence(cadence: number | undefined, addUnit = true) {
+  if (cadence) {
+    cadence = cadence * 2;
+  }
+  const value = cadence?.toFixed(0);
+  return addUnit ? `${value} spm` : `${value}`;
+}
 
 export {
   formatDistance,
@@ -200,4 +207,5 @@ export {
   formatDateTime,
   unitMapper,
   formatSpeed,
+  formatCadence,
 };

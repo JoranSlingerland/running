@@ -1,61 +1,45 @@
-import { Streams } from '@repo/strava';
 import bbox from '@turf/bbox';
 import { useEffect, useMemo, useState } from 'react';
-import Map, { Layer, Source } from 'react-map-gl';
 import WebMercatorViewport from 'viewport-mercator-project';
 
+import { Icon } from '@elements/icon';
 import { useProps } from '@hooks/useProps';
+import useSessionStorageState from '@hooks/useSessionStorageState';
 import { useActivity } from '@services/data/activity';
 import { useStreams } from '@services/data/streams';
 import { Chart } from '@ui/chart';
 import { chartColorsMap } from '@ui/colors';
-import { formatDistance, formatPace } from '@utils/formatting';
+import Map from '@ui/map';
+import { ToggleGroup, ToggleGroupItem } from '@ui/toggle-group';
+import { Text } from '@ui/typography';
+import {
+  formatDistance,
+  formatHeartRate,
+  formatNumber,
+  formatPace,
+  formatTime,
+} from '@utils/formatting';
+import { getPreferredTss } from '@utils/tss/helpers';
+import { averageDataPoints, calculateTickInterval } from '@utils/utils';
 
-import 'mapbox-gl/dist/mapbox-gl.css';
+import { lapColumns } from './columns/lapColumns';
+import { splitColumns } from './columns/splitColumns';
+import { DataTable } from './shadcnTable';
 
 // Data to implement:
 
-// Map should interact with the charts - Implemented
-
-// Charts - Implemented
-// Pace
-// HeartRate
-// Altitude
-
-// Tables:
-// Splits
-// Laps
-
-// Stats:
-// Distance
-// Time
+// Stats - Implemented
 // Pace min / avg / max
 // HR min / avg /max
-// TSS
-
-// Speed
 // Elevation
 // calories
-// elapsed time
-// weather
 
-// Components:
+// Tables:
 // Best efforts
-
-function calculateTickInterval(streams: Streams | undefined) {
-  const totalDistance =
-    streams?.distance.data[streams?.distance.data.length - 1] || 0;
-  const totalTicks = streams?.distance.original_size || 1;
-  const distancePerTick = totalDistance / totalTicks;
-  const ticksPerKm = 1000 / distancePerTick;
-  const ticksThatWillBeDisplayed = totalTicks / ticksPerKm;
-
-  return Math.round(
-    ticksThatWillBeDisplayed > 20 ? totalTicks / 20 : ticksPerKm,
-  );
-}
+// Format y-axis on whole minutes
 
 const viewport = new WebMercatorViewport({ width: 1100, height: 300 });
+const dataSmoothing = 10;
 
 export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
   const { userSettings } = useProps();
@@ -67,16 +51,21 @@ export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
   });
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeCoordinates, setActiveCoordinates] = useState([0, 0]);
+  const [selectedTable, setSelectedTable] = useSessionStorageState(
+    'activitySelectedTable',
+    'laps',
+  );
+  const [selectedChart, setSelectedChart] = useSessionStorageState(
+    'activitySelectedChart',
+    'area',
+  );
 
   useEffect(() => {
-    const animation = window.requestAnimationFrame(() =>
-      setActiveCoordinates(
-        streams?.latlng.data[activeIndex]
-          ? [...streams.latlng.data[activeIndex]].reverse()
-          : [0, 0],
-      ),
+    setActiveCoordinates(
+      streams?.latlng.data[activeIndex]
+        ? [...streams.latlng.data[activeIndex]].reverse()
+        : [0, 0],
     );
-    return () => window.cancelAnimationFrame(animation);
   }, [streams, activeIndex]);
 
   const routeCoordinates = useMemo(() => {
@@ -87,22 +76,69 @@ export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
     return bbox({ type: 'LineString', coordinates: routeCoordinates });
   }, [routeCoordinates]);
 
+  const lapsData = useMemo(() => {
+    if (!activity?.laps) {
+      return [];
+    }
+    return activity.laps.map((lap) => ({
+      Distance: lap.distance,
+      Pace: lap.average_speed,
+      Heartrate: lap.average_heartrate,
+      Split: lap.split,
+    }));
+  }, [activity?.laps]);
+
+  const splitsData = useMemo(() => {
+    if (!activity?.splits_metric) {
+      return [];
+    }
+    return activity.splits_metric.map((lap) => ({
+      Distance: lap.distance,
+      Pace: lap.average_speed,
+      Heartrate: lap.average_heartrate,
+      Split: lap.split,
+    }));
+  }, [activity?.splits_metric]);
+
   const chartData = useMemo(() => {
-    return (
-      streams?.distance.data.map((value, index) => ({
-        Distance: value,
-        Heartrate: streams.heartrate.data[index],
-        Cadence: streams.cadence.data[index],
-        Altitude: streams.altitude.data[index],
-        Pace: streams.velocity_smooth.data[index],
-      })) || []
+    if (!streams) {
+      return [];
+    }
+    const distance = averageDataPoints(
+      streams.distance.data,
+      streams.distance.data.length / dataSmoothing,
     );
-  }, [streams]);
-  console.log(chartData);
-  const tickInterval = useMemo(() => {
-    return calculateTickInterval(streams);
+    const heartrate = averageDataPoints(
+      streams.heartrate.data,
+      streams.heartrate.data.length / dataSmoothing,
+    );
+    const cadence = averageDataPoints(
+      streams.cadence.data,
+      streams.cadence.data.length / dataSmoothing,
+    );
+    const altitude = averageDataPoints(
+      streams.altitude.data,
+      streams.altitude.data.length / dataSmoothing,
+    );
+    const pace = averageDataPoints(
+      streams.velocity_smooth.data,
+      streams.velocity_smooth.data.length / dataSmoothing,
+    );
+
+    return distance.map((value, index) => ({
+      Distance: value,
+      Heartrate: heartrate[index],
+      Cadence: cadence[index],
+      Altitude: altitude[index],
+      Pace: pace[index],
+    }));
   }, [streams]);
 
+  const tickInterval = useMemo(() => {
+    return calculateTickInterval(streams, dataSmoothing);
+  }, [streams]);
+
+  // Implement skeleton loading
   if (activityIsLoading || streamsIsLoading) {
     return <div>Loading...</div>;
   }
@@ -113,148 +149,352 @@ export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
   ]);
 
   return (
-    <div className="flex flex-col space-y-2">
-      {/* 
-        - Move to separate component
-        - switch to different map library
-        - Hide point when not hovered over chart
-        - Add zoom buttons
-      */}
-      <div className="h-96">
-        <Map
-          mapLib={import('mapbox-gl')}
-          initialViewState={{
-            longitude,
-            latitude,
-            zoom,
-          }}
-          mapStyle="mapbox://styles/mapbox/streets-v9"
-          mapboxAccessToken={process.env.NEXT_PUBLIC_MapboxAccessToken}
-        >
-          <Source
-            id="route"
-            type="geojson"
-            data={{
-              type: 'Feature',
-              properties: {},
-              geometry: {
-                type: 'LineString',
-                coordinates: routeCoordinates,
-              },
-            }}
-          />
-          <Layer
-            id="route"
-            type="line"
-            source="route"
-            layout={{
-              'line-join': 'round',
-              'line-cap': 'round',
-            }}
-            paint={{
-              'line-color': chartColorsMap['blue'],
-              'line-width': 2,
-            }}
-          />
-          <Source
-            id="point"
-            type="geojson"
-            data={{
-              type: 'Feature',
-              properties: {},
-              geometry: {
-                type: 'Point',
-                coordinates: activeCoordinates,
-              },
-            }}
-          />
-          <Layer
-            id="point"
-            type="circle"
-            source="point"
-            paint={{
-              'circle-radius': 4,
-              'circle-color': chartColorsMap['orange'],
-            }}
-          />
-        </Map>
+    <div className="flex flex-col space-y-4">
+      <div className="flex space-x-4">
+        <div>
+          <Text bold size="large">
+            {formatDistance({
+              meters: activity?.distance,
+              units: userSettings?.data?.preferences.units || 'metric',
+            })}
+          </Text>
+          <Text size="small" type="muted">
+            Distance
+          </Text>
+        </div>
+        <div>
+          <Text bold size="large">
+            {formatPace({
+              metersPerSecond: activity?.average_speed,
+              units: userSettings?.data?.preferences.units || 'metric',
+            })}
+          </Text>
+          <Text size="small" type="muted">
+            Pace
+          </Text>
+        </div>
+        <div>
+          <Text bold size="large">
+            {formatTime({
+              seconds: activity?.moving_time || 0,
+            })}
+          </Text>
+          <Text size="small" type="muted">
+            Moving time
+          </Text>
+        </div>
+        <div>
+          <Text bold size="large">
+            {formatNumber({ number: activity?.average_heartrate, decimals: 0 })}
+          </Text>
+          <Text size="small" type="muted">
+            Heartrate
+          </Text>
+        </div>
+        <div>
+          <Text bold size="large">
+            {formatNumber({
+              number: getPreferredTss(
+                userSettings?.data?.preferences.preferred_tss_type,
+                activity,
+              ).tss,
+              decimals: 0,
+            })}
+          </Text>
+          <Text size="small" type="muted">
+            Training stress score (TSS)
+          </Text>
+        </div>
       </div>
-      <div className="h-64">
-        <Chart
-          data={chartData || []}
-          dataIndexCallback={(value) => setActiveIndex(value)}
-          isLoading={streamsIsLoading}
-          areas={[
-            {
-              dataKey: 'Pace',
-              useGradient: true,
+
+      {/* 
+        - Hide point when not hovered over chart
+        - Add animation to point
+      */}
+      <Map
+        initialViewState={{
+          center: [longitude, latitude],
+          zoom,
+        }}
+        className="h-96"
+        sources={[
+          {
+            id: 'route',
+            source: {
+              type: 'geojson',
+              data: {
+                type: 'Feature',
+                properties: {},
+                geometry: {
+                  type: 'LineString',
+                  coordinates: routeCoordinates,
+                },
+              },
             },
-            {
-              dataKey: 'Heartrate',
-              useGradient: true,
+          },
+          {
+            id: 'point',
+            source: {
+              type: 'geojson',
+              data: {
+                type: 'Feature',
+                properties: {},
+                geometry: {
+                  type: 'Point',
+                  coordinates: activeCoordinates,
+                },
+              },
             },
-            {
-              dataKey: 'Altitude',
-              useGradient: true,
+          },
+        ]}
+        layers={[
+          {
+            layer: {
+              id: 'route',
+              type: 'line',
+              source: 'route',
+              layout: {
+                'line-join': 'round',
+                'line-cap': 'round',
+              },
+              paint: {
+                'line-color': chartColorsMap['blue'],
+                'line-width': 2,
+              },
             },
-          ]}
-          toggle={{ type: 'single', enabled: true, initial: ['Heartrate'] }}
-          toolTip={{
-            enabled: true,
-            formatter(value: number) {
-              return `${value} bpm`;
+          },
+          {
+            layer: {
+              id: 'point',
+              type: 'circle',
+              source: 'point',
+              paint: {
+                'circle-radius': 4,
+                'circle-color': chartColorsMap['orange'],
+              },
             },
-            labelFormatter(label: number) {
-              return formatDistance({
-                meters: label,
-                units: userSettings?.data?.preferences.units || 'metric',
-                decimals: 1,
-              });
-            },
+          },
+        ]}
+      />
+      <div>
+        <ToggleGroup
+          type="single"
+          value={selectedChart}
+          onValueChange={(value) => {
+            if (value) {
+              setSelectedChart(value);
+            }
           }}
-          xAxis={[
-            {
-              dataKey: 'Distance',
-              tickFormatter(value: number) {
-                return formatDistance({
-                  meters: value,
-                  units: userSettings?.data?.preferences.units || 'metric',
-                  decimals: 0,
-                });
-              },
-              interval: tickInterval,
-            },
-          ]}
-          yAxis={[
-            {
-              tickFormatter(value: number) {
-                return formatPace({
-                  metersPerSecond: value,
-                  units: userSettings?.data?.preferences.units || 'metric',
-                });
-              },
-              orientation: 'left',
-              dataKey: 'Pace',
-              toolTipFormatDataKeys: ['Pace'],
-            },
-            {
-              tickFormatter(value: number) {
-                return `${value} bpm`;
-              },
-              orientation: 'left',
-              dataKey: 'Heartrate',
-              toolTipFormatDataKeys: ['Heartrate'],
-            },
-            {
-              tickFormatter(value: number) {
-                return `${value} m`;
-              },
-              orientation: 'left',
-              dataKey: 'Altitude',
-              toolTipFormatDataKeys: ['Altitude'],
-            },
-          ]}
-        />
+          className="float-left pb-4"
+        >
+          <ToggleGroupItem value={'area'}>
+            <Icon icon="area_chart" />
+          </ToggleGroupItem>
+          <ToggleGroupItem value={'bar'}>
+            <Icon icon="bar_chart" />
+          </ToggleGroupItem>
+        </ToggleGroup>
+        <div className="h-64">
+          {selectedChart == 'area' && (
+            <Chart
+              data={chartData || []}
+              dataIndexCallback={(value) =>
+                setActiveIndex(value * dataSmoothing)
+              }
+              isLoading={streamsIsLoading}
+              areas={[
+                {
+                  dataKey: 'Pace',
+                  useGradient: true,
+                },
+                {
+                  dataKey: 'Heartrate',
+                  useGradient: true,
+                },
+                {
+                  dataKey: 'Altitude',
+                  useGradient: true,
+                },
+              ]}
+              toggle={{ type: 'single', enabled: true, initial: ['Pace'] }}
+              toolTip={{
+                enabled: true,
+                labelFormatter(label: number) {
+                  return formatDistance({
+                    meters: label,
+                    units: userSettings?.data?.preferences.units || 'metric',
+                    decimals: 1,
+                  });
+                },
+              }}
+              xAxis={[
+                {
+                  dataKey: 'Distance',
+                  tickFormatter(value: number) {
+                    return formatDistance({
+                      meters: value,
+                      units: userSettings?.data?.preferences.units || 'metric',
+                      decimals: 0,
+                    });
+                  },
+                  interval: tickInterval,
+                },
+              ]}
+              yAxis={[
+                {
+                  tickFormatter(value: number) {
+                    return formatPace({
+                      metersPerSecond: value,
+                      units: userSettings?.data?.preferences.units || 'metric',
+                    });
+                  },
+                  orientation: 'left',
+                  dataKey: 'Pace',
+                  toolTipFormatDataKeys: ['Pace'],
+                  domain([dataMin, dataMax]) {
+                    return [Math.max(dataMin - 0.1, 0), dataMax];
+                  },
+                  allowDataOverflow: true,
+                },
+                {
+                  tickFormatter(value: number) {
+                    return formatHeartRate(value);
+                  },
+                  orientation: 'left',
+                  dataKey: 'Heartrate',
+                  toolTipFormatDataKeys: ['Heartrate'],
+                  domain([dataMin, dataMax]) {
+                    return [dataMin - 0.9, dataMax];
+                  },
+                  allowDataOverflow: true,
+                },
+                {
+                  tickFormatter(value: number) {
+                    return `${formatNumber({ number: value, decimals: 0 })} m`;
+                  },
+                  orientation: 'left',
+                  dataKey: 'Altitude',
+                  toolTipFormatDataKeys: ['Altitude'],
+                  domain([dataMin, dataMax]) {
+                    return [
+                      dataMin < 0 ? 1.1 * dataMin : 0.9 * dataMin,
+                      dataMax < 0 ? 0.9 * dataMax : 1.1 * dataMax,
+                    ];
+                  },
+                  allowDataOverflow: true,
+                },
+              ]}
+            />
+          )}
+          {selectedChart == 'bar' && (
+            <Chart
+              data={selectedTable == 'laps' ? lapsData : splitsData}
+              isLoading={activityIsLoading}
+              bars={[
+                {
+                  dataKey: 'Pace',
+                  stackId: 'a',
+                  useGradient: true,
+                },
+                {
+                  dataKey: 'Heartrate',
+                  stackId: 'a',
+                  useGradient: true,
+                },
+                {
+                  dataKey: 'Distance',
+                  stackId: 'a',
+                  useGradient: true,
+                },
+              ]}
+              toggle={{
+                type: 'single',
+                enabled: true,
+                initial: ['Pace'],
+              }}
+              toolTip={{
+                enabled: true,
+                hideLabel: true,
+              }}
+              yAxis={[
+                {
+                  tickFormatter(value: number) {
+                    return formatPace({
+                      metersPerSecond: value,
+                      units: userSettings?.data?.preferences.units || 'metric',
+                    });
+                  },
+                  orientation: 'left',
+                  dataKey: 'Pace',
+                  toolTipFormatDataKeys: ['Pace'],
+                  domain([dataMin, dataMax]) {
+                    return [Math.max(dataMin - 0.1, 0), dataMax];
+                  },
+                },
+                {
+                  tickFormatter(value: number) {
+                    return formatHeartRate(value);
+                  },
+                  orientation: 'left',
+                  dataKey: 'Heartrate',
+                  toolTipFormatDataKeys: ['Heartrate'],
+                  domain([dataMin, dataMax]) {
+                    return [dataMin - 0.9, dataMax];
+                  },
+                  // allowDataOverflow: true,
+                },
+                {
+                  tickFormatter(value: number) {
+                    return formatDistance({
+                      meters: value,
+                      units: userSettings?.data?.preferences.units || 'metric',
+                      decimals: 1,
+                    });
+                  },
+                  orientation: 'left',
+                  dataKey: 'Distance',
+                  toolTipFormatDataKeys: ['Distance'],
+                  domain([dataMin, dataMax]) {
+                    return [0.9 * dataMin, 1.1 * dataMax];
+                  },
+                  // allowDataOverflow: true,
+                },
+              ]}
+            />
+          )}
+        </div>
+      </div>
+      <div className="pt-16">
+        <ToggleGroup
+          type="single"
+          value={selectedTable}
+          onValueChange={(value) => {
+            if (value) {
+              setSelectedTable(value);
+            }
+          }}
+        >
+          <ToggleGroupItem value={'laps'}>Laps</ToggleGroupItem>
+          <ToggleGroupItem value={'splits'}>Splits</ToggleGroupItem>
+        </ToggleGroup>
+        {selectedTable == 'laps' && (
+          <DataTable
+            isLoading={activityIsLoading}
+            columns={lapColumns(
+              userSettings?.data?.preferences.units || 'metric',
+            )}
+            data={activity?.laps || []}
+          />
+        )}
+        {selectedTable == 'splits' && (
+          <DataTable
+            isLoading={activityIsLoading}
+            columns={splitColumns(
+              userSettings?.data?.preferences.units || 'metric',
+            )}
+            data={activity?.splits_metric || []}
+          />
+        )}
       </div>
     </div>
   );

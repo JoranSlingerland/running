@@ -39,6 +39,7 @@ interface Lines extends LineProps {
 
 interface ToolTips extends TooltipProps<number, string> {
   enabled: boolean;
+  hideLabel?: boolean;
 }
 
 interface YAxises extends YAxisProps {
@@ -255,14 +256,19 @@ export function Chart<T>({
                 if (active) {
                   return (
                     <div className="min-w-32 rounded-lg border bg-background py-2 shadow-2xl">
-                      <div className="px-2">
-                        <Text>
-                          {labelFormatter && payload
-                            ? labelFormatter(label, payload)
-                            : label}
-                        </Text>
-                      </div>
-                      <Separator />
+                      {!toolTip.hideLabel && (
+                        <>
+                          <div className="px-2">
+                            <Text>
+                              {labelFormatter && payload
+                                ? labelFormatter(label, payload)
+                                : label}
+                            </Text>
+                          </div>
+                          <Separator />
+                        </>
+                      )}
+
                       <div className="flex flex-col px-2">
                         {payload?.map((item, index) => {
                           const matchingYAxis = yAxis.filter((y) =>
@@ -337,6 +343,7 @@ export function Chart<T>({
                     : chartColorsMap[colors[keyCount % colors.length]]
                 }
                 animationDuration={bar.animationDuration}
+                stackId={bar.stackId}
               />
             );
           })}
