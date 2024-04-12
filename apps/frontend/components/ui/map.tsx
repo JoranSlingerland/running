@@ -3,7 +3,6 @@ import maplibregl from 'maplibre-gl';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import WebMercatorViewport from 'viewport-mercator-project';
-
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 type Source = {
@@ -56,12 +55,11 @@ export default function Map({
       return { longitude: 0, latitude: 0, zoom: 12 };
     }
 
-    const { offsetWidth: windowWidth, offsetHeight: windowHeight } =
-      mapContainerRef.current;
+    const { offsetWidth, offsetHeight } = mapContainerRef.current;
 
     const viewport = new WebMercatorViewport({
-      width: windowWidth - 50,
-      height: windowHeight - 50,
+      width: offsetWidth - 50,
+      height: offsetHeight - 50,
     });
 
     const routeBbox = bbox({
@@ -104,16 +102,29 @@ export default function Map({
 
   // Update map when sources change
   useEffect(() => {
-    if (map) {
-      sources.forEach((source) => {
-        try {
-          // @ts-expect-error Weird typing within the mapbox-gl library
-          map.getSource(source.id)?.setData(source.source.data);
-        } catch (error) {
-          console.error('An error occurred:', error);
-        }
-      });
+    let animationId: number | null = null;
+
+    function animateMarker() {
+      if (map) {
+        sources.forEach((source) => {
+          try {
+            // @ts-expect-error Weird typing within the mapbox-gl library
+            map.getSource(source.id)?.setData(source.source.data);
+          } catch (error) {
+            console.error('An error occurred:', error);
+          }
+        });
+        animationId = requestAnimationFrame(animateMarker);
+      }
     }
+
+    animateMarker();
+
+    return () => {
+      if (animationId !== null) {
+        cancelAnimationFrame(animationId);
+      }
+    };
   }, [sources, map]);
 
   return (
