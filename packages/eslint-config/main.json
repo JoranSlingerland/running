@@ -4,13 +4,12 @@
     "prettier",
     "eslint-config-turbo",
     "eslint:recommended",
-    "plugin:import/recommended",
     "plugin:import/typescript",
     "plugin:sonarjs/recommended",
     "plugin:tailwindcss/recommended",
     "plugin:@typescript-eslint/recommended"
   ],
-  "plugins": ["prettier", "@typescript-eslint", "import", "sonarjs"],
+  "plugins": ["prettier", "@typescript-eslint", "sonarjs"],
   "rules": {
     "prettier/prettier": [
       "warn",
@@ -30,24 +29,6 @@
         "allowSeparatedGroups": true
       }
     ],
-    "import/no-unresolved": "off",
-    "import/order": [
-      "warn",
-      {
-        "groups": [
-          "builtin",
-          "external",
-          "internal",
-          ["parent", "sibling"],
-          "index"
-        ],
-        "newlines-between": "always",
-        "alphabetize": {
-          "order": "asc",
-          "caseInsensitive": true
-        }
-      }
-    ],
     "import/no-named-as-default": "off",
     "no-undef": "off",
     "no-unused-vars": "off",
@@ -55,8 +36,7 @@
     "require-yield": "off",
     "no-prototype-builtins": "off",
     "sonarjs/no-small-switch": "off",
-    "sonarjs/no-duplicate-string": ["warn", { "threshold": 5 }],
-    "tailwindcss/no-custom-classname": "off"
+    "sonarjs/no-duplicate-string": ["warn", { "threshold": 5 }]
   },
   "parser": "@typescript-eslint/parser",
   "root": true
