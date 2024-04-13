@@ -3,7 +3,11 @@ import { Streams } from '@repo/strava';
 const isNotNullOrZero = (value: unknown) =>
   value !== null && value !== undefined && value !== 0;
 
-function averageDataPoints(data: number[], numPoints: number) {
+function averageDataPoints(data: number[] | undefined, numPoints: number) {
+  if (!data) {
+    return [];
+  }
+
   const step = Math.ceil(data.length / numPoints);
   const averagedData = [];
 
@@ -21,7 +25,7 @@ function calculateTickInterval(
   dataSmoothing: number,
   distance = 1000,
 ) {
-  if (!streams) {
+  if (!streams || !streams.distance) {
     return 1;
   }
 

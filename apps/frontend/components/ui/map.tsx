@@ -3,6 +3,8 @@ import maplibregl from 'maplibre-gl';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import WebMercatorViewport from 'viewport-mercator-project';
+
+import { Skeleton } from '@ui/skeleton';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 type Source = {
@@ -19,6 +21,7 @@ type BaseMapProps = {
   className?: string;
   sources?: Source[];
   layers?: Layer[];
+  isLoading?: boolean;
 };
 
 type MapPropsWithBBox = BaseMapProps & {
@@ -45,9 +48,11 @@ export default function Map({
   sources = [],
   layers = [],
   boundingBox,
+  isLoading = false,
 }: MapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<maplibregl.Map | null>(null);
+  const [mapIsLoading, setMapIsLoading] = useState(isLoading);
 
   // Calculate initial viewport based on bounding box
   const { longitude, latitude, zoom } = useMemo(() => {
@@ -67,10 +72,22 @@ export default function Map({
       coordinates: boundingBox.coordinates,
     });
 
-    return viewport.fitBounds([
-      [routeBbox[0], routeBbox[1]],
-      [routeBbox[2], routeBbox[3]],
-    ]);
+    routeBbox.forEach((value, index) => {
+      if (!isFinite(value)) {
+        routeBbox[index] = 0;
+      }
+    });
+
+    try {
+      const { longitude, latitude, zoom } = viewport.fitBounds([
+        [routeBbox[0], routeBbox[1]],
+        [routeBbox[2], routeBbox[3]],
+      ]);
+
+      return { longitude, latitude, zoom };
+    } catch (error) {
+      return { longitude: 0, latitude: 0, zoom: 12 };
+    }
   }, [boundingBox]);
 
   // Initialize map when component mounts
@@ -85,7 +102,7 @@ export default function Map({
     });
 
     newMap.addControl(new maplibregl.NavigationControl(), 'top-right');
-
+    setMapIsLoading(false);
     newMap.on('load', () => {
       sources.forEach((source) => {
         newMap.addSource(source.id, source.source);
@@ -95,8 +112,8 @@ export default function Map({
         newMap.addLayer(layer, beforeId);
       });
     });
-
     setMap(newMap);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [longitude, latitude, zoom]);
 
@@ -109,7 +126,7 @@ export default function Map({
         sources.forEach((source) => {
           try {
             // @ts-expect-error Weird typing within the mapbox-gl library
-            map.getSource(source.id)?.setData(source.source.data);
+            map.getSource(source.id)?.setData(source.source.data); // type-coverage:ignore-line
           } catch (error) {
             console.error('An error occurred:', error);
           }
@@ -128,6 +145,19 @@ export default function Map({
   }, [sources, map]);
 
   return (
-    <div ref={mapContainerRef} className={twMerge(['size-full', className])} />
+    <>
+      {mapIsLoading ||
+        (isLoading && (
+          <Skeleton className={twMerge(['size-full', className])}></Skeleton>
+        ))}
+      <div
+        ref={mapContainerRef}
+        className={twMerge([
+          'size-full',
+          mapIsLoading || isLoading ? 'hidden' : '',
+          className,
+        ])}
+      ></div>
+    </>
   );
 }

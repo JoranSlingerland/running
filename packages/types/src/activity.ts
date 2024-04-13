@@ -40,7 +40,7 @@ interface Activity {
   description: null | string | undefined;
   device_name: null | string;
   embed_token: null | string;
-  laps: Laps[] | undefined;
+  laps: Laps[] | undefined | null;
   splits_metric: null | Split[];
   utc_offset: number;
   location_city: null | string;
@@ -74,7 +74,7 @@ interface Activity {
   streams?: null | streams;
 }
 
-interface BestEfforts {
+export interface BestEfforts {
   id: number;
   resource_state: number;
   name: string;

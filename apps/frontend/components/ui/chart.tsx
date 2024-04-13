@@ -252,6 +252,7 @@ export function Chart<T>({
           {/* Setup Tooltip */}
           {toolTip?.enabled && (
             <Tooltip
+              // type-coverage:ignore-next-line
               content={({ active, payload, label, labelFormatter }) => {
                 if (active) {
                   return (
@@ -261,7 +262,8 @@ export function Chart<T>({
                           <div className="px-2">
                             <Text>
                               {labelFormatter && payload
-                                ? labelFormatter(label, payload)
+                                ? // type-coverage:ignore-next-line
+                                  labelFormatter(label, payload)
                                 : label}
                             </Text>
                           </div>
@@ -290,10 +292,12 @@ export function Chart<T>({
                               <Text>
                                 {matchingYAxis?.tickFormatter
                                   ? matchingYAxis.tickFormatter(
+                                      // type-coverage:ignore-next-line
                                       item.payload[item.dataKey || ''],
                                       0,
                                     )
-                                  : item.payload[item.dataKey || '']}
+                                  : // type-coverage:ignore-next-line
+                                    item.payload[item.dataKey || '']}
                               </Text>
                             </div>
                           );
@@ -302,7 +306,6 @@ export function Chart<T>({
                     </div>
                   );
                 }
-                return 'test';
               }}
               {...toolTip}
             />

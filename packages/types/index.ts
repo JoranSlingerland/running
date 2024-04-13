@@ -1,5 +1,3 @@
-import type { Activity, Laps, Split } from './src/activity';
-import type { Units } from './src/generic';
-import type { UserSettings } from './src/user';
-
-export type { UserSettings, Units, Activity, Laps, Split };
+export type * from './src/activity';
+export type * from './src/generic';
+export type * from './src/user';
