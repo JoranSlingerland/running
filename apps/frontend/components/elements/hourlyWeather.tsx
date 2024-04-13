@@ -33,6 +33,37 @@ const TextLoading: React.FC<TextLoadingProps> = ({ children, isLoading }) => {
   return isLoading ? <Skeleton className="h-4 w-12" /> : children;
 };
 
+const formatters = (units: Units) => [
+  {
+    formatter(value: number) {
+      return `${value}°C`;
+    },
+    dataKeys: ['Temperature'],
+  },
+  {
+    formatter(value: number) {
+      return `${value}:00`;
+    },
+    dataKeys: ['Time'],
+  },
+  {
+    formatter(value: number) {
+      return `${value} mm`;
+    },
+    dataKeys: ['Precipitation'],
+  },
+  {
+    formatter(value: number) {
+      return formatSpeed({
+        metersPerSecond: value,
+        units: units,
+        decimals: 0,
+      });
+    },
+    dataKeys: ['Wind Speed', 'Wind Gusts'],
+  },
+];
+
 function HourlyWeatherBlock({ date }: { date: Dayjs }) {
   const { userSettings } = useProps();
   const geoLocation = useGeolocation({
@@ -132,28 +163,22 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
                   useGradient: true,
                 },
               ]}
+              formatters={formatters(
+                userSettings?.data?.preferences.units || 'metric',
+              )}
               xAxis={[
                 {
                   dataKey: 'Time',
-                  tickFormatter(value: string) {
-                    return `${value}:00`;
-                  },
                 },
               ]}
               yAxis={[
                 {
-                  tickFormatter(value: number) {
-                    return `${value}°C`;
-                  },
                   orientation: 'right',
-                  toolTipFormatDataKeys: ['Temperature'],
+                  dataKey: 'Temperature',
                 },
               ]}
               toolTip={{
                 enabled: true,
-                formatter(value: number) {
-                  return `${value}°C`;
-                },
                 labelFormatter(label: string) {
                   return `${label}:00`;
                 },
@@ -174,28 +199,22 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
                   useGradient: true,
                 },
               ]}
+              formatters={formatters(
+                userSettings?.data?.preferences.units || 'metric',
+              )}
               xAxis={[
                 {
                   dataKey: 'Time',
-                  tickFormatter(value: string) {
-                    return `${value}:00`;
-                  },
                 },
               ]}
               yAxis={[
                 {
-                  tickFormatter(value: number) {
-                    return `${value} mm`;
-                  },
                   orientation: 'right',
-                  toolTipFormatDataKeys: ['Precipitation'],
+                  dataKey: 'Precipitation',
                 },
               ]}
               toolTip={{
                 enabled: true,
-                formatter(value: number) {
-                  return `${value} mm`;
-                },
                 labelFormatter(label: string) {
                   return `${label}:00`;
                 },
@@ -216,6 +235,9 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
                   useGradient: true,
                 },
               ]}
+              formatters={formatters(
+                userSettings?.data?.preferences.units || 'metric',
+              )}
               lines={[
                 {
                   dataKey: 'Wind Gusts',
@@ -225,34 +247,17 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
               xAxis={[
                 {
                   dataKey: 'Time',
-                  tickFormatter(value: string) {
-                    return `${value}:00`;
-                  },
                 },
               ]}
               colors={['blue', 'teal']}
               yAxis={[
                 {
-                  tickFormatter(value: number) {
-                    return formatSpeed({
-                      metersPerSecond: value,
-                      units: userSettings?.data?.preferences.units || 'metric',
-                      decimals: 0,
-                    });
-                  },
                   orientation: 'right',
-                  toolTipFormatDataKeys: ['Wind Speed', 'Wind Gusts'],
+                  dataKey: 'Wind Gusts',
                 },
               ]}
               toolTip={{
                 enabled: true,
-                formatter(value: number) {
-                  return `${formatSpeed({
-                    metersPerSecond: value,
-                    units: userSettings?.data?.preferences.units || 'metric',
-                    decimals: 1,
-                  })}`;
-                },
                 labelFormatter(label: string) {
                   return `${label}:00`;
                 },
