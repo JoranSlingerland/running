@@ -121,6 +121,43 @@ const Tables: React.FC<TableProps> = ({
   );
 };
 
+const formatters = (units: Units) => [
+  {
+    formatter(value: number) {
+      return formatPace({
+        metersPerSecond: value,
+        units,
+      });
+    },
+    dataKeys: ['Pace'],
+  },
+  {
+    formatter(value: number) {
+      return formatHeartRate(value);
+    },
+    dataKeys: ['Heartrate'],
+  },
+  {
+    formatter(value: number) {
+      return `${formatNumber({
+        number: value,
+        decimals: 0,
+      })} m`;
+    },
+    dataKeys: ['Altitude'],
+  },
+  {
+    formatter(value: number) {
+      return formatDistance({
+        meters: value,
+        units,
+        decimals: value < 950 ? 1 : 0,
+      });
+    },
+    dataKeys: ['Distance'],
+  },
+];
+
 export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
   const { userSettings } = useProps();
   const { data: activity, isLoading: activityIsLoading } = useActivity({
@@ -481,59 +518,35 @@ export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
                         });
                       },
                     }}
+                    formatters={formatters(
+                      userSettings?.data?.preferences.units || 'metric',
+                    )}
                     xAxis={[
                       {
                         dataKey: 'Distance',
-                        tickFormatter(value: number) {
-                          return formatDistance({
-                            meters: value,
-                            units:
-                              userSettings?.data?.preferences.units || 'metric',
-                            decimals: 0,
-                          });
-                        },
                         interval: tickInterval,
                       },
                     ]}
                     yAxis={[
                       {
-                        tickFormatter(value: number) {
-                          return formatPace({
-                            metersPerSecond: value,
-                            units:
-                              userSettings?.data?.preferences.units || 'metric',
-                          });
-                        },
                         orientation: 'left',
                         dataKey: 'Pace',
-                        toolTipFormatDataKeys: ['Pace'],
                         domain([dataMin, dataMax]) {
                           return [Math.max(dataMin - 0.1, 0), dataMax];
                         },
                         allowDataOverflow: true,
                       },
                       {
-                        tickFormatter(value: number) {
-                          return formatHeartRate(value);
-                        },
                         orientation: 'left',
                         dataKey: 'Heartrate',
-                        toolTipFormatDataKeys: ['Heartrate'],
                         domain([dataMin, dataMax]) {
                           return [dataMin - 0.9, dataMax];
                         },
                         allowDataOverflow: true,
                       },
                       {
-                        tickFormatter(value: number) {
-                          return `${formatNumber({
-                            number: value,
-                            decimals: 0,
-                          })} m`;
-                        },
                         orientation: 'left',
                         dataKey: 'Altitude',
-                        toolTipFormatDataKeys: ['Altitude'],
                         domain([dataMin, dataMax]) {
                           return [
                             dataMin < 0 ? 1.1 * dataMin : 0.9 * dataMin,
@@ -577,47 +590,27 @@ export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
                           enabled: true,
                           hideLabel: true,
                         }}
+                        formatters={formatters(
+                          userSettings?.data?.preferences.units || 'metric',
+                        )}
                         yAxis={[
                           {
-                            tickFormatter(value: number) {
-                              return formatPace({
-                                metersPerSecond: value,
-                                units:
-                                  userSettings?.data?.preferences.units ||
-                                  'metric',
-                              });
-                            },
                             orientation: 'left',
                             dataKey: 'Pace',
-                            toolTipFormatDataKeys: ['Pace'],
                             domain([dataMin, dataMax]) {
                               return [Math.max(dataMin - 0.1, 0), dataMax];
                             },
                           },
                           {
-                            tickFormatter(value: number) {
-                              return formatHeartRate(value);
-                            },
                             orientation: 'left',
                             dataKey: 'Heartrate',
-                            toolTipFormatDataKeys: ['Heartrate'],
                             domain([dataMin, dataMax]) {
                               return [dataMin - 0.9, dataMax];
                             },
                           },
                           {
-                            tickFormatter(value: number) {
-                              return formatDistance({
-                                meters: value,
-                                units:
-                                  userSettings?.data?.preferences.units ||
-                                  'metric',
-                                decimals: 1,
-                              });
-                            },
                             orientation: 'left',
                             dataKey: 'Distance',
-                            toolTipFormatDataKeys: ['Distance'],
                             domain([dataMin, dataMax]) {
                               return [0.9 * dataMin, 1.1 * dataMax];
                             },
@@ -644,19 +637,13 @@ export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
                         toolTip={{
                           enabled: true,
                         }}
+                        formatters={formatters(
+                          userSettings?.data?.preferences.units || 'metric',
+                        )}
                         yAxis={[
                           {
-                            tickFormatter(value: number) {
-                              return formatPace({
-                                metersPerSecond: value,
-                                units:
-                                  userSettings?.data?.preferences.units ||
-                                  'metric',
-                              });
-                            },
                             orientation: 'left',
                             dataKey: 'Pace',
-                            toolTipFormatDataKeys: ['Pace'],
                             domain([dataMin, dataMax]) {
                               return [Math.max(dataMin - 0.1, 0), dataMax];
                             },
