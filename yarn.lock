@@ -2801,20 +2801,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:5.0.1":
-  version: 5.0.1
-  resolution: "chalk@npm:5.0.1"
-  checksum: 10c0/97898611ae40cfdeda9778901731df1404ea49fac0eb8253804e8d21b8064917df9823e29c0c9d766aab623da1a0b43d0e072d19a73d4f62d0d9115aef4c64e6
-  languageName: node
-  linkType: hard
-
-"chalk@npm:^4.0.0, chalk@npm:^4.1.2":
+"chalk@npm:4.1.2, chalk@npm:^4.0.0, chalk@npm:^4.1.2":
   version: 4.1.2
   resolution: "chalk@npm:4.1.2"
   dependencies:
     ansi-styles: "npm:^4.1.0"
     supports-color: "npm:^7.1.0"
   checksum: 10c0/4a3fef5cc34975c898ffe77141450f679721df9dde00f6c304353fa9c8b571929123b26a0e4617bde5018977eb655b31970c297b91b63ee83bb82aeb04666880
+  languageName: node
+  linkType: hard
+
+"chalk@npm:5.0.1":
+  version: 5.0.1
+  resolution: "chalk@npm:5.0.1"
+  checksum: 10c0/97898611ae40cfdeda9778901731df1404ea49fac0eb8253804e8d21b8064917df9823e29c0c9d766aab623da1a0b43d0e072d19a73d4f62d0d9115aef4c64e6
   languageName: node
   linkType: hard
 
@@ -6364,20 +6364,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^16.13.1":
-  version: 16.14.0
-  resolution: "react-dom@npm:16.14.0"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-    object-assign: "npm:^4.1.1"
-    prop-types: "npm:^15.6.2"
-    scheduler: "npm:^0.19.1"
-  peerDependencies:
-    react: ^16.14.0
-  checksum: 10c0/ca146e780631672a2d57c8d77775d38f394a6cd67db30c6af7964d0b3574ef7edccb1de8d592e990b98f4f5f8d1c8460b0691f04e7a45799962a51dcbaaa1371
-  languageName: node
-  linkType: hard
-
 "react-dom@npm:^18.2.0":
   version: 18.2.0
   resolution: "react-dom@npm:18.2.0"
@@ -6501,17 +6487,6 @@ __metadata:
     react: ">=16.6.0"
     react-dom: ">=16.6.0"
   checksum: 10c0/2ba754ba748faefa15f87c96dfa700d5525054a0141de8c75763aae6734af0740e77e11261a1e8f4ffc08fd9ab78510122e05c21c2d79066c38bb6861a886c82
-  languageName: node
-  linkType: hard
-
-"react@npm:^16.13.1":
-  version: 16.14.0
-  resolution: "react@npm:16.14.0"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-    object-assign: "npm:^4.1.1"
-    prop-types: "npm:^15.6.2"
-  checksum: 10c0/df8faae43e01387013900e8f8fb3c4ce9935b7edbcbaa77e12999c913eb958000a0a8750bf9a0886dae0ad768dd4a4ee983752d5bade8d840adbe0ce890a2438
   languageName: node
   linkType: hard
 
@@ -6763,7 +6738,7 @@ __metadata:
     turbo: "npm:^1.12.2"
     type-coverage: "npm:^2.28.1"
     typescript: "npm:^5.4.4"
-    typescript-coverage-report: "npm:^0.8.0"
+    typescript-coverage-report: "npm:^1.0.0"
   languageName: unknown
   linkType: soft
 
@@ -6822,16 +6797,6 @@ __metadata:
   version: 1.3.0
   resolution: "sax@npm:1.3.0"
   checksum: 10c0/599dbe0ba9d8bd55e92d920239b21d101823a6cedff71e542589303fa0fa8f3ece6cf608baca0c51be846a2e88365fac94a9101a9c341d94b98e30c4deea5bea
-  languageName: node
-  linkType: hard
-
-"scheduler@npm:^0.19.1":
-  version: 0.19.1
-  resolution: "scheduler@npm:0.19.1"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-    object-assign: "npm:^4.1.1"
-  checksum: 10c0/9658932a73148a93d791c064b331d9690ddfecc4de25bcd6c9b89f5f1166e3d23d9c31c1595d66565e5ffbb34d47035cb14841aba6444bc266bfcd215cefe9c0
   languageName: node
   linkType: hard
 
@@ -7690,24 +7655,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript-coverage-report@npm:^0.8.0":
-  version: 0.8.0
-  resolution: "typescript-coverage-report@npm:0.8.0"
+"typescript-coverage-report@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "typescript-coverage-report@npm:1.0.0"
   dependencies:
-    chalk: "npm:^4.0.0"
+    chalk: "npm:4.1.2"
     cli-table3: "npm:^0.6.1"
     commander: "npm:^5.0.0"
     ncp: "npm:^2.0.0"
-    react: "npm:^16.13.1"
-    react-dom: "npm:^16.13.1"
     rimraf: "npm:^3.0.2"
     semantic-ui-react: "npm:^0.88.2"
     type-coverage-core: "npm:^2.23.0"
   peerDependencies:
+    react: ^18.2.0
+    react-dom: ^18.2.0
     typescript: 2 || 3 || 4 || 5
   bin:
     typescript-coverage-report: dist/bin/typescript-coverage-report.js
-  checksum: 10c0/233908ed2fcf77d97fbe569c5aebb24f143877330e6c426a2a035fd68f817540a583da3993c344a27871371c180a353c597cc81fc961fcc6a6bd4d08911e1382
+  checksum: 10c0/261bab1066cbfb6fc1fdc4038e68bb2e7cf237ac0f78cad0bc1973bd9377960bb287be06a7dab042665134a1f863436ebc508fb5f4459862c4beba8b3978a8eb
   languageName: node
   linkType: hard
 
