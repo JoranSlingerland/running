@@ -35,13 +35,13 @@ interface Activity {
   upload_id_str: string;
   weighted_average_watts: number | null | undefined;
   workout_type: null | number;
-  best_efforts: null | BestEfforts[];
+  best_efforts: null | BestEfforts[] | undefined;
   calories: null | number;
   description: null | string | undefined;
   device_name: null | string;
   embed_token: null | string;
   laps: Laps[] | undefined | null;
-  splits_metric: null | Split[];
+  splits_metric: null | Split[] | undefined;
   utc_offset: number;
   location_city: null | string;
   location_state: null | string;

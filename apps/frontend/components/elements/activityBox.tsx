@@ -1,3 +1,4 @@
+import { Activity } from '@repo/types';
 import { useEffect, useMemo, useState } from 'react';
 
 import { lapColumns } from '@elements//columns/lapColumns';
@@ -24,14 +25,12 @@ import {
 } from '@utils/formatting';
 import { getPreferredTss } from '@utils/tss/helpers';
 import { averageDataPoints, calculateTickInterval } from '@utils/utils';
-
+const dataSmoothing = 10;
 interface HeaderStatProps {
   value: string;
   label: string;
   isLoading: boolean;
 }
-
-const dataSmoothing = 10;
 
 const HeaderStat: React.FC<HeaderStatProps> = ({ value, label, isLoading }) => {
   return (
@@ -48,6 +47,77 @@ const HeaderStat: React.FC<HeaderStatProps> = ({ value, label, isLoading }) => {
         {label}
       </Text>
     </div>
+  );
+};
+
+type TableProps = {
+  isLoading: boolean;
+  selectedTable: string;
+  setSelectedTable: (value: string) => void;
+  units: Units;
+  laps: Activity['laps'];
+  splits: Activity['splits_metric'];
+  bestEfforts: Activity['best_efforts'];
+};
+
+const Tables: React.FC<TableProps> = ({
+  isLoading,
+  selectedTable,
+  setSelectedTable,
+  units,
+  laps,
+  splits,
+  bestEfforts,
+}) => {
+  if (isLoading) {
+    return (
+      <div>
+        <div className="flex items-center justify-center pb-2">
+          <Skeleton className="h-12 w-48" />
+        </div>
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <ToggleGroup
+        type="single"
+        value={selectedTable}
+        onValueChange={(value) => {
+          if (value) {
+            setSelectedTable(value);
+          }
+        }}
+      >
+        <ToggleGroupItem value={'laps'}>Laps</ToggleGroupItem>
+        <ToggleGroupItem value={'splits'}>Splits</ToggleGroupItem>
+        <ToggleGroupItem value={'best_efforts'}>Best efforts</ToggleGroupItem>
+      </ToggleGroup>
+
+      {selectedTable == 'laps' && (
+        <DataTable
+          isLoading={isLoading}
+          columns={lapColumns(units)}
+          data={laps || []}
+        />
+      )}
+      {selectedTable == 'splits' && (
+        <DataTable
+          isLoading={isLoading}
+          columns={splitColumns(units || 'metric')}
+          data={splits || []}
+        />
+      )}
+      {selectedTable == 'best_efforts' && (
+        <DataTable
+          isLoading={isLoading}
+          columns={bestEffortColumns(units || 'metric')}
+          data={bestEfforts || []}
+        />
+      )}
+    </>
   );
 };
 
@@ -606,62 +676,15 @@ export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
           )}
         </div>
       )}
-      <div>
-        {isLoading ? (
-          <div className="flex items-center justify-center pb-2">
-            <Skeleton className="h-12 w-48" />
-          </div>
-        ) : (
-          <ToggleGroup
-            type="single"
-            value={selectedTable}
-            onValueChange={(value) => {
-              if (value) {
-                setSelectedTable(value);
-              }
-            }}
-          >
-            <ToggleGroupItem value={'laps'}>Laps</ToggleGroupItem>
-            <ToggleGroupItem value={'splits'}>Splits</ToggleGroupItem>
-            <ToggleGroupItem value={'best_efforts'}>
-              Best efforts
-            </ToggleGroupItem>
-          </ToggleGroup>
-        )}
-        {isLoading ? (
-          <Skeleton className="h-64 w-full" />
-        ) : (
-          <>
-            {selectedTable == 'laps' && (
-              <DataTable
-                isLoading={activityIsLoading}
-                columns={lapColumns(
-                  userSettings?.data?.preferences.units || 'metric',
-                )}
-                data={activity?.laps || []}
-              />
-            )}
-            {selectedTable == 'splits' && (
-              <DataTable
-                isLoading={activityIsLoading}
-                columns={splitColumns(
-                  userSettings?.data?.preferences.units || 'metric',
-                )}
-                data={activity?.splits_metric || []}
-              />
-            )}
-            {selectedTable == 'best_efforts' && (
-              <DataTable
-                isLoading={activityIsLoading}
-                columns={bestEffortColumns(
-                  userSettings?.data?.preferences.units || 'metric',
-                )}
-                data={activity?.best_efforts || []}
-              />
-            )}
-          </>
-        )}
-      </div>
+      <Tables
+        isLoading={isLoading}
+        selectedTable={selectedTable}
+        setSelectedTable={setSelectedTable}
+        units={userSettings?.data?.preferences.units || 'metric'}
+        laps={activity?.laps}
+        splits={activity?.splits_metric}
+        bestEfforts={activity?.best_efforts}
+      />
     </div>
   );
 }
