@@ -71,7 +71,7 @@ function WeatherBox(
           ° {wmoCodes[`${daily.weather_code[index]}`]?.day.description}
         </Text>
       </PopoverTrigger>
-      <PopoverContent className="w-[36rem] p-2">
+      <PopoverContent className="max-h-full w-[36rem] p-2">
         <HourlyWeatherBlock date={dayjs(daily.time[index])} />
       </PopoverContent>
     </Popover>

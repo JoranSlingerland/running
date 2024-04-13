@@ -2,16 +2,15 @@ name: Deploy to Azure
 
 on:
   push:
-    branches: ["main"]
+    branches: ['main']
     paths:
       - 'apps/frontend/**'
       - '.github/workflows/**'
   workflow_dispatch:
 
 env:
-  DEPLOYMENT_PACKAGE_NAME: "release.zip"
-  WORKSPACE_ROOT: "./apps/frontend"
-  WORKSPACE_NAME: "frontend"
+  DEPLOYMENT_PACKAGE_NAME: 'release.zip'
+  WORKSPACE_ROOT: './apps/frontend'
 
 jobs:
   build:
@@ -23,10 +22,10 @@ jobs:
 
       - name: Setup Node.js
         uses: ./.github/workflows/actions/setup-node
-            
+
       - name: Build Next.js Application
         run: |
-          yarn build --filter=${{ env.WORKSPACE_NAME }}
+          yarn build
           shopt -s dotglob
           mv -f ${{ env.WORKSPACE_ROOT }}/.next/standalone/apps/frontend/* ${{ env.WORKSPACE_ROOT }}/.next/standalone
           mkdir -p ${{ env.WORKSPACE_ROOT }}/.next/standalone/.next/static
@@ -39,7 +38,7 @@ jobs:
         run: |
           zip ${{ env.DEPLOYMENT_PACKAGE_NAME }} ./* -qr
 
-      - name:  Upload Artifact for Deployment
+      - name: Upload Artifact for Deployment
         uses: actions/upload-artifact@v4
         with:
           name: artifact
@@ -56,7 +55,7 @@ jobs:
       id-token: write
 
     steps:
-      - name:  Download Artifact for Deployment
+      - name: Download Artifact for Deployment
         uses: actions/download-artifact@v4
         with:
           name: artifact
@@ -64,7 +63,7 @@ jobs:
       - name: Login to Azure Subscription
         uses: azure/login@v1
         with:
-            creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp

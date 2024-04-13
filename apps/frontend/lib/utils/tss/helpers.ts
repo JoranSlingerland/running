@@ -3,10 +3,10 @@ import { Dayjs } from 'dayjs';
 
 function getPreferredTss(
   preferredTss: 'hr' | 'pace' | undefined,
-  activity: Activity,
+  activity: Activity | undefined,
 ): { tss: number | undefined; type: 'hr' | 'pace' | undefined } {
-  const hr_tss = activity.hr_trimp;
-  const pace_tss = activity.pace_trimp;
+  const hr_tss = activity?.hr_trimp;
+  const pace_tss = activity?.pace_trimp;
 
   if (preferredTss === 'hr' && hr_tss) {
     return {

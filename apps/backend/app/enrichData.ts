@@ -205,7 +205,7 @@ function calculateLapsPaceData(
 }
 
 function calculateLapsHrData(
-  laps: Activity['laps'] | null,
+  laps: Activity['laps'] | null | undefined,
   stream: Streams,
   userSettings: UserSettings,
 ): Activity['laps'] | null {

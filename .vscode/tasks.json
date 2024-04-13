@@ -14,9 +14,10 @@
         "showReuseMessage": false,
         "clear": false
       },
-      "dependsOn": [
-        "yarn watch"
-      ]
+      "dependsOn": ["yarn watch"],
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
     },
     {
       "type": "shell",
@@ -34,7 +35,7 @@
     {
       "type": "shell",
       "label": "run: Comos emulator",
-      "command": "Microsoft.Azure.Cosmos.Emulator.exe /AllowNetworkAccess /Key=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
+      "command": "tasklist | findstr /I Microsoft.Azure.Cosmos >nul || Microsoft.Azure.Cosmos.Emulator.exe /AllowNetworkAccess /Key=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
@@ -42,6 +43,9 @@
         "panel": "shared",
         "showReuseMessage": false,
         "clear": false
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
       }
     },
     {
@@ -50,12 +54,12 @@
       "command": "host start",
       "problemMatcher": "$func-node-watch",
       "isBackground": true,
-      "dependsOn": [
-        "yarn watch",
-        "azurite"
-      ],
+      "dependsOn": ["yarn watch", "azurite"],
       "options": {
         "cwd": "${workspaceFolder}/apps\\backend"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
       }
     },
     {
@@ -86,9 +90,7 @@
         "showReuseMessage": false,
         "clear": false
       },
-      "dependsOn": [
-        "yarn install"
-      ]
+      "dependsOn": ["yarn install"]
     },
     {
       "label": "azurite",
@@ -118,6 +120,6 @@
         "showReuseMessage": false,
         "clear": false
       }
-    },
+    }
   ]
 }

@@ -1,20 +1,21 @@
 {
-    "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": "explicit",
-        "source.fixAll": "explicit"
-    },
-    "editor.formatOnSave": true,
-    "azureFunctions.deploySubpath": "apps\\backend",
-    "azureFunctions.postDeployTask": "yarn install",
-    "azureFunctions.projectLanguage": "TypeScript",
-    "azureFunctions.projectRuntime": "~4",
-    "azureFunctions.projectLanguageModel": 4,
-    "eslint.workingDirectories": [
-        {
-            "mode": "auto"
-        }
-    ],
-    "editor.tabSize": 2,
-    "editor.insertSpaces": true,
-    "editor.detectIndentation": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll": "explicit"
+  },
+  "eslint.format.enable": true,
+  "editor.formatOnSave": true,
+  "azureFunctions.deploySubpath": "apps\\backend",
+  "azureFunctions.postDeployTask": "yarn install",
+  "azureFunctions.projectLanguage": "TypeScript",
+  "azureFunctions.projectRuntime": "~4",
+  "azureFunctions.projectLanguageModel": 4,
+  "eslint.workingDirectories": [
+    {
+      "mode": "auto"
+    }
+  ],
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false
 }

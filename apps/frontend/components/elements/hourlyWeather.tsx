@@ -146,6 +146,7 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
                     return `${value}°C`;
                   },
                   orientation: 'right',
+                  toolTipFormatDataKeys: ['Temperature'],
                 },
               ]}
               toolTip={{
@@ -187,6 +188,7 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
                     return `${value} mm`;
                   },
                   orientation: 'right',
+                  toolTipFormatDataKeys: ['Precipitation'],
                 },
               ]}
               toolTip={{
@@ -239,6 +241,7 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
                     });
                   },
                   orientation: 'right',
+                  toolTipFormatDataKeys: ['Wind Speed', 'Wind Gusts'],
                 },
               ]}
               toolTip={{

@@ -35,13 +35,13 @@ interface Activity {
   upload_id_str: string;
   weighted_average_watts: number | null | undefined;
   workout_type: null | number;
-  best_efforts: null | BestEfforts[];
+  best_efforts: null | BestEfforts[] | undefined;
   calories: null | number;
   description: null | string | undefined;
   device_name: null | string;
   embed_token: null | string;
-  laps: null | Laps[];
-  splits_metric: null | Splits[];
+  laps: Laps[] | undefined | null;
+  splits_metric: null | Split[] | undefined;
   utc_offset: number;
   location_city: null | string;
   location_state: null | string;
@@ -74,7 +74,7 @@ interface Activity {
   streams?: null | streams;
 }
 
-interface BestEfforts {
+export interface BestEfforts {
   id: number;
   resource_state: number;
   name: string;
@@ -89,7 +89,7 @@ interface BestEfforts {
   end_index: number;
 }
 
-interface Laps {
+export interface Laps {
   activity: {
     id: number;
   };
@@ -119,7 +119,7 @@ interface Laps {
   pace_trimp: number | null;
 }
 
-interface Splits {
+export interface Split {
   average_speed: number;
   distance: number;
   elapsed_time: number;
