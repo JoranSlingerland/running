@@ -16,6 +16,7 @@ import {
   YAxis,
   YAxisProps,
 } from 'recharts';
+import { BaseAxisProps } from 'recharts/types/util/types';
 
 import { ChartColor, chartColorsList, chartColorsMap } from '@ui/colors';
 import { Separator } from '@ui/separator';
@@ -42,13 +43,14 @@ interface ToolTips extends TooltipProps<number, string> {
   hideLabel?: boolean;
 }
 
-interface YAxises extends YAxisProps {
-  toolTipFormatDataKeys: string[];
-}
-
 function textColor(theme: string | undefined) {
   return theme === 'light' ? 'hsl(240 10% 3.9)' : 'hsl(0 0% 98%)';
 }
+
+type Formatters = {
+  formatter: BaseAxisProps['tickFormatter'];
+  dataKeys: string[];
+};
 
 export function Chart<T>({
   data,
@@ -63,13 +65,14 @@ export function Chart<T>({
   gradient,
   toggle,
   dataIndexCallback,
+  formatters,
 }: {
   data: T[];
   areas?: Areas[];
   bars?: Bars[];
   lines?: Lines[];
   xAxis?: XAxisProps[];
-  yAxis?: YAxises[];
+  yAxis?: YAxisProps[];
   colors?: ChartColor[];
   toolTip?: ToolTips;
   isLoading?: boolean;
@@ -84,6 +87,7 @@ export function Chart<T>({
     type: 'single' | 'multiple';
     initial: string[];
   };
+  formatters?: Formatters[];
 }) {
   const { resolvedTheme } = useTheme();
   const keys = [...areas, ...bars, ...lines].map(
@@ -228,6 +232,11 @@ export function Chart<T>({
               }
               className="pt-2"
               padding={xAxis.padding || { left: 10, right: 10 }}
+              tickFormatter={
+                formatters?.find((formatter) =>
+                  formatter.dataKeys.includes(xAxis.dataKey as string),
+                )?.formatter
+              }
               {...xAxis}
             />
           ))}
@@ -245,6 +254,11 @@ export function Chart<T>({
                   width={yAxis.width || 60}
                   {...yAxis}
                   padding={yAxis.padding || { top: 10, bottom: 10 }}
+                  tickFormatter={
+                    formatters?.find((formatter) =>
+                      formatter.dataKeys.includes(yAxis.dataKey as string),
+                    )?.formatter
+                  }
                 />
               ),
           )}
@@ -273,11 +287,12 @@ export function Chart<T>({
 
                       <div className="flex flex-col px-2">
                         {payload?.map((item, index) => {
-                          const matchingYAxis = yAxis.filter((y) =>
-                            y.toolTipFormatDataKeys.includes(
-                              item.dataKey as string,
-                            ),
-                          )[0];
+                          const matchingFormatter = formatters?.find(
+                            (formatter) =>
+                              formatter.dataKeys.includes(
+                                item.dataKey as string,
+                              ),
+                          )?.formatter;
                           return (
                             <div
                               key={index}
@@ -290,8 +305,8 @@ export function Chart<T>({
                                 }}
                               />
                               <Text>
-                                {matchingYAxis?.tickFormatter
-                                  ? matchingYAxis.tickFormatter(
+                                {matchingFormatter
+                                  ? matchingFormatter(
                                       // type-coverage:ignore-next-line
                                       item.payload[item.dataKey || ''],
                                       0,
