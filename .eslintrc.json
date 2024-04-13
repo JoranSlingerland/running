@@ -1,9 +1,4 @@
 {
-  "extends": [
-    "@repo/eslint-config/main.json"
-  ],
-  "ignorePatterns": [
-    "apps/**",
-    "packages/**"
-  ]
+  "extends": ["@repo/eslint-config/vanilla.json"],
+  "ignorePatterns": ["apps/**", "packages/**"]
 }
