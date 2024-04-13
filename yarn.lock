@@ -494,21 +494,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/eslint-plugin-next@npm:14.2.1":
+"@next/eslint-plugin-next@npm:14.2.1, @next/eslint-plugin-next@npm:^14.2.1":
   version: 14.2.1
   resolution: "@next/eslint-plugin-next@npm:14.2.1"
   dependencies:
     glob: "npm:10.3.10"
   checksum: 10c0/f037d096734643d45bc606290c94da7e762e09ed821651648a9300a1cdf394c459652629edbe2b8e7bff5f2ef286038778bb8b029f6cf196230351cee60dfcda
-  languageName: node
-  linkType: hard
-
-"@next/eslint-plugin-next@npm:^14.1.0":
-  version: 14.1.0
-  resolution: "@next/eslint-plugin-next@npm:14.1.0"
-  dependencies:
-    glob: "npm:10.3.10"
-  checksum: 10c0/d8753d8258bef471ba1296f760b092c0a17e89ddc937bf16b9399725d05b6426e58e3c8eb4efb8e8f027025804ecea3b714a7b7c75682d019e53ea8d181b8632
   languageName: node
   linkType: hard
 
@@ -4169,7 +4160,7 @@ __metadata:
   resolution: "frontend@workspace:apps/frontend"
   dependencies:
     "@hookform/resolvers": "npm:^3.3.4"
-    "@next/eslint-plugin-next": "npm:^14.1.0"
+    "@next/eslint-plugin-next": "npm:^14.2.1"
     "@radix-ui/react-accordion": "npm:^1.1.2"
     "@radix-ui/react-avatar": "npm:^1.0.4"
     "@radix-ui/react-dialog": "npm:^1.0.5"
