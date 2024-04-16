@@ -1,7 +1,6 @@
 import '../styles/globals.css';
 
 import type { AppProps } from 'next/app';
-import { Inter as FontSans } from 'next/font/google';
 import Head from 'next/head';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
@@ -14,12 +13,6 @@ import FullScreenLoader from '@modules/loading';
 import Navbar from '@modules/navbar';
 import { useUserSettings } from '@services/user/get';
 import { Toaster } from '@ui/sonner';
-import { cn } from '@utils/shadcn';
-
-export const fontSans = FontSans({
-  subsets: ['latin'],
-  variable: '--font-sans',
-});
 
 interface PageProps {
   title: string;
@@ -72,12 +65,7 @@ function AppContent({ Component, pageProps }: AppContentProps) {
 
   // Main content
   return (
-    <div
-      className={cn(
-        'font-sans antialiased flex flex-col min-h-screen justify-between',
-        fontSans.variable || '',
-      )}
-    >
+    <div className="flex min-h-screen flex-col justify-between font-sans antialiased">
       <PropsContext.Provider
         value={{
           userSettings,
