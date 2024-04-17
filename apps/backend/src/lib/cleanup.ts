@@ -26,7 +26,7 @@ function cleanupDetailedActivity(
   const numberActivityId = activity.id.toString();
 
   const result: Activity = {
-    id: numberActivityId,
+    _id: numberActivityId,
     achievement_count: activity.achievement_count,
     athlete_count: activity.athlete_count,
     average_speed: activity.average_speed,
@@ -122,7 +122,7 @@ function cleanUpSummaryActivity(
   const numberActivityId = activity.id.toString();
 
   const result: Activity = {
-    id: numberActivityId,
+    _id: numberActivityId,
     achievement_count: activity.achievement_count,
     athlete_count: activity.athlete_count,
     average_speed: activity.average_speed,

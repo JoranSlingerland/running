@@ -1,5 +1,5 @@
 interface Activity {
-  id: string;
+  _id: string;
   achievement_count: number;
   athlete_count: number;
   average_speed: number;

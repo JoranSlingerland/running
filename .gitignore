@@ -4,7 +4,7 @@
 node_modules
 /.pnp
 .pnp.js
-node_modules.old*
+node_modules.old*''
 
 # testing
 /coverage
@@ -36,6 +36,7 @@ yarn-error.log
 .env.test.local
 .env.production.local
 db.env.local
+.env
 
 # PWA files
 **/public/sw.js
@@ -58,3 +59,6 @@ out
 
 # Azure functions
 local.settings.json
+
+# Temporary files
+backend.old*
