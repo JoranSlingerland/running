@@ -86,7 +86,7 @@ updates:
     open-pull-requests-limit: 5
 
   - package-ecosystem: 'npm'
-    directory: '/packages/queue-helpers'
+    directory: '/packages/mongodb'
     schedule:
       interval: 'weekly'
     target-branch: 'main'
