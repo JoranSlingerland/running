@@ -12,6 +12,11 @@ export class StravaDataEnhancementCronService {
     name: 'stravaDataEnhancement',
   })
   async handleCron() {
+    if (process.env.NODE_ENV !== 'production') {
+      console.info('Not in production environment, skipping cron job');
+      return;
+    }
+
     console.info('Running cron job');
     await this.stravaDataEnhancementService.orchestrator();
   }

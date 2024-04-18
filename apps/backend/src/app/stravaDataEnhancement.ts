@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import {
   getNonFullDataActivitiesFromMongoDB,
+  serviceStatusFromMongoDB,
   upsertActivitiesToMongoDB,
+  upsertServiceStatusToMongoDB,
   upsertStreamsToMongoDB,
   upsertUserSettingsToMongoDB,
   userSettingsFromMongoDB,
@@ -25,28 +27,36 @@ import {
   calculateVo2MaxEstimate,
 } from '../lib/trimpHelpers';
 
+type ServiceStatus = {
+  _id: string;
+  apiCallCount15Min: number;
+  apiCallCountDaily: number;
+  lastReset15Min: string;
+  lastResetDaily: string;
+  isRunning: boolean;
+};
+
 @Injectable()
 export class StravaDataEnhancementService {
-  // TODO: Store these in the database to ensure persistence
-  private static apiCallCount15Min = 0;
-  private static apiCallCountDaily = 0;
-  private static lastReset15Min = dayjs();
-  private static lastResetDaily = dayjs();
-  private static isRunning = false;
+  private serviceStatus: ServiceStatus;
 
   async orchestrator() {
-    if (StravaDataEnhancementService.isRunning) {
+    this.serviceStatus = await this.getServiceStatus();
+    if (this.serviceStatus.isRunning) {
       console.info(`Strava data enhancement is already running`);
       return;
     }
-    StravaDataEnhancementService.isRunning = true;
+    this.serviceStatus.isRunning = true;
+    await upsertServiceStatusToMongoDB(this.serviceStatus);
 
     const callsPerActivity = 2;
 
     console.info('Step 1: Checking rate limits');
     const { callsAvailable, limit } =
-      this.checkStravaApiRateLimits(callsPerActivity);
+      await this.checkStravaApiRateLimits(callsPerActivity);
     if (!callsAvailable) {
+      this.serviceStatus.isRunning = false;
+      await upsertServiceStatusToMongoDB(this.serviceStatus);
       return { status: 'error', message: 'API call limit reached' };
     }
 
@@ -77,7 +87,6 @@ export class StravaDataEnhancementService {
       );
 
       await this.writeToMongoDB([calculatedActivity], [stream]);
-      StravaDataEnhancementService.isRunning = false;
       return { status: 'success', activityId: activity._id };
     });
 
@@ -85,6 +94,8 @@ export class StravaDataEnhancementService {
     console.info(
       `Step 4: Returning data to the user with ${result.length} activities enhanced`,
     );
+    this.serviceStatus.isRunning = false;
+    await upsertServiceStatusToMongoDB(this.serviceStatus);
     return {
       status: 'success',
       activitiesEnhanced: result.filter(Boolean).length,
@@ -92,31 +103,30 @@ export class StravaDataEnhancementService {
     };
   }
 
-  private checkStravaApiRateLimits(callsPerActivity: number) {
+  private async checkStravaApiRateLimits(callsPerActivity: number) {
     const fifteenMinuteLimit = parseInt(process.env.STRAVA_15MIN_LIMIT) || 100;
     const dailyLimit = parseInt(process.env.STRAVA_DAILY_LIMIT) || 1000;
 
-    if (
-      dayjs().diff(StravaDataEnhancementService.lastReset15Min, 'minute') >= 15
-    ) {
-      StravaDataEnhancementService.apiCallCount15Min = 0;
-      StravaDataEnhancementService.lastReset15Min = dayjs();
+    if (dayjs().diff(this.serviceStatus.lastReset15Min, 'minute') >= 15) {
+      this.serviceStatus.apiCallCount15Min = 0;
+      this.serviceStatus.lastReset15Min = dayjs().toISOString();
+      await upsertServiceStatusToMongoDB(this.serviceStatus);
     }
 
-    if (dayjs().diff(StravaDataEnhancementService.lastResetDaily, 'day') >= 1) {
-      StravaDataEnhancementService.apiCallCountDaily = 0;
-      StravaDataEnhancementService.lastResetDaily = dayjs();
+    if (dayjs().diff(this.serviceStatus.lastResetDaily, 'day') >= 1) {
+      this.serviceStatus.apiCallCountDaily = 0;
+      this.serviceStatus.lastResetDaily = dayjs().toISOString();
+      await upsertServiceStatusToMongoDB(this.serviceStatus);
     }
 
     const limitInfo = {
       callsAvailable: true,
       limit: Math.min(
-        fifteenMinuteLimit - StravaDataEnhancementService.apiCallCount15Min,
-        dailyLimit - StravaDataEnhancementService.apiCallCountDaily,
+        fifteenMinuteLimit - this.serviceStatus.apiCallCount15Min,
+        dailyLimit - this.serviceStatus.apiCallCountDaily,
       ),
     };
 
-    // Check if we are hitting any of the limits
     if (limitInfo.limit - callsPerActivity < 0) {
       console.error('API call limit reached');
       limitInfo.callsAvailable = false;
@@ -126,8 +136,27 @@ export class StravaDataEnhancementService {
   }
 
   private updateApiCallCount() {
-    StravaDataEnhancementService.apiCallCount15Min += 1;
-    StravaDataEnhancementService.apiCallCountDaily += 1;
+    this.serviceStatus.apiCallCount15Min += 1;
+    this.serviceStatus.apiCallCountDaily += 1;
+  }
+
+  private async getServiceStatus(): Promise<ServiceStatus> {
+    const serviceStatus = await serviceStatusFromMongoDB<ServiceStatus>(
+      'stravaDataEnhancement',
+    );
+    if (!serviceStatus) {
+      const serviceStatus: ServiceStatus = {
+        _id: 'stravaDataEnhancement',
+        apiCallCount15Min: 1000,
+        apiCallCountDaily: 1000,
+        lastReset15Min: dayjs().toISOString(),
+        lastResetDaily: dayjs().toISOString(),
+        isRunning: false,
+      };
+      await upsertServiceStatusToMongoDB(serviceStatus);
+      return serviceStatus;
+    }
+    return serviceStatus;
   }
 
   private async getUserSettings(_id: string): Promise<UserSettings> {
