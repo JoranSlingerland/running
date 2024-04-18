@@ -32,7 +32,6 @@
     "@repo/api": "*",
     "@repo/cosmosdb": "*",
     "@repo/jwt": "*",
-    "@repo/queue-helpers": "*",
     "@repo/schemas": "*",
     "@repo/strava": "*",
     "@repo/weather": "*",

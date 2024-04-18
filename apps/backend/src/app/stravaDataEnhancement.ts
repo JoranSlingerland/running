@@ -32,8 +32,15 @@ export class StravaDataEnhancementService {
   private static apiCallCountDaily = 0;
   private static lastReset15Min = dayjs();
   private static lastResetDaily = dayjs();
+  private static isRunning = false;
 
   async orchestrator() {
+    if (StravaDataEnhancementService.isRunning) {
+      console.info(`Strava data enhancement is already running`);
+      return;
+    }
+    StravaDataEnhancementService.isRunning = true;
+
     const callsPerActivity = 2;
 
     console.info('Step 1: Checking rate limits');
@@ -70,6 +77,7 @@ export class StravaDataEnhancementService {
       );
 
       await this.writeToMongoDB([calculatedActivity], [stream]);
+      StravaDataEnhancementService.isRunning = false;
       return { status: 'success', activityId: activity._id };
     });
 
@@ -340,5 +348,3 @@ export class StravaDataEnhancementService {
     upsertStreamsToMongoDB(streams);
   }
 }
-
-// TODO: Also trigger on a schedule

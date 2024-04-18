@@ -14,7 +14,7 @@
         "showReuseMessage": false,
         "clear": false
       },
-      "dependsOn": ["yarn watch", "docker: start dev environment"],
+      "dependsOn": ["yarn watch"],
       "runOptions": {
         "runOn": "folderOpen"
       }
@@ -32,7 +32,7 @@
         "showReuseMessage": false,
         "clear": false
       },
-      "dependsOn": ["docker: start dev environment"],
+      "dependsOn": [],
       "runOptions": {
         "runOn": "folderOpen"
       }
@@ -62,7 +62,10 @@
         "showReuseMessage": false,
         "clear": false
       },
-      "isBackground": true
+      "isBackground": true,
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
     },
     {
       "label": "yarn watch",
