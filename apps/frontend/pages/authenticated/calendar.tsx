@@ -154,7 +154,7 @@ function CalendarItem({
             {sportIcon(item.type)}
             {`${item.type} at ${dayjs(item.start_date).format('HH:mm')}`}
           </DialogTitle>
-          <ActivityBox activityId={item.id} />
+          <ActivityBox activityId={item._id} />
         </DialogHeader>
       </DialogContent>
     </Dialog>

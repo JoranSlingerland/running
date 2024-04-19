@@ -18,13 +18,13 @@ async function upsertStreamsToMongoDB(streams: Streams[]): Promise<void> {
     });
 
     if (operations.length === 0) {
-      console.log('No streams to update or insert.');
+      console.debug('No streams to update or insert.');
       return;
     }
     const result = await collection.bulkWrite(operations);
 
-    console.log(`${result.modifiedCount} activities updated.`);
-    console.log(`${result.upsertedCount} activities inserted.`);
+    console.debug(`${result.modifiedCount} activities updated.`);
+    console.debug(`${result.upsertedCount} activities inserted.`);
   } catch (error) {
     console.error('Error inserting or updating activities in MongoDB:', error);
   }

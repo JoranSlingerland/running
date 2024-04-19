@@ -1,9 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import {
   getNonFullDataActivitiesFromMongoDB,
-  serviceStatusFromMongoDB,
   upsertActivitiesToMongoDB,
-  upsertServiceStatusToMongoDB,
   upsertStreamsToMongoDB,
   upsertUserSettingsToMongoDB,
   userSettingsFromMongoDB,
@@ -14,9 +12,9 @@ import {
   Streams as stravaStreams,
 } from '@repo/strava';
 import { Activity, Streams, UserSettings } from '@repo/types';
-import dayjs from 'dayjs';
 import { bisectLeft } from 'src/lib/helpers';
 
+import { StravaRateLimitService, isRunningService } from './shared';
 import { cleanupDetailedActivity } from '../lib/cleanup';
 import {
   calculateHrMaxPercentage,
@@ -27,51 +25,60 @@ import {
   calculateVo2MaxEstimate,
 } from '../lib/trimpHelpers';
 
-type ServiceStatus = {
-  _id: string;
-  apiCallCount15Min: number;
-  apiCallCountDaily: number;
-  lastReset15Min: string;
-  lastResetDaily: string;
-  isRunning: boolean;
-};
-
 @Injectable()
 export class StravaDataEnhancementService {
-  private serviceStatus: ServiceStatus;
+  private rateLimitService = new StravaRateLimitService('Strava');
+  private runningService = new isRunningService('StravaDataEnhancementService');
+  private callsPerActivity = 2;
 
   async orchestrator() {
-    this.serviceStatus = await this.getServiceStatus();
-    if (this.serviceStatus.isRunning) {
+    if (await this.runningService.startService()) {
       console.info(`Strava data enhancement is already running`);
-      return;
+      throw new HttpException(
+        'Strava data enhancement is already running',
+        HttpStatus.CONFLICT,
+      );
     }
-    this.serviceStatus.isRunning = true;
-    await upsertServiceStatusToMongoDB(this.serviceStatus);
 
-    const callsPerActivity = 2;
-
-    console.info('Step 1: Checking rate limits');
+    console.info('Step 0: Checking rate limits');
     const { callsAvailable, limit } =
-      await this.checkStravaApiRateLimits(callsPerActivity);
+      await this.rateLimitService.checkStravaApiRateLimits(
+        this.callsPerActivity,
+      );
     if (!callsAvailable) {
-      this.serviceStatus.isRunning = false;
-      await upsertServiceStatusToMongoDB(this.serviceStatus);
-      return { status: 'error', message: 'API call limit reached' };
+      this.runningService.endService();
+      throw new HttpException(
+        'API call limit reached',
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
     }
 
-    console.info('Step 2: Fetching activities without full data');
+    console.info('Step 1: Fetching activities without full data');
     const activities = (await this.getActivities()).slice(
       0,
-      Math.floor(limit / callsPerActivity),
+      Math.floor(limit / this.callsPerActivity),
     );
 
     console.info(
-      'Step 3: Fetching activity and stream. Then writing to MongoDB',
+      'Step 2: Fetching activity and stream. Then writing to MongoDB',
     );
     const promises = activities.map(async (activity) => {
-      const { activity: cleanedActivity, stream } =
-        (await this.getActivityAndStream(activity)) || {};
+      let cleanedActivity: Activity;
+      let stream: Streams;
+      try {
+        const result = await this.getActivityAndStream(activity);
+        if (result) {
+          cleanedActivity = result.activity;
+          stream = result.stream;
+        }
+      } catch (error) {
+        console.error('Error fetching activity or stream:', error);
+        return {
+          status: 'error',
+          message: 'Error fetching activity or stream',
+          activityId: activity._id,
+        };
+      }
 
       if (!cleanedActivity || !stream) {
         return {
@@ -92,71 +99,15 @@ export class StravaDataEnhancementService {
 
     const result = await Promise.all(promises);
     console.info(
-      `Step 4: Returning data to the user with ${result.length} activities enhanced`,
+      `Step 3: Returning data to the user with ${result.length} activities enhanced`,
     );
-    this.serviceStatus.isRunning = false;
-    await upsertServiceStatusToMongoDB(this.serviceStatus);
+    this.rateLimitService.updateServiceStatus();
+    this.runningService.endService();
     return {
       status: 'success',
       activitiesEnhanced: result.filter(Boolean).length,
       details: result,
     };
-  }
-
-  private async checkStravaApiRateLimits(callsPerActivity: number) {
-    const fifteenMinuteLimit = parseInt(process.env.STRAVA_15MIN_LIMIT) || 100;
-    const dailyLimit = parseInt(process.env.STRAVA_DAILY_LIMIT) || 1000;
-
-    if (dayjs().diff(this.serviceStatus.lastReset15Min, 'minute') >= 15) {
-      this.serviceStatus.apiCallCount15Min = 0;
-      this.serviceStatus.lastReset15Min = dayjs().toISOString();
-      await upsertServiceStatusToMongoDB(this.serviceStatus);
-    }
-
-    if (dayjs().diff(this.serviceStatus.lastResetDaily, 'day') >= 1) {
-      this.serviceStatus.apiCallCountDaily = 0;
-      this.serviceStatus.lastResetDaily = dayjs().toISOString();
-      await upsertServiceStatusToMongoDB(this.serviceStatus);
-    }
-
-    const limitInfo = {
-      callsAvailable: true,
-      limit: Math.min(
-        fifteenMinuteLimit - this.serviceStatus.apiCallCount15Min,
-        dailyLimit - this.serviceStatus.apiCallCountDaily,
-      ),
-    };
-
-    if (limitInfo.limit - callsPerActivity < 0) {
-      console.error('API call limit reached');
-      limitInfo.callsAvailable = false;
-    }
-
-    return limitInfo;
-  }
-
-  private updateApiCallCount() {
-    this.serviceStatus.apiCallCount15Min += 1;
-    this.serviceStatus.apiCallCountDaily += 1;
-  }
-
-  private async getServiceStatus(): Promise<ServiceStatus> {
-    const serviceStatus = await serviceStatusFromMongoDB<ServiceStatus>(
-      'stravaDataEnhancement',
-    );
-    if (!serviceStatus) {
-      const serviceStatus: ServiceStatus = {
-        _id: 'stravaDataEnhancement',
-        apiCallCount15Min: 1000,
-        apiCallCountDaily: 1000,
-        lastReset15Min: dayjs().toISOString(),
-        lastResetDaily: dayjs().toISOString(),
-        isRunning: false,
-      };
-      await upsertServiceStatusToMongoDB(serviceStatus);
-      return serviceStatus;
-    }
-    return serviceStatus;
   }
 
   private async getUserSettings(_id: string): Promise<UserSettings> {
@@ -185,7 +136,7 @@ export class StravaDataEnhancementService {
     });
 
     try {
-      this.updateApiCallCount();
+      this.rateLimitService.updateApiCallCount();
       detailedActivity = await stravaClient.getActivity({ id: activity._id });
     } catch (error) {
       console.error('Error fetching activity:', error);
@@ -193,6 +144,7 @@ export class StravaDataEnhancementService {
     }
 
     try {
+      this.rateLimitService.updateApiCallCount();
       stravaStream = await stravaClient.getStream({
         id: activity._id,
         keys: [

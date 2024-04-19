@@ -32,7 +32,7 @@
         "showReuseMessage": false,
         "clear": false
       },
-      "dependsOn": [],
+      "dependsOn": ["yarn install"],
       "runOptions": {
         "runOn": "folderOpen"
       }

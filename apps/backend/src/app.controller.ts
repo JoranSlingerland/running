@@ -1,4 +1,10 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Query,
+} from '@nestjs/common';
 
 import { StravaActivityGatheringService } from './app/StravaActivityGathering';
 import { StravaDataEnhancementService } from './app/stravaDataEnhancement';
@@ -23,7 +29,14 @@ export class StravaActivityGatheringController {
       return data;
     } catch (error) {
       console.error('Error gathering data:', error);
-      throw new Error('Failed to gather data');
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(
+          'Failed to enhance data',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
 }
@@ -40,7 +53,14 @@ export class StravaDataEnhancementController {
       return await this.StravaDataEnhancementService.orchestrator();
     } catch (error) {
       console.error('Error enhancing data:', error);
-      throw new Error('Failed to enhance data');
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(
+          'Failed to enhance data',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
 }

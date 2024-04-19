@@ -21,7 +21,7 @@ async function upsertActivitiesToMongoDB(
     });
 
     if (operations.length === 0) {
-      console.log('No activities to update or insert.');
+      console.debug('No activities to update or insert.');
       return;
     }
     const result = await collection.bulkWrite(operations);
