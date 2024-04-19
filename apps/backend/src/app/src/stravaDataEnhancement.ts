@@ -99,9 +99,7 @@ export class StravaDataEnhancementService {
     });
 
     const result = await Promise.all(promises);
-    console.info(
-      `Step 3: Returning data to the user with ${result.length} activities enhanced`,
-    );
+    console.info(`Step 3: Finished with ${result.length} activities enhanced`);
     this.rateLimitService.updateServiceStatus();
     this.runningService.endService();
     return {

@@ -14,7 +14,8 @@ import { cleanUpSummaryActivity } from '../../lib/cleanup';
 @Injectable()
 export class StravaActivityGatheringService {
   private rateLimitService = new StravaRateLimitService('Strava');
-  private callsPerActivity = 1;
+  // There could be more calls. The actual number of calls is calculated based on the number of activities fetched
+  private callsPerActivity = 2;
 
   async orchestrator(userId: string) {
     console.info('Step 0: Checking rate limits');
@@ -71,12 +72,12 @@ export class StravaActivityGatheringService {
       epochStartDate = new Date(latestActivityDate.start_date).getTime() / 1000;
     }
 
-    // There could be more then 1 api call per activity.
-    // This is not being accounted for in the rate limit check.
-    this.rateLimitService.updateApiCallCount();
     const activities = await stravaClient.getActivities({
       after: epochStartDate,
     });
+    this.rateLimitService.updateApiCallCount(
+      Math.ceil(activities.length / 200) + 1,
+    );
 
     if (!activities || activities.length === 0) {
       return [];

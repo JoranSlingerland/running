@@ -1,4 +1,6 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
+import { RequestWithUser } from 'data';
+import { AdminGuard } from 'src/guards/admin.guard';
 
 import { resetIsRunningStatusService } from './src/resetIsRunningStatus';
 import { StravaActivityGatheringService } from './src/StravaActivityGathering';
@@ -12,18 +14,17 @@ export class StravaActivityGatheringController {
   ) {}
 
   @Get()
-  async gatherData(@Query('userId') userId: string) {
+  async gatherData(@Req() request: RequestWithUser) {
+    const userId = request?.userId;
+    console.log('userId', userId);
     const data = await this.StravaActivityGatheringService.orchestrator(userId);
-
-    // Start the enhancement process
     this.StravaDataEnhancementService.orchestrator();
-
-    // Return the data immediately
     return data;
   }
 }
 
 @Controller('/admin/strava')
+@UseGuards(AdminGuard)
 export class StravaDataEnhancementController {
   constructor(
     private readonly StravaDataEnhancementService: StravaDataEnhancementService,

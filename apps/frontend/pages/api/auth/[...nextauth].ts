@@ -33,6 +33,7 @@ const authOptions: NextAuthOptions = {
             `${account.provider}-${user?.id}-${process.env.NEXTAUTH_SALT}`,
           )
           .digest('hex');
+        token.admin = false;
         if (user?.email === process.env.NEXTAUTH_ADMIN_EMAIL) {
           token.admin = true;
         }

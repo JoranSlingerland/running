@@ -47,15 +47,11 @@ export default async function handler(
     secret: process.env.API_SHARED_KEY,
     issuer: process.env.NEXTAUTH_URL,
   });
-  const url = `${process.env.AZURE_FUNCTION_URL}${urlPath.replace('/api', '')}`;
-  const query = {
-    code: process.env.AZURE_FUNCTION_KEY,
-  };
+  const url = `${process.env.NESTJS_URL}${urlPath.replace('/api', '')}`;
   const wretchInstance = createWretchInstance({
     url,
     method,
     controller: new AbortController(),
-    query,
     bearerToken: jwt,
   });
 
