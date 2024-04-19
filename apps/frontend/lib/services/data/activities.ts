@@ -28,7 +28,7 @@ function useActivities({
       storageType: 'sessionStorage',
       customKey: query ? 'activities' : undefined,
       useStartEndDates: query ? true : false,
-      deDupeKey: 'id',
+      deDupeKey: '_id',
     },
   });
 }

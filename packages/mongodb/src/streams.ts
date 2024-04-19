@@ -1,4 +1,5 @@
 import { Streams } from '@repo/types';
+import { FindOptions } from 'mongodb';
 
 import { connectToCollection } from './helpers';
 
@@ -23,11 +24,56 @@ async function upsertStreamsToMongoDB(streams: Streams[]): Promise<void> {
     }
     const result = await collection.bulkWrite(operations);
 
-    console.debug(`${result.modifiedCount} activities updated.`);
-    console.debug(`${result.upsertedCount} activities inserted.`);
+    console.debug(`${result.modifiedCount} streams updated.`);
+    console.debug(`${result.upsertedCount} streams inserted.`);
   } catch (error) {
-    console.error('Error inserting or updating activities in MongoDB:', error);
+    console.error('Error inserting or updating streams in MongoDB:', error);
   }
 }
 
-export { upsertStreamsToMongoDB };
+async function getLastStreamFromMongoDB(
+  userId: string,
+): Promise<Streams | undefined> {
+  try {
+    const collection = await connectToCollection<Streams>('streams');
+
+    const queryOptions: FindOptions<Streams> = {
+      sort: { start_date: -1 },
+      limit: 1,
+    };
+
+    const streams = await collection.find({ userId }, queryOptions).toArray();
+
+    if (streams.length === 0) {
+      return undefined;
+    }
+
+    return streams[0];
+  } catch (error) {
+    console.error('Error retrieving last stream from MongoDB:', error);
+    return undefined;
+  }
+}
+
+async function getStreamFromMongoDB(_id: string): Promise<Streams | undefined> {
+  try {
+    const collection = await connectToCollection<Streams>('streams');
+
+    const stream = await collection.findOne({ _id });
+
+    if (!stream) {
+      return undefined;
+    }
+
+    return stream;
+  } catch (error) {
+    console.error('Error retrieving stream from MongoDB:', error);
+    return undefined;
+  }
+}
+
+export {
+  upsertStreamsToMongoDB,
+  getLastStreamFromMongoDB,
+  getStreamFromMongoDB,
+};

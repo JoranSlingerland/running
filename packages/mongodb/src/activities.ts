@@ -3,6 +3,47 @@ import { FindOptions } from 'mongodb';
 
 import { connectToCollection } from './helpers';
 
+interface Query {
+  userId: string;
+  start_date?: {
+    $gte?: string;
+    $lte?: string;
+  };
+}
+
+async function activitiesFromMongoDB({
+  id,
+  startDate = '',
+  endDate = '',
+}: {
+  id: string;
+  startDate?: string;
+  endDate?: string;
+}): Promise<Activity[] | undefined> {
+  const collection = await connectToCollection<Activity>('activities');
+
+  const query: Query = { userId: id };
+
+  if (startDate) {
+    query.start_date = { $gte: startDate };
+  }
+  if (endDate) {
+    if (query.start_date) {
+      query.start_date.$lte = endDate;
+    } else {
+      query.start_date = { $lte: endDate };
+    }
+  }
+
+  const activities = await collection.find(query).toArray();
+
+  if (!activities || activities.length === 0) {
+    return undefined;
+  }
+
+  return activities;
+}
+
 async function upsertActivitiesToMongoDB(
   activities: Activity[],
 ): Promise<void> {
@@ -61,4 +102,8 @@ async function getNonFullDataActivitiesFromMongoDB(): Promise<
   }
 }
 
-export { upsertActivitiesToMongoDB, getNonFullDataActivitiesFromMongoDB };
+export {
+  upsertActivitiesToMongoDB,
+  getNonFullDataActivitiesFromMongoDB,
+  activitiesFromMongoDB,
+};

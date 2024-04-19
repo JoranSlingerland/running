@@ -1,8 +1,7 @@
 import {
-  removeKeys,
-  upsertUserSettingsToCosmos,
-  userSettingsFromCosmos,
-} from '@repo/cosmosdb';
+  upsertUserSettingsToMongoDB,
+  userSettingsFromMongoDB,
+} from '@repo/mongodb';
 import { initialAuth } from '@repo/strava';
 import type { NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
@@ -49,7 +48,7 @@ async function handleGet(
     return;
   }
 
-  const userSettings = await userSettingsFromCosmos(id);
+  const userSettings = await userSettingsFromMongoDB(id);
 
   if (!userSettings) {
     res.status(400).json({ message: 'User not found' });
@@ -72,13 +71,11 @@ async function handleGet(
     },
   };
 
-  const result = await upsertUserSettingsToCosmos(userSettingsWithAuth);
+  const result = await upsertUserSettingsToMongoDB(userSettingsWithAuth);
 
   if (!result.isError && result.result) {
-    return res.status(200).json(removeKeys(result.result.resource || {}));
+    return res.status(200).json({ message: 'Strava authorization completed' });
   }
 
-  return res
-    .status(result.result?.statusCode || 500)
-    .json({ message: 'Something went wrong' });
+  return res.status(500).json({ message: 'Something went wrong' });
 }
