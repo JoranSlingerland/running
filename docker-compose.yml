@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   frontend:
     build:
@@ -7,22 +7,21 @@ services:
       args:
         APP_NAME: frontend
     ports:
-      - '3000:3000'
+      - "3000:3000"
     depends_on:
       - mongodb
     env_file:
       - path: apps/frontend/.env.local
         required: false
   mongodb:
-    build:
-      context: .
-      dockerfile: infrastructure/docker/mongodb/Dockerfile
+    container_name: mongodb
+    image: mongo:latest
     volumes:
       - mongodb_data:/data/db
     ports:
-      - '27017:27017'
+      - "27017:27017"
     env_file:
-      - path: infrastructure/db/db.env.local
+      - path: apps/backend/.env
         required: true
 volumes:
   mongodb_data:
