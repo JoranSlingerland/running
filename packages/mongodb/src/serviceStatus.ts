@@ -39,9 +39,9 @@ async function upsertServiceStatusToMongoDB<T extends DocumentWithId>(
       { upsert: true },
     );
 
-    console.debug(`${result.upsertedCount} activities inserted.`);
+    console.debug(`${result.upsertedCount} services inserted.`);
   } catch (error) {
-    console.error('Error inserting or updating activities in MongoDB:', error);
+    console.error('Error inserting or updating services in MongoDB:', error);
   }
 }
 

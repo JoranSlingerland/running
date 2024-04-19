@@ -3,6 +3,9 @@ import {
   upsertServiceStatusToMongoDB,
 } from '@repo/mongodb';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 
 type ServiceStatus = {
   _id: string;
@@ -49,15 +52,27 @@ export class StravaRateLimitService {
       parseInt(process.env.FIFTEEN_MINUTE_LIMIT) || 100;
     const dailyLimit = parseInt(process.env.DAILY_LIMIT) || 1000;
 
-    if (dayjs().diff(this.serviceStatus.lastReset15Min, 'minute') >= 15) {
+    const current = dayjs();
+    const nextReset15Min = dayjs(this.serviceStatus.lastReset15Min)
+      .startOf('hour')
+      .add(
+        Math.ceil(dayjs(this.serviceStatus.lastReset15Min).minute() / 15) * 15,
+        'minute',
+      );
+    const nextResetDaily = dayjs(this.serviceStatus.lastResetDaily)
+      .utc()
+      .startOf('day')
+      .add(1, 'day');
+
+    if (current.isAfter(nextReset15Min)) {
       this.serviceStatus.apiCallCount15Min = 0;
-      this.serviceStatus.lastReset15Min = dayjs().toISOString();
+      this.serviceStatus.lastReset15Min = current.toISOString();
       await upsertServiceStatusToMongoDB(this.serviceStatus);
     }
 
-    if (dayjs().diff(this.serviceStatus.lastResetDaily, 'day') >= 1) {
+    if (current.isAfter(nextResetDaily)) {
       this.serviceStatus.apiCallCountDaily = 0;
-      this.serviceStatus.lastResetDaily = dayjs().toISOString();
+      this.serviceStatus.lastResetDaily = current.toISOString();
       await upsertServiceStatusToMongoDB(this.serviceStatus);
     }
 
@@ -67,8 +82,8 @@ export class StravaRateLimitService {
         fifteenMinuteLimit - this.serviceStatus.apiCallCount15Min,
         dailyLimit - this.serviceStatus.apiCallCountDaily,
       ),
+      nextReset: Math.min(nextReset15Min.valueOf(), nextResetDaily.valueOf()),
     };
-    console.log('limitInfo', limitInfo);
 
     if (limitInfo.limit - callsPerActivity < 0) {
       console.error('API call limit reached');

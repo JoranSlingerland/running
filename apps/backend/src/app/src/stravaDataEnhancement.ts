@@ -12,6 +12,7 @@ import {
   Streams as stravaStreams,
 } from '@repo/strava';
 import { Activity, Streams, UserSettings } from '@repo/types';
+import dayjs from 'dayjs';
 import { bisectLeft } from 'src/lib/helpers';
 
 import { StravaRateLimitService, isRunningService } from './shared';
@@ -41,14 +42,14 @@ export class StravaDataEnhancementService {
     }
 
     console.info('Step 0: Checking rate limits');
-    const { callsAvailable, limit } =
+    const { callsAvailable, limit, nextReset } =
       await this.rateLimitService.checkStravaApiRateLimits(
         this.callsPerActivity,
       );
     if (!callsAvailable) {
       this.runningService.endService();
       throw new HttpException(
-        'API call limit reached',
+        `API call limit reached. Try again at ${dayjs(nextReset).toISOString()} minutes`,
         HttpStatus.TOO_MANY_REQUESTS,
       );
     }
