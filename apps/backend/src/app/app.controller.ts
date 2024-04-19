@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  HttpException,
-  HttpStatus,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 
 import { resetIsRunningStatusService } from './src/resetIsRunningStatus';
 import { StravaActivityGatheringService } from './src/StravaActivityGathering';
@@ -19,26 +13,13 @@ export class StravaActivityGatheringController {
 
   @Get()
   async gatherData(@Query('userId') userId: string) {
-    try {
-      const data =
-        await this.StravaActivityGatheringService.orchestrator(userId);
+    const data = await this.StravaActivityGatheringService.orchestrator(userId);
 
-      // Start the enhancement process
-      this.StravaDataEnhancementService.orchestrator();
+    // Start the enhancement process
+    this.StravaDataEnhancementService.orchestrator();
 
-      // Return the data immediately
-      return data;
-    } catch (error) {
-      console.error('Error gathering data:', error);
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        throw new HttpException(
-          'Failed to enhance data',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
-    }
+    // Return the data immediately
+    return data;
   }
 }
 
@@ -50,37 +31,16 @@ export class StravaDataEnhancementController {
 
   @Get('/enhance')
   async gatherData() {
-    try {
-      return await this.StravaDataEnhancementService.orchestrator();
-    } catch (error) {
-      console.error('Error enhancing data:', error);
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        throw new HttpException(
-          'Failed to enhance data',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
-    }
+    return await this.StravaDataEnhancementService.orchestrator();
   }
 
   @Get('/reset')
   async resetIsRunningStatus(@Query('serviceName') serviceName: string) {
-    try {
-      const resetService = new resetIsRunningStatusService();
-      await resetService.endService(serviceName);
-      return { status: 'success' };
-    } catch (error) {
-      console.error('Error resetting isRunning status:', error);
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        throw new HttpException(
-          'Failed to reset isRunning status',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
-    }
+    const resetService = new resetIsRunningStatusService();
+    await resetService.endService(serviceName);
+    return {
+      status: 'success',
+      message: `Reset ${serviceName} running status`,
+    };
   }
 }
