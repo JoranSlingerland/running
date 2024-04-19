@@ -99,7 +99,7 @@ export class isRunningService {
     this.getServiceStatus();
   }
 
-  private async getServiceStatus() {
+  public async getServiceStatus() {
     this.runningStatus = await serviceStatusFromMongoDB<RunningStatus>(
       this.serviceName,
     );

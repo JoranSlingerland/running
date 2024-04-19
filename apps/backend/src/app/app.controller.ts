@@ -6,8 +6,9 @@ import {
   Query,
 } from '@nestjs/common';
 
-import { StravaActivityGatheringService } from './app/StravaActivityGathering';
-import { StravaDataEnhancementService } from './app/stravaDataEnhancement';
+import { resetIsRunningStatusService } from './src/resetIsRunningStatus';
+import { StravaActivityGatheringService } from './src/StravaActivityGathering';
+import { StravaDataEnhancementService } from './src/stravaDataEnhancement';
 
 @Controller('strava/gather')
 export class StravaActivityGatheringController {
@@ -41,13 +42,13 @@ export class StravaActivityGatheringController {
   }
 }
 
-@Controller('/admin/strava/enhance')
+@Controller('/admin/strava')
 export class StravaDataEnhancementController {
   constructor(
     private readonly StravaDataEnhancementService: StravaDataEnhancementService,
   ) {}
 
-  @Get()
+  @Get('/enhance')
   async gatherData() {
     try {
       return await this.StravaDataEnhancementService.orchestrator();
@@ -58,6 +59,25 @@ export class StravaDataEnhancementController {
       } else {
         throw new HttpException(
           'Failed to enhance data',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
+
+  @Get('/reset')
+  async resetIsRunningStatus(@Query('serviceName') serviceName: string) {
+    try {
+      const resetService = new resetIsRunningStatusService();
+      await resetService.endService(serviceName);
+      return { status: 'success' };
+    } catch (error) {
+      console.error('Error resetting isRunning status:', error);
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(
+          'Failed to reset isRunning status',
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }

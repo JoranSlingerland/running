@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { StravaDataEnhancementService } from 'src/app/stravaDataEnhancement';
+import { StravaDataEnhancementService } from 'src/app/src/stravaDataEnhancement';
 
 @Injectable()
 export class StravaDataEnhancementCronService {

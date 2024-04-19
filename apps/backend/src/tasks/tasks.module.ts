@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { StravaDataEnhancementService } from 'src/app/stravaDataEnhancement';
+import { StravaDataEnhancementService } from 'src/app/src/stravaDataEnhancement';
 
 import { StravaDataEnhancementCronService } from './tasks.service';
 

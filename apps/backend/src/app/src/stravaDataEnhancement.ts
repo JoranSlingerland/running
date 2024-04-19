@@ -15,7 +15,7 @@ import { Activity, Streams, UserSettings } from '@repo/types';
 import { bisectLeft } from 'src/lib/helpers';
 
 import { StravaRateLimitService, isRunningService } from './shared';
-import { cleanupDetailedActivity } from '../lib/cleanup';
+import { cleanupDetailedActivity } from '../../lib/cleanup';
 import {
   calculateHrMaxPercentage,
   calculateHrReserve,
@@ -23,7 +23,7 @@ import {
   calculatePaceReserve,
   calculatePaceTrimp,
   calculateVo2MaxEstimate,
-} from '../lib/trimpHelpers';
+} from '../../lib/trimpHelpers';
 
 @Injectable()
 export class StravaDataEnhancementService {
