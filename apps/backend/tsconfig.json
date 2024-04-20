@@ -8,6 +8,7 @@
       "@guards/*": ["src/guards/*"],
       "@lib/*": ["src/lib/*"],
       "@tasks/*": ["src/tasks/*"]
-    }
+    },
+    "outDir": "./dist"
   }
 }
