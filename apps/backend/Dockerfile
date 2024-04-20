@@ -22,7 +22,7 @@ RUN yarn install
 FROM base AS sourcer
 COPY --from=installer /app/ .
 COPY --from=turbo /app/out/full/ .
-RUN yarn turbo run build --scope=${APP_NAME} --include-dependencies --no-deps
+RUN yarn turbo run build --include-dependencies --no-deps
 
 # Runner stage: Copies the built application and sets the command to run the application
 FROM base as runner
