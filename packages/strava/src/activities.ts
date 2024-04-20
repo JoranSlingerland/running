@@ -1,4 +1,4 @@
-import { WretchError, createBasicWretchInstance } from '@repo/api';
+import { createBasicWretchInstance } from '@repo/api';
 
 import { baseUrl } from './config';
 import {
@@ -38,7 +38,7 @@ async function getActivities({
       .query(query)
       .get()
       .json()
-      .catch((error: WretchError) => {
+      .catch((error: unknown) => {
         console.error('Error fetching activities', error);
         throw new Error('Error fetching activities');
       });

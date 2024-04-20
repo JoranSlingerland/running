@@ -1,4 +1,4 @@
-import { WretchError, createBasicWretchInstance } from '@repo/api';
+import { createBasicWretchInstance } from '@repo/api';
 
 import { baseUrl } from './config';
 import { DetailedActivity, StravaAuthentication } from './types';
@@ -29,7 +29,7 @@ async function getActivity({
         throw new Error('Rate limited');
       })
       .json()
-      .catch((error: WretchError) => {
+      .catch((error: unknown) => {
         console.error('Error fetching activity', error);
         throw new Error('Error fetching activity');
       })) as DetailedActivity
