@@ -22,7 +22,7 @@ export default async function handler(
       await handleGet(res, token.id as string);
       break;
     case 'POST':
-      await handlePost(req, res);
+      await handlePost(req, res, token.id as string);
       break;
     default:
       res.setHeader('Allow', 'GET, POST');
@@ -40,7 +40,15 @@ async function handleGet(res: NextApiResponse, id: string) {
   return res.status(200).json(user);
 }
 
-async function handlePost(req: NextApiRequestUnknown, res: NextApiResponse) {
+async function handlePost(
+  req: NextApiRequestUnknown,
+  res: NextApiResponse,
+  id: string,
+) {
+  if (typeof req.body !== 'object' || req.body === null) {
+    return res.status(400).json({ message: 'Invalid request body' });
+  }
+  (req.body as Record<string, unknown>)._id = id;
   const result = await upsertUserSettingsToMongoDB(req.body);
 
   if (!result.isError && result.result) {

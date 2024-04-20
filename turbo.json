@@ -21,6 +21,7 @@
     },
     "watch": {
       "cache": false
-    }
+    },
+    "db:setup": {}
   }
 }

@@ -4,6 +4,7 @@ import { MongoClient } from 'mongodb';
 dotenv.config();
 
 async function setupDatabase() {
+  console.log('Setting up database...');
   const host = process.env.MONGODB_URI;
   const password = process.env.MONGO_INITDB_ROOT_PASSWORD;
   const username = process.env.MONGO_INITDB_ROOT_USERNAME;
@@ -39,6 +40,7 @@ async function setupDatabase() {
     await client.close();
     console.log('Connection to MongoDB closed.');
   }
+  console.log('Database setup complete.');
 }
 
 export { setupDatabase };

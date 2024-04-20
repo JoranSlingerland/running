@@ -8,7 +8,8 @@
     "fix": "dotenv -- turbo fix",
     "ts-coverage": "turbo ts-coverage",
     "preinstall": "npx only-allow yarn",
-    "watch": "dotenv -- turbo watch"
+    "watch": "dotenv -- turbo watch",
+    "db:setup": "dotenv -- turbo db:setup --filter=backend"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
