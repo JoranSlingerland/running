@@ -8,11 +8,15 @@ services:
         APP_NAME: frontend
     ports:
       - "3000:3000"
+    networks:
+      - backend_network
     depends_on:
       - mongodb
+      - backend
     env_file:
       - path: apps/frontend/.env.local
         required: false
+
   backend:
     build:
       context: .
@@ -21,16 +25,26 @@ services:
         APP_NAME: backend
     ports:
       - "3001:3001"
+    networks:
+      - backend_network
     depends_on:
       - mongodb
     env_file:
       - path: apps/backend/.env
         required: true
+    command: >
+      /bin/sh -c "
+        yarn db:setup &&
+        node dist/main.js
+      "
+
   mongodb:
     container_name: mongodb
     image: mongo:latest
     volumes:
       - mongodb_data:/data/db
+    networks:
+      - backend_network
     ports:
       - "27017:27017"
     env_file:
@@ -38,3 +52,6 @@ services:
         required: true
 volumes:
   mongodb_data:
+networks:
+  backend_network:
+    driver: bridge

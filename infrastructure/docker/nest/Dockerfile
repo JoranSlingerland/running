@@ -1,28 +1,31 @@
-FROM node:18-alpine AS builder
-RUN apk update
-# Set working directory
+# Base stage: Sets up the base image with Node.js and creates a working directory
+FROM node:18-alpine AS base
 WORKDIR /app
+ARG APP_NAME
+
+# Turbo stage: Updates the package list, installs Turbo, copies the application files, and prunes dependencies
+FROM base AS turbo
+
 RUN yarn global add turbo
 COPY . .
-RUN turbo prune --scope=backend --docker
+RUN turbo prune --scope=${APP_NAME} --docker
 
-# Add lockfile and package.json's of isolated subworkspace
-FROM node:18-alpine AS installer
+# Installer stage: Copies the pruned dependencies and installs them
+FROM base AS installer
 RUN apk update
-WORKDIR /app
-COPY --from=builder /app/out/json/ .
-COPY --from=builder /app/out/yarn.lock ./yarn.lock
-COPY --from=builder /app/turbo.json ./turbo.json
+COPY --from=turbo /app/out/json/ .
+COPY --from=turbo /app/out/yarn.lock ./yarn.lock
+COPY --from=turbo /app/turbo.json ./turbo.json
 RUN yarn install
 
-
-FROM node:18-alpine AS sourcer
-WORKDIR /app
+# Sourcer stage: Copies the installed dependencies and application files, and builds the application
+FROM base AS sourcer
 COPY --from=installer /app/ .
-COPY --from=builder /app/out/full/ .
-RUN yarn turbo run build --scope=backend --include-dependencies --no-deps
+COPY --from=turbo /app/out/full/ .
+RUN yarn turbo run build --scope=${APP_NAME} --include-dependencies --no-deps
 
-FROM node:18-alpine as runner
-WORKDIR /app
+# Runner stage: Copies the built application and sets the command to run the application
+FROM base as runner
 COPY --from=sourcer /app/ .
-CMD [ "node", "apps/backend/dist/main.js" ]
+WORKDIR /app/apps/${APP_NAME}
+CMD [ "node", "dist/main.js" ]
