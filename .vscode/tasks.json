@@ -53,7 +53,7 @@
     {
       "type": "shell",
       "label": "docker: start dev environment",
-      "command": "docker-compose -f docker-compose-dev.yml up",
+      "command": "docker-compose -f docker-compose-dev.yaml up",
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
