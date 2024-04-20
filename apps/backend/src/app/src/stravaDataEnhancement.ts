@@ -1,3 +1,12 @@
+import { cleanupDetailedActivity } from '@lib/cleanup';
+import {
+  calculateHrMaxPercentage,
+  calculateHrReserve,
+  calculateHrTrimp,
+  calculatePaceReserve,
+  calculatePaceTrimp,
+  calculateVo2MaxEstimate,
+} from '@lib/trimpHelpers';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import {
   getNonFullDataActivitiesFromMongoDB,
@@ -16,15 +25,6 @@ import dayjs from 'dayjs';
 import { bisectLeft } from 'src/lib/helpers';
 
 import { StravaRateLimitService, isRunningService } from './shared';
-import { cleanupDetailedActivity } from '../../lib/cleanup';
-import {
-  calculateHrMaxPercentage,
-  calculateHrReserve,
-  calculateHrTrimp,
-  calculatePaceReserve,
-  calculatePaceTrimp,
-  calculateVo2MaxEstimate,
-} from '../../lib/trimpHelpers';
 
 @Injectable()
 export class StravaDataEnhancementService {

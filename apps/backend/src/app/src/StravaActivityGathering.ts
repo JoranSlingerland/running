@@ -1,3 +1,4 @@
+import { cleanUpSummaryActivity } from '@lib/cleanup';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import {
   getLastActivityFromMongoDB,
@@ -9,7 +10,6 @@ import { StravaClient } from '@repo/strava';
 import { Activity, UserSettings } from '@repo/types';
 
 import { StravaRateLimitService } from './shared';
-import { cleanUpSummaryActivity } from '../../lib/cleanup';
 
 @Injectable()
 export class StravaActivityGatheringService {
