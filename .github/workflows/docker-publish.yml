@@ -20,6 +20,10 @@ jobs:
       packages: write
       id-token: write
 
+    strategy:
+      matrix:
+        app: ["frontend", "backend"]
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -35,35 +39,18 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract Docker metadata
-        id: meta-frontend
+        id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${{ matrix.app }}
 
-      - name: Extract Docker metadata
-        id: meta-backend
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend
-
-      - name: Build and push frontend image
+      - name: Build and push image
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: infrastructure/docker/next/Dockerfile
+          file: infrastructure/docker/${{ matrix.app }}/Dockerfile
           push: true
-          tags: ${{ steps.meta-frontend.outputs.tags }}
-          labels: ${{ steps.meta-frontend.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            APP_NAME=frontend
-
-      - name: Build and push backend image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: infrastructure/docker/nest/Dockerfile
-          push: true
-          tags: ${{ steps.meta-backend.outputs.tags }}
-          labels: ${{ steps.meta-backend.outputs.labels }}
-          build-args: |
-            APP_NAME=backend
+            APP_NAME=${{ matrix.app }}
