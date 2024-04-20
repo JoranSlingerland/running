@@ -2,18 +2,19 @@
   "name": "running-repo",
   "private": true,
   "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
-    "lint": "turbo lint",
-    "fix": "turbo fix",
+    "build": "dotenv -- turbo build",
+    "dev": "dotenv -- turbo dev",
+    "lint": "dotenv -- turbo lint",
+    "fix": "dotenv -- turbo fix",
     "ts-coverage": "turbo ts-coverage",
     "preinstall": "npx only-allow yarn",
-    "watch": "turbo watch"
+    "watch": "dotenv -- turbo watch"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
     "@types/eslint": "^8",
+    "dotenv-cli": "^7.4.1",
     "only-allow": "^1.2.1",
     "turbo": "^1.12.2",
     "type-coverage": "^2.28.1",

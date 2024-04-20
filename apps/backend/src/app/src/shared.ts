@@ -48,9 +48,8 @@ export class StravaRateLimitService {
 
   public async checkStravaApiRateLimits(callsPerActivity: number) {
     await this.getServiceStatus();
-    const fifteenMinuteLimit =
-      parseInt(process.env.FIFTEEN_MINUTE_LIMIT) || 100;
-    const dailyLimit = parseInt(process.env.DAILY_LIMIT) || 1000;
+    const fifteenMinuteLimit = parseInt(process.env.STRAVA_15MIN_LIMIT) || 100;
+    const dailyLimit = parseInt(process.env.STRAVA_DAILY_LIMIT) || 1000;
 
     const current = dayjs();
     const nextReset15Min = dayjs(this.serviceStatus.lastReset15Min)

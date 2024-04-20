@@ -14,8 +14,11 @@ services:
       - mongodb
       - backend
     env_file:
-      - path: apps/frontend/.env.local
+      - path: .env
         required: false
+    environment:
+      - MONGODB_URI=mongodb:27017
+      - NESTJS_URL=http://backend:3001
 
   backend:
     build:
@@ -30,13 +33,15 @@ services:
     depends_on:
       - mongodb
     env_file:
-      - path: apps/backend/.env
+      - path: .env
         required: true
     command: >
       /bin/sh -c "
         yarn db:setup &&
         node dist/main.js
       "
+    environment:
+      - MONGODB_URI=mongodb:27017
 
   mongodb:
     container_name: mongodb
@@ -48,7 +53,7 @@ services:
     ports:
       - "27017:27017"
     env_file:
-      - path: apps/backend/.env
+      - path: .env
         required: true
 volumes:
   mongodb_data:

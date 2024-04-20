@@ -4,10 +4,15 @@ let client: MongoClient;
 
 export async function connectToMongoDB(): Promise<Db> {
   if (!client) {
-    const uri = process.env.MONGODB_URI;
-    if (!uri) {
-      throw new Error('Missing MONGODB_URI environment variable');
+    const host = process.env.MONGODB_URI;
+    const password = process.env.MONGO_INITDB_ROOT_PASSWORD;
+    const username = process.env.MONGO_INITDB_ROOT_USERNAME;
+    if (!host || !password || !username) {
+      throw new Error(
+        'Missing MONGO_INITDB_URI or MONGO_INITDB_ROOT_USERNAME or MONGO_INITDB_ROOT_PASSWORD in environment variables.',
+      );
     }
+    const uri = `mongodb://${username}:${password}@${host}`;
     client = new MongoClient(uri);
     await client.connect();
   }
