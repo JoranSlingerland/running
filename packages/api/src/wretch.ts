@@ -2,7 +2,7 @@ import wretch from 'wretch';
 import AbortAddon from 'wretch/addons/abort';
 import QueryAddon from 'wretch/addons/queryString';
 
-function createWretchInstance<Query, Body>({
+function createWretchInstance<Query extends string | object, Body>({
   url,
   method,
   query,
