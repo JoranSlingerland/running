@@ -279,7 +279,11 @@ function showMessage(
 
 // main functions
 // eslint-disable-next-line sonarjs/cognitive-complexity
-async function regularFetch<Query, Body, Response>({
+async function regularFetch<
+  Query extends object | string | undefined,
+  Body,
+  Response,
+>({
   url,
   method,
   query,

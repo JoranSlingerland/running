@@ -37,7 +37,7 @@ interface UseFetchResult<Response> {
   overwriteData: (data: Response) => void;
 }
 
-function useFetch<Body, Query, Response>({
+function useFetch<Body, Query extends string | object | undefined, Response>({
   url,
   method,
   body,
