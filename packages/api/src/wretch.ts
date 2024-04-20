@@ -1,6 +1,6 @@
 import wretch from 'wretch';
 import AbortAddon from 'wretch/addons/abort';
-import QueryStringAddon from 'wretch/addons/queryString';
+// import QueryStringAddon from 'wretch/addons/queryString';
 
 function createWretchInstance<Query, Body>({
   url,
@@ -17,12 +17,14 @@ function createWretchInstance<Query, Body>({
   body?: Body;
   bearerToken?: string;
 }) {
+  if (query) {
+    url = queryString(url, query);
+  }
+
   const wretchInstance = wretch()
     .url(url)
     .addon(AbortAddon())
-    .addon(QueryStringAddon)
-    .signal(controller)
-    .query(query || {});
+    .signal(controller);
 
   if (bearerToken) {
     wretchInstance.auth(`Bearer ${bearerToken}`);
@@ -40,6 +42,10 @@ function createWretchInstance<Query, Body>({
   }
 }
 
+function queryString(url: string, query: Record<string, string>) {
+  return `${url}?${new URLSearchParams(query).toString()}`;
+}
+
 function createBasicWretchInstance({
   url,
   controller,
@@ -52,7 +58,6 @@ function createBasicWretchInstance({
   const wretchInstance = wretch()
     .url(url)
     .addon(AbortAddon())
-    .addon(QueryStringAddon)
     .signal(controller);
 
   if (bearerToken) {
