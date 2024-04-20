@@ -16,8 +16,7 @@ RUN apk add --no-cache python3 make g++ libc6-compat
 # First install the dependencies (as they change less often)
 COPY --from=turbo /app/out/json/ .
 COPY --from=turbo /app/out/yarn.lock ./yarn.lock
-# First install only production deps and cache them, then install all deps
-RUN --mount=type=cache,target=/var/cache/npm yarn install && cp -R node_modules node_modules_production && yarn install
+RUN yarn install && cp -R node_modules node_modules_production && yarn install
 
 # Then copy over the application files (change often, no longer cached from this step on)
 COPY --from=turbo /app/out/full/ .

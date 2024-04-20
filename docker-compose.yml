@@ -13,6 +13,19 @@ services:
     env_file:
       - path: apps/frontend/.env.local
         required: false
+  backend:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/nest/Dockerfile
+      args:
+        APP_NAME: backend
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongodb
+    env_file:
+      - path: apps/backend/.env
+        required: true
   mongodb:
     container_name: mongodb
     image: mongo:latest

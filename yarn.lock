@@ -1767,6 +1767,7 @@ __metadata:
   resolution: "@repo/mongodb@workspace:packages/mongodb"
   dependencies:
     "@repo/eslint-config": "npm:*"
+    "@repo/schemas": "npm:*"
     "@repo/strava": "npm:*"
     "@repo/typescript-config": "npm:*"
     mongodb: "npm:^6.5.0"
