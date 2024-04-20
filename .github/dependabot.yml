@@ -6,95 +6,88 @@
 version: 2
 updates:
   # Root
-  - package-ecosystem: 'npm'
-    directory: '/'
+  - package-ecosystem: "npm"
+    directory: "/"
     schedule:
-      interval: 'weekly'
-    target-branch: 'main'
+      interval: "weekly"
+    target-branch: "main"
     open-pull-requests-limit: 10
 
   # Apps
-  - package-ecosystem: 'npm'
-    directory: '/apps/backend'
+  - package-ecosystem: "npm"
+    directory: "/apps/backend"
     schedule:
-      interval: 'weekly'
-    target-branch: 'main'
+      interval: "weekly"
+    target-branch: "main"
     open-pull-requests-limit: 10
 
-  - package-ecosystem: 'npm'
-    directory: '/apps/frontend'
+  - package-ecosystem: "npm"
+    directory: "/apps/frontend"
     schedule:
-      interval: 'weekly'
-    target-branch: 'main'
+      interval: "weekly"
+    target-branch: "main"
     open-pull-requests-limit: 10
 
   # Packages
-  - package-ecosystem: 'npm'
-    directory: '/packages/api'
+  - package-ecosystem: "npm"
+    directory: "/packages/api"
     schedule:
-      interval: 'weekly'
-    target-branch: 'main'
+      interval: "weekly"
+    target-branch: "main"
     open-pull-requests-limit: 5
 
-  - package-ecosystem: 'npm'
-    directory: '/packages/cosmosdb'
+  - package-ecosystem: "npm"
+    directory: "/packages/eslint-config"
     schedule:
-      interval: 'weekly'
-    target-branch: 'main'
+      interval: "weekly"
+    target-branch: "main"
     open-pull-requests-limit: 5
 
-  - package-ecosystem: 'npm'
-    directory: '/packages/eslint-config'
+  - package-ecosystem: "npm"
+    directory: "/packages/jwt"
     schedule:
-      interval: 'weekly'
-    target-branch: 'main'
+      interval: "weekly"
+    target-branch: "main"
     open-pull-requests-limit: 5
 
-  - package-ecosystem: 'npm'
-    directory: '/packages/jwt'
+  - package-ecosystem: "npm"
+    directory: "/packages/schemas"
     schedule:
-      interval: 'weekly'
-    target-branch: 'main'
+      interval: "weekly"
+    target-branch: "main"
     open-pull-requests-limit: 5
 
-  - package-ecosystem: 'npm'
-    directory: '/packages/schemas'
+  - package-ecosystem: "npm"
+    directory: "/packages/strava"
     schedule:
-      interval: 'weekly'
-    target-branch: 'main'
+      interval: "weekly"
+    target-branch: "main"
     open-pull-requests-limit: 5
 
-  - package-ecosystem: 'npm'
-    directory: '/packages/strava'
+  - package-ecosystem: "npm"
+    directory: "/packages/types"
     schedule:
-      interval: 'weekly'
-    target-branch: 'main'
+      interval: "weekly"
+    target-branch: "main"
     open-pull-requests-limit: 5
 
-  - package-ecosystem: 'npm'
-    directory: '/packages/types'
+  - package-ecosystem: "npm"
+    directory: "/packages/typescript-config"
     schedule:
-      interval: 'weekly'
-    target-branch: 'main'
+      interval: "weekly"
+    target-branch: "main"
     open-pull-requests-limit: 5
 
-  - package-ecosystem: 'npm'
-    directory: '/packages/typescript-config'
+  - package-ecosystem: "npm"
+    directory: "/packages/mongodb"
     schedule:
-      interval: 'weekly'
-    target-branch: 'main'
+      interval: "weekly"
+    target-branch: "main"
     open-pull-requests-limit: 5
 
-  - package-ecosystem: 'npm'
-    directory: '/packages/mongodb'
+  - package-ecosystem: "npm"
+    directory: "/packages/weather"
     schedule:
-      interval: 'weekly'
-    target-branch: 'main'
-    open-pull-requests-limit: 5
-
-  - package-ecosystem: 'npm'
-    directory: '/packages/weather'
-    schedule:
-      interval: 'weekly'
-    target-branch: 'main'
+      interval: "weekly"
+    target-branch: "main"
     open-pull-requests-limit: 5
