@@ -1,3 +1,4 @@
+import { WretchError } from '@repo/api';
 import { useState } from 'react';
 import { useDeepCompareEffect } from 'rooks';
 
@@ -32,7 +33,7 @@ interface UseFetchResult<Response> {
   data: Response | undefined;
   isLoading: boolean;
   isError: boolean;
-  error: unknown | undefined;
+  error: WretchError | undefined;
   refetchData: (params?: { setLoading?: boolean; overwrite?: boolean }) => void;
   overwriteData: (data: Response) => void;
 }
@@ -53,7 +54,7 @@ function useFetch<Body, Query extends string | object | undefined, Response>({
   const [isError, setIsError] = useState(false);
   const [refetch, setRefetch] = useState(false);
   const [data, setData] = useState<Response | undefined>(initialData);
-  const [error, setError] = useState<unknown | undefined>(undefined);
+  const [error, setError] = useState<WretchError | undefined>(undefined);
   const [overwrite, setOverwrite] = useState(initialOverwrite);
   const [isLoading, setIsLoading] = useState(
     background || overwrite ? false : true,

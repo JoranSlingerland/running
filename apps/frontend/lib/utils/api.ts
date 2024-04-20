@@ -1,4 +1,4 @@
-import { createWretchInstance } from '@repo/api';
+import { WretchError, createWretchInstance } from '@repo/api';
 import hash from 'object-hash';
 import { toast } from 'sonner';
 
@@ -211,7 +211,7 @@ function processCachedResponse<Query, Response>(
   cache: CacheSettings | undefined,
   query: Query,
   isError: boolean,
-  error: unknown | undefined,
+  error: WretchError | undefined,
 ) {
   if (!cachedResponse) {
     return null;
@@ -309,12 +309,12 @@ async function regularFetch<
 }): Promise<{
   response: Response;
   isError: boolean;
-  error: unknown | undefined;
+  error: WretchError | undefined;
 }> {
   // Variables
   controller = controller || new AbortController();
   let isError = false;
-  let error: unknown | undefined = undefined;
+  let error: WretchError | undefined = undefined;
   let cachedResponse: CachedResponse<Response> | null = null;
   const key = cache?.customKey || newKey(url, method, body, query);
   const {
@@ -378,7 +378,7 @@ async function regularFetch<
       isError = true;
     })
     .json()
-    .catch((err: unknown) => {
+    .catch((err: WretchError) => {
       isError = true;
       error = err;
     })) as Response;

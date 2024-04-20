@@ -1,14 +1,9 @@
-import { createWretchInstance } from '@repo/api';
+import { WretchError, createWretchInstance } from '@repo/api';
 import { signAndEncryptPayload } from '@repo/jwt';
 import type { NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 
 import type { NextApiRequestUnknown } from './types';
-
-type apiError = {
-  status?: number;
-  json?: unknown;
-};
 
 /**
 This is a catch-all route handler that forwards requests to the NestJS API.
@@ -65,10 +60,10 @@ export default async function handler(
       statusCode = 500;
     })
     .json()
-    .catch((err: apiError) => {
+    .catch((err: WretchError) => {
       isError = true;
-      statusCode = err?.status || 500;
-      error = err?.json;
+      statusCode = err.status;
+      error = err.json; // type-coverage:ignore-line
     });
 
   res.status(statusCode).json(isError ? error : response);
