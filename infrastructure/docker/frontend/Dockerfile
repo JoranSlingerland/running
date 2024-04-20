@@ -17,7 +17,7 @@ COPY --from=turbo /app/out/json/ .
 COPY --from=turbo /app/out/yarn.lock ./yarn.lock
 RUN yarn install && cp -R node_modules node_modules_production && yarn install
 COPY --from=turbo /app/out/full/ .
-RUN npx turbo run build --filter=${APP_NAME}
+RUN npx turbo run build
 RUN rm -rf node_modules && mv node_modules_production node_modules && apk --no-cache add curl && curl -sf https://gobinaries.com/tj/node-prune | sh && node-prune
 
 # Runner stage: Sets up a non-root user, copies the built application and static files, and sets the command to run the application
