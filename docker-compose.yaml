@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   frontend:
-    image: ghcr.io/joranslingerland/running-frontend:pr-238
+    image: ghcr.io/joranslingerland/running-frontend:main
     networks:
       - backend_network
     depends_on:
@@ -10,14 +10,14 @@ services:
     env_file:
       - path: .env
         required: false
-    # ports:
-    #   - "3000:3000"
+    ports:
+      - "3000:3000"
     environment:
       - MONGODB_URI=mongodb:27017
       - NESTJS_URL=http://backend:3001
 
   backend:
-    image: ghcr.io/joranslingerland/running-backend:pr-238
+    image: ghcr.io/joranslingerland/running-backend:main
     networks:
       - backend_network
     depends_on:
@@ -25,8 +25,6 @@ services:
     env_file:
       - path: .env
         required: true
-    # ports:
-    #   - "3001:3001"
     command: >
       /bin/sh -c "
         yarn db:setup &&
@@ -42,8 +40,6 @@ services:
       - mongodb_data:/data/db
     networks:
       - backend_network
-    ports:
-      - "27017:27017"
     env_file:
       - path: .env
         required: true
