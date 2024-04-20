@@ -15,7 +15,6 @@ export const bestEffortColumns = (
       accessorKey: 'elapsed_time',
       header: 'Pace',
       cell: ({ row }) => {
-        console.log(row);
         const elapsedTime = row.original?.elapsed_time;
         const distance = row.original?.distance;
         if (!distance || !elapsedTime) {

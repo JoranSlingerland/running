@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    volumes:
+      - mongodb_data_dev:/data/db
+    ports:
+      - "27017:27017"
+    env_file:
+      - path: .env
+        required: true
+volumes:
+  mongodb_data_dev:

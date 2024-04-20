@@ -5,4 +5,7 @@ module.exports = {
     unoptimized: true,
   },
   output: 'standalone',
+  experimental: {
+    esmExternals: false,
+  },
 };

@@ -1,14 +1,14 @@
 {
-  "extends": "@repo/typescript-config/base.json",
+  "extends": "@repo/typescript-config/nest.json",
   "compilerOptions": {
-    "rootDir": ".",
-    "baseUrl": ".",
-    "outDir": "dist",
+    "baseUrl": "./",
     "paths": {
-      "@api/*": ["api/*"],
-      "@app/*": ["app/*"],
-    }
-  },
-  "include": ["**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+      "@app/*": ["src/app/*"],
+      "@db/*": ["src/db/*"],
+      "@guards/*": ["src/guards/*"],
+      "@lib/*": ["src/lib/*"],
+      "@tasks/*": ["src/tasks/*"]
+    },
+    "outDir": "./dist"
+  }
 }

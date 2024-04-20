@@ -179,7 +179,7 @@ function handleCacheSet<Query, Response>({
     const newData = (cachedData as Response[]).concat(response);
     const deDupedData = deDupeData(
       newData,
-      (cache.deDupeKey as keyof Response) || ('id' as keyof Response),
+      (cache.deDupeKey as keyof Response) || ('_id' as keyof Response),
     );
 
     if (!cachedResponse?.start_end_dates) {
@@ -279,7 +279,11 @@ function showMessage(
 
 // main functions
 // eslint-disable-next-line sonarjs/cognitive-complexity
-async function regularFetch<Query, Body, Response>({
+async function regularFetch<
+  Query extends object | string | undefined,
+  Body,
+  Response,
+>({
   url,
   method,
   query,

@@ -1,4 +1,4 @@
-import { getLastStreamFromCosmos, getStreamFromCosmos } from '@repo/cosmosdb';
+import { getLastStreamFromMongoDB, getStreamFromMongoDB } from '@repo/mongodb';
 import type { NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 
@@ -33,14 +33,12 @@ async function handleGet(
   const activityId = getQueryParam(req.query, 'id') || 'latest';
 
   if (activityId === 'latest') {
-    const activity = await getLastStreamFromCosmos(id);
+    const activity = await getLastStreamFromMongoDB(id);
 
     return res.status(200).json(activity);
   }
 
-  const activity = await getStreamFromCosmos({
-    id: activityId,
-  });
+  const activity = await getStreamFromMongoDB(activityId);
 
   return res.status(200).json(activity);
 }

@@ -21,6 +21,24 @@
     },
     {
       "type": "shell",
+      "label": "yarn: dev (backend)",
+      "command": "yarn dev --filter=backend",
+      "problemMatcher": [],
+      "isBackground": true,
+      "presentation": {
+        "reveal": "never",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false
+      },
+      "dependsOn": ["yarn install"],
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
+      "type": "shell",
       "label": "yarn install",
       "command": "yarn install",
       "problemMatcher": [],
@@ -34,8 +52,8 @@
     },
     {
       "type": "shell",
-      "label": "run: Comos emulator",
-      "command": "tasklist | findstr /I Microsoft.Azure.Cosmos >nul || Microsoft.Azure.Cosmos.Emulator.exe /AllowNetworkAccess /Key=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
+      "label": "docker: start dev environment",
+      "command": "docker-compose -f docker-compose-dev.yaml up",
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
@@ -44,20 +62,7 @@
         "showReuseMessage": false,
         "clear": false
       },
-      "runOptions": {
-        "runOn": "folderOpen"
-      }
-    },
-    {
-      "type": "func",
-      "label": "func: host start",
-      "command": "host start",
-      "problemMatcher": "$func-node-watch",
       "isBackground": true,
-      "dependsOn": ["yarn watch", "azurite"],
-      "options": {
-        "cwd": "${workspaceFolder}/apps\\backend"
-      },
       "runOptions": {
         "runOn": "folderOpen"
       }
@@ -91,35 +96,6 @@
         "clear": false
       },
       "dependsOn": ["yarn install"]
-    },
-    {
-      "label": "azurite",
-      "type": "shell",
-      "command": "azurite --location ./.azurite",
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "azurite",
-        "pattern": [
-          {
-            "regexp": "Azurite Blob service is successfully listening at http://[0-9.]+:10000",
-            "file": 1,
-            "line": 2,
-            "message": 3
-          }
-        ],
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "Azurite Blob service is starting",
-          "endsPattern": "Azurite Blob service is successfully listening"
-        }
-      },
-      "presentation": {
-        "reveal": "never",
-        "focus": false,
-        "panel": "shared",
-        "showReuseMessage": false,
-        "clear": false
-      }
     }
   ]
 }

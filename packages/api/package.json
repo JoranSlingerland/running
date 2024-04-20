@@ -18,7 +18,9 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
-    "@repo/typescript-config": "*"
+    "@repo/typescript-config": "*",
+    "webpack": "^5.91.0",
+    "workspace": "^0.0.1-preview.1"
   },
   "main": "dist/index.js"
 }

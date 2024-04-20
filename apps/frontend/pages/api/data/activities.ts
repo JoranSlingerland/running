@@ -1,4 +1,4 @@
-import { activitiesFromCosmos } from '@repo/cosmosdb';
+import { activitiesFromMongoDB } from '@repo/mongodb';
 import type { NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 
@@ -32,7 +32,7 @@ async function handleGet(
 ) {
   const startDate = getQueryParam(req.query, 'startDate') || '';
   const endDate = getQueryParam(req.query, 'endDate') || '';
-  const activities = await activitiesFromCosmos({
+  const activities = await activitiesFromMongoDB({
     id,
     startDate,
     endDate,

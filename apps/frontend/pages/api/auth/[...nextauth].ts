@@ -29,10 +29,9 @@ const authOptions: NextAuthOptions = {
         token.accessToken = account.access_token;
         token.id = crypto
           .createHash('sha256')
-          .update(
-            `${account.provider}-${user?.id}-${process.env.NEXTAUTH_SALT}`,
-          )
+          .update(`${user?.id}-${process.env.NEXTAUTH_SALT}`)
           .digest('hex');
+        token.admin = false;
         if (user?.email === process.env.NEXTAUTH_ADMIN_EMAIL) {
           token.admin = true;
         }

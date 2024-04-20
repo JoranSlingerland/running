@@ -2,14 +2,10 @@ import { stravaConfig } from '@repo/strava';
 import { useRouter } from 'next/router';
 import { toast } from 'sonner';
 
-import { orchestratorColumns } from '@elements/columns/orchestratorColumns';
 import { AccountForm } from '@elements/forms/Account';
 import { PreferencesForm } from '@elements/forms/preferences';
-import { DataTable } from '@elements/shadcnTable';
 import useSessionStorageState from '@hooks/useSessionStorageState';
-import { useListOrchestrator } from '@services/orchestrator/list';
-import { startOrchestrator } from '@services/orchestrator/start';
-import { queueNonFullData } from '@services/queue/nonFullData';
+import { gatherStravaData } from '@services/backend/strava';
 import { Button } from '@ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/tabs';
 import { Text, Title } from '@ui/typography';
@@ -62,22 +58,8 @@ const Actions = (router: ReturnType<typeof useRouter>) => (
       {buttonRow(
         'Get activities',
         'This will get all new activities from Strava ',
-        () => {
-          startOrchestrator({
-            query: {
-              functionName: 'gatherData',
-            },
-          });
-        },
+        () => gatherStravaData(),
         'Refresh',
-      )}
-      {buttonRow(
-        'Queue Incomplete Activities',
-        'This will queue all activities that still need data from Strava',
-        () => {
-          queueNonFullData();
-        },
-        'Queue',
       )}
       {buttonRow(
         'Clear local storage',
@@ -98,14 +80,6 @@ const Actions = (router: ReturnType<typeof useRouter>) => (
 export default function Settings() {
   const [tab, setTab] = useSessionStorageState('settingsTab', 'account');
   const router = useRouter();
-  const {
-    data: orchestratorListData,
-    isLoading: orchestratorListIsLoading,
-    refetchData: orchestratorListRefetch,
-  } = useListOrchestrator({
-    query: { days: 7 },
-    enabled: tab === 'orchestrations',
-  });
 
   return (
     <>
@@ -119,7 +93,6 @@ export default function Settings() {
               <TabsTrigger value="account">Account</TabsTrigger>
               <TabsTrigger value="preferences">Preferences</TabsTrigger>
               <TabsTrigger value="actions">Actions</TabsTrigger>
-              <TabsTrigger value="orchestrations">Orchestrations</TabsTrigger>
             </TabsList>
           </div>
           <TabsContent className="px-2" value="account">
@@ -130,15 +103,6 @@ export default function Settings() {
           </TabsContent>
           <TabsContent className="px-2" value="actions">
             {Actions(router)}
-          </TabsContent>
-          <TabsContent className="px-2" value="orchestrations">
-            <DataTable
-              isLoading={orchestratorListIsLoading}
-              columns={orchestratorColumns}
-              data={orchestratorListData || []}
-              pagination={true}
-              refetch={orchestratorListRefetch}
-            />
           </TabsContent>
         </Tabs>
       </div>

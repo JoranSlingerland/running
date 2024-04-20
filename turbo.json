@@ -1,30 +1,13 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDotEnv": [
-    ".env"
-  ],
+  "globalDotEnv": [".env"],
   "pipeline": {
     "build": {
-      "outputs": [
-        ".next/**",
-        "!.next/cache/**"
-      ],
-      "dotEnv": [
-        ".env.production.local",
-        ".env.local",
-        ".env.production",
-        ".env"
-      ]
+      "outputs": [".next/**", "!.next/cache/**"]
     },
     "dev": {
       "cache": false,
-      "persistent": true,
-      "dotEnv": [
-        ".env.production.local",
-        ".env.local",
-        ".env.production",
-        ".env"
-      ]
+      "persistent": true
     },
     "fix": {
       "cache": false
@@ -32,24 +15,13 @@
     "lint": {
       "cache": false
     },
-    "start": {
-      "dotEnv": [
-        ".env.production.local",
-        ".env.local",
-        ".env.production",
-        ".env"
-      ]
-    },
+    "start": {},
     "ts-coverage": {
       "cache": false
     },
     "watch": {
-      "dotEnv": [
-        ".env.production.local",
-        ".env.local",
-        ".env.production",
-        ".env"
-      ]
-    }
+      "cache": false
+    },
+    "db:setup": {}
   }
 }

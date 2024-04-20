@@ -23,7 +23,7 @@ const initialData: UserSettings = {
     dark_mode: 'system',
     enable_weather: false,
   },
-  id: '',
+  _id: '',
 };
 
 function useUserSettings({ enabled = true }: { enabled?: boolean } = {}) {
