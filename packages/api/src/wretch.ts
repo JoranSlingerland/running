@@ -1,18 +1,6 @@
-import wretch, { Wretch, WretchResponseChain } from 'wretch';
-import AbortAddon, { AbortResolver, AbortWretch } from 'wretch/addons/abort';
-import QueryStringAddon, {
-  QueryStringAddon as QueryStringAddonType,
-} from 'wretch/addons/queryString';
-
-type WretchInstance = QueryStringAddonType &
-  AbortWretch &
-  Wretch<AbortWretch & QueryStringAddonType, AbortResolver, undefined>;
-type WretchResponse = AbortResolver &
-  WretchResponseChain<
-    AbortWretch & QueryStringAddonType,
-    AbortResolver,
-    undefined
-  >;
+import wretch from 'wretch';
+import AbortAddon from 'wretch/addons/abort';
+import QueryStringAddon from 'wretch/addons/queryString';
 
 function createWretchInstance<Query, Body>({
   url,
@@ -29,14 +17,16 @@ function createWretchInstance<Query, Body>({
   body?: Body;
   bearerToken?: string;
 }) {
-  let wretchInstance: WretchInstance | WretchResponse = wretch()
+  const wretchInstance = wretch()
     .url(url)
     .addon(AbortAddon())
     .addon(QueryStringAddon)
     .signal(controller)
     .query(query || {});
 
-  wretchInstance = addBearerTokenToWretchInstance(bearerToken, wretchInstance);
+  if (bearerToken) {
+    wretchInstance.auth(`Bearer ${bearerToken}`);
+  }
 
   switch (method) {
     case 'GET':
@@ -48,16 +38,6 @@ function createWretchInstance<Query, Body>({
     default:
       throw new Error('Invalid method');
   }
-}
-
-function addBearerTokenToWretchInstance(
-  bearerToken: string | undefined,
-  wretchInstance: WretchInstance,
-) {
-  if (bearerToken) {
-    return wretchInstance.auth(`Bearer ${bearerToken}`);
-  }
-  return wretchInstance;
 }
 
 function createBasicWretchInstance({
@@ -75,7 +55,11 @@ function createBasicWretchInstance({
     .addon(QueryStringAddon)
     .signal(controller);
 
-  return addBearerTokenToWretchInstance(bearerToken, wretchInstance);
+  if (bearerToken) {
+    wretchInstance.auth(`Bearer ${bearerToken}`);
+  }
+
+  return wretchInstance;
 }
 
 export { createWretchInstance, createBasicWretchInstance };
