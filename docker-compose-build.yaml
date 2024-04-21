@@ -3,7 +3,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: infrastructure/docker/next/Dockerfile
+      dockerfile: apps/frontend/Dockerfile
       args:
         APP_NAME: frontend
     ports:
@@ -23,7 +23,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: infrastructure/docker/nest/Dockerfile
+      dockerfile: apps/backend/Dockerfile
       args:
         APP_NAME: backend
     ports:
@@ -34,7 +34,7 @@ services:
       - mongodb
     env_file:
       - path: .env
-        required: true
+        required: false
     command: >
       /bin/sh -c "
         yarn db:setup &&
@@ -54,7 +54,12 @@ services:
       - "27017:27017"
     env_file:
       - path: .env
-        required: true
+        required: false
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 volumes:
   mongodb_data:
 networks:

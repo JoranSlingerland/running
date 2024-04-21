@@ -24,7 +24,7 @@ services:
       - mongodb
     env_file:
       - path: .env
-        required: true
+        required: false
     command: >
       /bin/sh -c "
         yarn db:setup &&
@@ -42,7 +42,12 @@ services:
       - backend_network
     env_file:
       - path: .env
-        required: true
+        required: false
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 volumes:
   mongodb_data:
 networks:
