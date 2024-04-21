@@ -34,13 +34,13 @@ async function setupDatabase() {
         console.log(`Collection '${collection}' already exists.`);
       }
     }
+    console.log('Database setup complete.');
   } catch (error) {
     console.error('Error setting up database:', error);
   } finally {
     await client.close();
     console.log('Connection to MongoDB closed.');
   }
-  console.log('Database setup complete.');
 }
 
 export { setupDatabase };
