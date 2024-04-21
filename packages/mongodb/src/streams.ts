@@ -56,7 +56,7 @@ async function getStreamFromMongoDB(_id: string): Promise<Streams | undefined> {
   try {
     const collection = await connectToCollection<Streams>('streams');
 
-    const stream = await collection.findOne({ _id });
+    const stream = await collection.findOne({ _id: { $eq: _id } });
 
     if (!stream) {
       return undefined;
