@@ -16,7 +16,6 @@ export class StravaActivityGatheringController {
   @Get()
   async gatherData(@Req() request: RequestWithUser) {
     const userId = request?.userId;
-    console.log('userId', userId);
     const data = await this.StravaActivityGatheringService.orchestrator(userId);
     this.StravaDataEnhancementService.orchestrator();
     return data;

@@ -65,10 +65,7 @@ async function upsertActivitiesToMongoDB(
       console.debug('No activities to update or insert.');
       return;
     }
-    const result = await collection.bulkWrite(operations);
-
-    console.debug(`${result.modifiedCount} activities updated.`);
-    console.debug(`${result.upsertedCount} activities inserted.`);
+    await collection.bulkWrite(operations);
   } catch (error) {
     console.error('Error inserting or updating activities in MongoDB:', error);
   }
