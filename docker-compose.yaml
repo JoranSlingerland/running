@@ -30,6 +30,19 @@ services:
       - NEXTAUTH_GITHUB_CLIENTSECRET = ${NEXTAUTH_GITHUB_CLIENTSECRET}
       - NESTJS_URL=http://backend:3001
       - MAPTILERTOKEN = ${MAPTILERTOKEN}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--spider",
+          "-q",
+          "http://frontend:3000/api/healthcheck/",
+        ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
 
   backend:
     image: ghcr.io/joranslingerland/running-backend:main
@@ -54,6 +67,13 @@ services:
       - MONGO_INITDB_ROOT_USERNAME = ${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD = ${MONGO_INITDB_ROOT_PASSWORD}
       - MONGODB_URI=mongodb:27017
+    healthcheck:
+      test:
+        ["CMD", "wget", "--spider", "-q", "http://backend:3001/healthcheck/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
 
   mongodb:
     container_name: mongodb
