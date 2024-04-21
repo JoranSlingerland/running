@@ -35,7 +35,7 @@ async function getActivityFromMongoDB(
   try {
     const collection = await connectToCollection<Activity>('activities');
 
-    const activity = await collection.findOne({ _id });
+    const activity = await collection.findOne({ _id: { $eq: _id } });
 
     if (!activity) {
       return undefined;
