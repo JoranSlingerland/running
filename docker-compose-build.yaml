@@ -3,7 +3,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: infrastructure/docker/next/Dockerfile
+      dockerfile: apps/frontend/Dockerfile
       args:
         APP_NAME: frontend
     ports:
@@ -17,13 +17,42 @@ services:
       - path: .env
         required: false
     environment:
+      - API_SHARED_KEY = ${API_SHARED_KEY}
+      - STRAVA_CLIENT_ID = ${STRAVA_CLIENT_ID}
+      - STRAVA_CLIENT_SECRET = ${STRAVA_CLIENT_SECRET}
+      - STRAVA_DAILY_LIMIT = ${STRAVA_DAILY_LIMIT}
+      - STRAVA_15MIN_LIMIT = ${STRAVA_15MIN_LIMIT}
+      - MONGO_INITDB_ROOT_USERNAME = ${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD = ${MONGO_INITDB_ROOT_PASSWORD}
       - MONGODB_URI=mongodb:27017
+      - NEXT_PUBLIC_api_key = ${NEXT_PUBLIC_api_key}
+      - NEXTAUTH_ADMIN_EMAIL = ${NEXTAUTH_ADMIN_EMAIL}
+      - NEXTAUTH_SECRET = ${NEXTAUTH_SECRET}
+      - NEXTAUTH_SALT = ${NEXTAUTH_SALT}
+      - NEXTAUTH_URL = ${NEXTAUTH_URL}
+      - NEXTAUTH_GITHUB_CLIENTID = ${NEXTAUTH_GITHUB_CLIENTID}
+      - NEXTAUTH_GITHUB_CLIENTSECRET = ${NEXTAUTH_GITHUB_CLIENTSECRET}
       - NESTJS_URL=http://backend:3001
+      - MAPTILERTOKEN = ${MAPTILERTOKEN}
+      - NODE_ENV = ${NODE_ENV}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--spider",
+          "-q",
+          "http://frontend:3000/api/healthcheck/",
+        ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
 
   backend:
     build:
       context: .
-      dockerfile: infrastructure/docker/nest/Dockerfile
+      dockerfile: apps/backend/Dockerfile
       args:
         APP_NAME: backend
     ports:
@@ -34,14 +63,29 @@ services:
       - mongodb
     env_file:
       - path: .env
-        required: true
+        required: false
     command: >
       /bin/sh -c "
         yarn db:setup &&
         node dist/main.js
       "
     environment:
+      - API_SHARED_KEY = ${API_SHARED_KEY}
+      - STRAVA_CLIENT_ID = ${STRAVA_CLIENT_ID}
+      - STRAVA_CLIENT_SECRET = ${STRAVA_CLIENT_SECRET}
+      - STRAVA_DAILY_LIMIT = ${STRAVA_DAILY_LIMIT}
+      - STRAVA_15MIN_LIMIT = ${STRAVA_15MIN_LIMIT}
+      - MONGO_INITDB_ROOT_USERNAME = ${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD = ${MONGO_INITDB_ROOT_PASSWORD}
       - MONGODB_URI=mongodb:27017
+      - NODE_ENV = ${NODE_ENV}
+    healthcheck:
+      test:
+        ["CMD", "wget", "--spider", "-q", "http://backend:3001/healthcheck/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
 
   mongodb:
     container_name: mongodb
@@ -54,7 +98,17 @@ services:
       - "27017:27017"
     env_file:
       - path: .env
-        required: true
+        required: false
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME = ${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD = ${MONGO_INITDB_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+
 volumes:
   mongodb_data:
 networks:

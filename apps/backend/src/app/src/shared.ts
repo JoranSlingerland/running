@@ -37,8 +37,8 @@ export class StravaRateLimitService {
     if (!this.serviceStatus) {
       this.serviceStatus = {
         _id: this.serviceName,
-        apiCallCount15Min: 1000,
-        apiCallCountDaily: 1000,
+        apiCallCount15Min: 0,
+        apiCallCountDaily: 0,
         lastReset15Min: dayjs().toISOString(),
         lastResetDaily: dayjs().toISOString(),
       };

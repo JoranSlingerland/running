@@ -1,4 +1,3 @@
-import { stravaConfig } from '@repo/strava';
 import { useRouter } from 'next/router';
 import { toast } from 'sonner';
 
@@ -6,6 +5,7 @@ import { AccountForm } from '@elements/forms/Account';
 import { PreferencesForm } from '@elements/forms/preferences';
 import useSessionStorageState from '@hooks/useSessionStorageState';
 import { gatherStravaData } from '@services/backend/strava';
+import { getStravaUrl } from '@services/env/stravaurl';
 import { Button } from '@ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/tabs';
 import { Text, Title } from '@ui/typography';
@@ -20,18 +20,19 @@ function handleSessionStorageClearClick() {
   }
 }
 
-function handleStravaAuthentication(router: ReturnType<typeof useRouter>) {
-  const callback_url = `${window.location.origin}/authenticated/callback/strava`;
+async function handleStravaAuthentication(
+  router: ReturnType<typeof useRouter>,
+) {
+  const callbackUrl = `${window.location.origin}/authenticated/callback/strava`;
   const scope = 'profile:read_all,activity:read_all';
 
-  if (!process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID) {
-    toast.error('Strava client id not found');
+  const url = await getStravaUrl({ callbackUrl, scope });
+
+  if (!url) {
+    toast.error('Error getting Strava authentication URL');
     return;
   }
-
-  router.push(
-    `${stravaConfig.authUrl}?client_id=${process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID}&redirect_uri=${callback_url}&response_type=code&%20response_type=force&scope=${scope}`,
-  );
+  router.push(url);
 }
 
 // Components

@@ -54,7 +54,7 @@ async function upsertActivitiesToMongoDB(
       const { _id, ...dataWithoutId } = activity;
       return {
         updateOne: {
-          filter: { _id },
+          filter: { _id: { $eq: _id } },
           update: { $set: dataWithoutId },
           upsert: true,
         },
@@ -65,18 +65,17 @@ async function upsertActivitiesToMongoDB(
       console.debug('No activities to update or insert.');
       return;
     }
-    const result = await collection.bulkWrite(operations);
-
-    console.debug(`${result.modifiedCount} activities updated.`);
-    console.debug(`${result.upsertedCount} activities inserted.`);
+    await collection.bulkWrite(operations);
   } catch (error) {
     console.error('Error inserting or updating activities in MongoDB:', error);
   }
 }
 
-async function getNonFullDataActivitiesFromMongoDB(): Promise<
-  Activity[] | undefined
-> {
+type NonFullDataQuery = { full_data: boolean; userId?: string };
+
+async function getNonFullDataActivitiesFromMongoDB(
+  userId?: string,
+): Promise<Activity[] | undefined> {
   try {
     const collection = await connectToCollection<Activity>('activities');
 
@@ -84,9 +83,12 @@ async function getNonFullDataActivitiesFromMongoDB(): Promise<
       sort: { start_date: -1 },
     };
 
-    const activities = await collection
-      .find({ full_data: false }, queryOptions)
-      .toArray();
+    const query: NonFullDataQuery = { full_data: false };
+    if (userId) {
+      query.userId = userId;
+    }
+
+    const activities = await collection.find(query, queryOptions).toArray();
 
     if (activities.length === 0) {
       return undefined;

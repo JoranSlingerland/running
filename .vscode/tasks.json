@@ -3,8 +3,8 @@
   "tasks": [
     {
       "type": "shell",
-      "label": "yarn: dev (frontend)",
-      "command": "yarn dev --filter=frontend",
+      "label": "yarn: dev",
+      "command": "yarn dev --filter=frontend --filter=backend",
       "problemMatcher": [],
       "isBackground": true,
       "presentation": {
@@ -14,17 +14,16 @@
         "showReuseMessage": false,
         "clear": false
       },
-      "dependsOn": ["yarn watch"],
+      "dependsOn": ["yarn watch", "docker: dev up", "yarn: db:setup"],
       "runOptions": {
         "runOn": "folderOpen"
       }
     },
     {
       "type": "shell",
-      "label": "yarn: dev (backend)",
-      "command": "yarn dev --filter=backend",
+      "label": "yarn: db:setup",
+      "command": "yarn db:setup --filter=backend",
       "problemMatcher": [],
-      "isBackground": true,
       "presentation": {
         "reveal": "never",
         "focus": false,
@@ -32,10 +31,7 @@
         "showReuseMessage": false,
         "clear": false
       },
-      "dependsOn": ["yarn install"],
-      "runOptions": {
-        "runOn": "folderOpen"
-      }
+      "dependsOn": ["docker: dev up"]
     },
     {
       "type": "shell",
@@ -52,8 +48,8 @@
     },
     {
       "type": "shell",
-      "label": "docker: start dev environment",
-      "command": "docker-compose -f docker-compose-dev.yaml up",
+      "label": "docker: dev up",
+      "command": "docker-compose -f docker-compose-dev.yaml up -d",
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
@@ -62,10 +58,7 @@
         "showReuseMessage": false,
         "clear": false
       },
-      "isBackground": true,
-      "runOptions": {
-        "runOn": "folderOpen"
-      }
+      "isBackground": true
     },
     {
       "label": "yarn watch",

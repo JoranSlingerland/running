@@ -7,7 +7,8 @@
       "@db/*": ["src/db/*"],
       "@guards/*": ["src/guards/*"],
       "@lib/*": ["src/lib/*"],
-      "@tasks/*": ["src/tasks/*"]
+      "@tasks/*": ["src/tasks/*"],
+      "@healthcheck/*": ["src/healthcheck/*"]
     },
     "outDir": "./dist"
   }

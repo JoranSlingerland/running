@@ -8,6 +8,7 @@ import {
 } from '@repo/mongodb';
 import { StravaClient } from '@repo/strava';
 import { Activity, UserSettings } from '@repo/types';
+import dayjs from 'dayjs';
 
 import { StravaRateLimitService } from './shared';
 
@@ -19,13 +20,13 @@ export class StravaActivityGatheringService {
 
   async orchestrator(userId: string) {
     console.info('Step 0: Checking rate limits');
-    const { callsAvailable } =
+    const { callsAvailable, nextReset } =
       await this.rateLimitService.checkStravaApiRateLimits(
         this.callsPerActivity,
       );
     if (!callsAvailable) {
       throw new HttpException(
-        'API call limit reached',
+        `API call limit reached. Try again after ${dayjs(nextReset).toISOString()}`,
         HttpStatus.TOO_MANY_REQUESTS,
       );
     }

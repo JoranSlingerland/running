@@ -33,13 +33,11 @@ async function upsertServiceStatusToMongoDB<T extends DocumentWithId>(
   try {
     const collection = await connectToCollection<T>('serviceStatus');
 
-    const result = await collection.updateOne(
+    await collection.updateOne(
       { _id: serviceStatus._id } as any, // eslint-disable-line @typescript-eslint/no-explicit-any
       { $set: serviceStatus },
       { upsert: true },
     );
-
-    console.debug(`${result.upsertedCount} services inserted.`);
   } catch (error) {
     console.error('Error inserting or updating services in MongoDB:', error);
   }

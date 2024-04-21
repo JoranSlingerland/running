@@ -22,6 +22,8 @@
     "watch": {
       "cache": false
     },
-    "db:setup": {}
+    "db:setup": {
+      "cache": false
+    }
   }
 }

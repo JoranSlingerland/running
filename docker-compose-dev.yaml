@@ -9,6 +9,14 @@ services:
       - "27017:27017"
     env_file:
       - path: .env
-        required: true
+        required: false
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME = ${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD = ${MONGO_INITDB_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 volumes:
   mongodb_data_dev:
