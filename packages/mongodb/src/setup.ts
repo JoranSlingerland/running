@@ -37,6 +37,7 @@ async function setupDatabase() {
     console.log('Database setup complete.');
   } catch (error) {
     console.error('Error setting up database:', error);
+    throw error;
   } finally {
     await client.close();
     console.log('Connection to MongoDB closed.');

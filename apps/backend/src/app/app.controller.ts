@@ -19,7 +19,7 @@ export class StravaActivityGatheringController {
   async gatherData(@Req() request: RequestWithUser) {
     const userId = request?.userId;
     const data = await this.StravaActivityGatheringService.orchestrator(userId);
-    this.StravaDataEnhancementService.orchestrator();
+    this.StravaDataEnhancementService.orchestrator(userId);
     return data;
   }
 }

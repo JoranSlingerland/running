@@ -11,7 +11,7 @@ async function upsertStreamsToMongoDB(streams: Streams[]): Promise<void> {
       const { _id, ...dataWithoutId } = stream;
       return {
         updateOne: {
-          filter: { _id },
+          filter: { _id: { $eq: _id } },
           update: { $set: dataWithoutId },
           upsert: true,
         },
@@ -22,10 +22,7 @@ async function upsertStreamsToMongoDB(streams: Streams[]): Promise<void> {
       console.debug('No streams to update or insert.');
       return;
     }
-    const result = await collection.bulkWrite(operations);
-
-    console.debug(`${result.modifiedCount} streams updated.`);
-    console.debug(`${result.upsertedCount} streams inserted.`);
+    await collection.bulkWrite(operations);
   } catch (error) {
     console.error('Error inserting or updating streams in MongoDB:', error);
   }

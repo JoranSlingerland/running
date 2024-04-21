@@ -38,7 +38,7 @@ async function upsertUserSettingsToMongoDB(
     const { _id, ...dataWithoutId } = body as UserSettings;
 
     await collection.updateOne(
-      { _id },
+      { _id: { $eq: _id } },
       { $set: dataWithoutId },
       { upsert: true },
     );

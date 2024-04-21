@@ -32,7 +32,7 @@ export class StravaDataEnhancementService {
   private runningService = new isRunningService('StravaDataEnhancementService');
   private callsPerActivity = 2;
 
-  async orchestrator() {
+  async orchestrator(userId?: string) {
     if (await this.runningService.startService()) {
       console.info(`Strava data enhancement is already running`);
       throw new HttpException(
@@ -49,13 +49,13 @@ export class StravaDataEnhancementService {
     if (!callsAvailable) {
       this.runningService.endService();
       throw new HttpException(
-        `API call limit reached. Try again at ${dayjs(nextReset).toISOString()} minutes`,
+        `API call limit reached. Try again after ${dayjs(nextReset).toISOString()}`,
         HttpStatus.TOO_MANY_REQUESTS,
       );
     }
 
     console.info('Step 1: Fetching activities without full data');
-    const activities = (await this.getActivities()).slice(
+    const activities = (await this.getActivities(userId)).slice(
       0,
       Math.floor(limit / this.callsPerActivity),
     );
@@ -117,8 +117,8 @@ export class StravaDataEnhancementService {
     return userSettings;
   }
 
-  private async getActivities() {
-    return await getNonFullDataActivitiesFromMongoDB();
+  private async getActivities(userId?: string) {
+    return await getNonFullDataActivitiesFromMongoDB(userId);
   }
 
   private async getActivityAndStream(activity: Activity) {

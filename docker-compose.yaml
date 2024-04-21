@@ -30,6 +30,7 @@ services:
       - NEXTAUTH_GITHUB_CLIENTSECRET = ${NEXTAUTH_GITHUB_CLIENTSECRET}
       - NESTJS_URL=http://backend:3001
       - MAPTILERTOKEN = ${MAPTILERTOKEN}
+      - NODE_ENV = ${NODE_ENV}
     healthcheck:
       test:
         [
@@ -67,6 +68,7 @@ services:
       - MONGO_INITDB_ROOT_USERNAME = ${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD = ${MONGO_INITDB_ROOT_PASSWORD}
       - MONGODB_URI=mongodb:27017
+      - NODE_ENV = ${NODE_ENV}
     healthcheck:
       test:
         ["CMD", "wget", "--spider", "-q", "http://backend:3001/healthcheck/"]
