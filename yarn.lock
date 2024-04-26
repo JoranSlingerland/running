@@ -5458,7 +5458,7 @@ __metadata:
     clsx: "npm:^2.1.0"
     dayjs: "npm:^1.11.10"
     isomorphic-unfetch: "npm:^4.0.2"
-    lucide-react: "npm:^0.365.0"
+    lucide-react: "npm:^0.376.0"
     maplibre-gl: "npm:^4.1.2"
     next: "npm:^14.2.1"
     next-auth: "npm:^4.24.5"
@@ -6802,12 +6802,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:^0.365.0":
-  version: 0.365.0
-  resolution: "lucide-react@npm:0.365.0"
+"lucide-react@npm:^0.376.0":
+  version: 0.376.0
+  resolution: "lucide-react@npm:0.376.0"
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/8f71ba540a338fda75fb904aa5cf10cfa6056f7f002f11aed686c5193af8debd01db31481536b88b4315a68c5cf929eac38a817e0888d195a547b4538b19ad10
+  checksum: 10c0/c3e52e882d42abc034907b06d6198fc5c2b8903212f6fb239b96ab0ab8016eb2e377e23e33920ba4ba216c0c53a635892a536c4af10c6892c41c7220e7e9e2ea
   languageName: node
   linkType: hard
 
