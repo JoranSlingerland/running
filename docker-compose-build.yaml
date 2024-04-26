@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 services:
   frontend:
     build:
@@ -7,7 +7,7 @@ services:
       args:
         APP_NAME: frontend
     ports:
-      - "3000:3000"
+      - '3000:3000'
     networks:
       - backend_network
     depends_on:
@@ -38,11 +38,11 @@ services:
     healthcheck:
       test:
         [
-          "CMD",
-          "wget",
-          "--spider",
-          "-q",
-          "http://frontend:3000/api/healthcheck/",
+          'CMD',
+          'wget',
+          '--spider',
+          '-q',
+          'http://frontend:3000/api/healthcheck/',
         ]
       interval: 30s
       timeout: 3s
@@ -56,7 +56,7 @@ services:
       args:
         APP_NAME: backend
     ports:
-      - "3001:3001"
+      - '3001:3001'
     networks:
       - backend_network
     depends_on:
@@ -81,7 +81,7 @@ services:
       - NODE_ENV = ${NODE_ENV}
     healthcheck:
       test:
-        ["CMD", "wget", "--spider", "-q", "http://backend:3001/healthcheck/"]
+        ['CMD', 'wget', '--spider', '-q', 'http://backend:3001/healthcheck/']
       interval: 30s
       timeout: 3s
       retries: 3
@@ -95,7 +95,7 @@ services:
     networks:
       - backend_network
     ports:
-      - "27017:27017"
+      - '27017:27017'
     env_file:
       - path: .env
         required: false
@@ -103,7 +103,7 @@ services:
       - MONGO_INITDB_ROOT_USERNAME = ${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD = ${MONGO_INITDB_ROOT_PASSWORD}
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
       interval: 30s
       timeout: 3s
       retries: 3

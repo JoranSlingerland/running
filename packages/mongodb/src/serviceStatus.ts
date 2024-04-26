@@ -22,7 +22,7 @@ async function serviceStatusFromMongoDB<T extends DocumentWithId>(
 
     return document;
   } catch (error) {
-    console.error('Error retrieving user settings from MongoDB:', error);
+    console.error('Error retrieving service status from MongoDB:', error);
     return undefined;
   }
 }

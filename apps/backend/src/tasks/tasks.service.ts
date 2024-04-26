@@ -17,7 +17,7 @@ export class StravaDataEnhancementCronService {
       return;
     }
 
-    console.info('Running cron job');
+    console.info('Running stravaDataEnhancement triggered by cron job');
     await this.stravaDataEnhancementService.orchestrator();
   }
 }

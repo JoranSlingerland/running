@@ -13,7 +13,9 @@ export async function connectToMongoDB(): Promise<Db> {
       );
     }
     const uri = `mongodb://${username}:${password}@${host}`;
-    client = new MongoClient(uri);
+    client = new MongoClient(uri, {
+      socketTimeoutMS: 5000,
+    });
     await client.connect();
   }
 

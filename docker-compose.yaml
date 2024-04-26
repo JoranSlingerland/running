@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 services:
   frontend:
     image: ghcr.io/joranslingerland/running-frontend:main
@@ -11,7 +11,7 @@ services:
       - path: .env
         required: false
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - API_SHARED_KEY = ${API_SHARED_KEY}
       - STRAVA_CLIENT_ID = ${STRAVA_CLIENT_ID}
@@ -34,11 +34,11 @@ services:
     healthcheck:
       test:
         [
-          "CMD",
-          "wget",
-          "--spider",
-          "-q",
-          "http://frontend:3000/api/healthcheck/",
+          'CMD',
+          'wget',
+          '--spider',
+          '-q',
+          'http://frontend:3000/api/healthcheck/',
         ]
       interval: 30s
       timeout: 3s
@@ -71,7 +71,7 @@ services:
       - NODE_ENV = ${NODE_ENV}
     healthcheck:
       test:
-        ["CMD", "wget", "--spider", "-q", "http://backend:3001/healthcheck/"]
+        ['CMD', 'wget', '--spider', '-q', 'http://backend:3001/healthcheck/']
       interval: 30s
       timeout: 3s
       retries: 3
@@ -91,10 +91,12 @@ services:
       - MONGO_INITDB_ROOT_USERNAME = ${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD = ${MONGO_INITDB_ROOT_PASSWORD}
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
       interval: 30s
       timeout: 10s
       retries: 3
+    ports:
+      - '27017:27017'
 volumes:
   mongodb_data:
 networks:
