@@ -15,7 +15,7 @@ export class StravaRateLimitService {
 
   constructor(serviceName: string) {
     this.serviceName = `${serviceName}-rateLimitService`;
-    this.apiCallCount = 0;
+    this.resetClass();
   }
 
   public async getServiceStatus() {
@@ -40,6 +40,10 @@ export class StravaRateLimitService {
       parseInt(process.env.STRAVA_DAILY_LIMIT) || 1000;
 
     return this.serviceStatus;
+  }
+
+  public resetClass() {
+    this.apiCallCount = 0;
   }
 
   public async checkStravaApiRateLimits(callsPerActivity: number) {

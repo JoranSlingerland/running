@@ -42,6 +42,7 @@ export class StravaDataEnhancementService {
     }
 
     console.info('Step 0: Checking rate limits');
+    this.rateLimitService.resetClass();
     const { callsAvailable, limit, nextReset } =
       await this.rateLimitService.checkStravaApiRateLimits(
         this.callsPerActivity,
