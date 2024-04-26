@@ -45,7 +45,7 @@
     "clsx": "^2.1.0",
     "dayjs": "^1.11.10",
     "isomorphic-unfetch": "^4.0.2",
-    "lucide-react": "^0.365.0",
+    "lucide-react": "^0.376.0",
     "maplibre-gl": "^4.1.2",
     "next": "^14.2.1",
     "next-auth": "^4.24.5",
