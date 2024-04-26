@@ -1,17 +1,14 @@
 import { Module } from '@nestjs/common';
 
 import {
+  AdminController,
   StravaActivityGatheringController,
-  StravaDataEnhancementController,
 } from './app.controller';
 import { StravaActivityGatheringService } from './src/StravaActivityGathering';
 import { StravaDataEnhancementService } from './src/stravaDataEnhancement';
 
 @Module({
-  controllers: [
-    StravaActivityGatheringController,
-    StravaDataEnhancementController,
-  ],
+  controllers: [StravaActivityGatheringController, AdminController],
   providers: [StravaActivityGatheringService, StravaDataEnhancementService],
 })
 export class AppModule {}

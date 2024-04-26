@@ -2,26 +2,14 @@ import {
   serviceStatusFromMongoDB,
   upsertServiceStatusToMongoDB,
 } from '@repo/mongodb';
+import { IsRunningStatus, RateLimitStatus } from '@repo/types';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 
 dayjs.extend(utc);
 
-type ServiceStatus = {
-  _id: string;
-  apiCallCount15Min: number;
-  apiCallCountDaily: number;
-  lastReset15Min: string;
-  lastResetDaily: string;
-};
-
-type RunningStatus = {
-  _id: string;
-  isRunning: boolean;
-};
-
 export class StravaRateLimitService {
-  private serviceStatus: ServiceStatus;
+  private serviceStatus: RateLimitStatus;
   private serviceName: string;
   private apiCallCount: number;
 
@@ -30,8 +18,8 @@ export class StravaRateLimitService {
     this.apiCallCount = 0;
   }
 
-  private async getServiceStatus() {
-    this.serviceStatus = await serviceStatusFromMongoDB<ServiceStatus>(
+  public async getServiceStatus() {
+    this.serviceStatus = await serviceStatusFromMongoDB<RateLimitStatus>(
       this.serviceName,
     );
     if (!this.serviceStatus) {
@@ -39,11 +27,19 @@ export class StravaRateLimitService {
         _id: this.serviceName,
         apiCallCount15Min: 0,
         apiCallCountDaily: 0,
+        apiCallLimit15Min: parseInt(process.env.STRAVA_15MIN_LIMIT) || 100,
+        apiCallLimitDaily: parseInt(process.env.STRAVA_DAILY_LIMIT) || 1000,
         lastReset15Min: dayjs().toISOString(),
         lastResetDaily: dayjs().toISOString(),
       };
       await upsertServiceStatusToMongoDB(this.serviceStatus);
     }
+    this.serviceStatus.apiCallLimit15Min =
+      parseInt(process.env.STRAVA_15MIN_LIMIT) || 100;
+    this.serviceStatus.apiCallLimitDaily =
+      parseInt(process.env.STRAVA_DAILY_LIMIT) || 1000;
+
+    return this.serviceStatus;
   }
 
   public async checkStravaApiRateLimits(callsPerActivity: number) {
@@ -59,7 +55,6 @@ export class StravaRateLimitService {
         'minute',
       );
     const nextResetDaily = dayjs(this.serviceStatus.lastResetDaily)
-      .utc()
       .startOf('day')
       .add(1, 'day');
 
@@ -75,13 +70,22 @@ export class StravaRateLimitService {
       await upsertServiceStatusToMongoDB(this.serviceStatus);
     }
 
+    const nextCallReset = () => {
+      if (this.serviceStatus.apiCallCount15Min >= fifteenMinuteLimit) {
+        return nextReset15Min;
+      } else if (this.serviceStatus.apiCallCountDaily >= dailyLimit) {
+        return nextResetDaily;
+      }
+      return nextReset15Min;
+    };
+
     const limitInfo = {
       callsAvailable: true,
       limit: Math.min(
         fifteenMinuteLimit - this.serviceStatus.apiCallCount15Min,
         dailyLimit - this.serviceStatus.apiCallCountDaily,
       ),
-      nextReset: Math.min(nextReset15Min.valueOf(), nextResetDaily.valueOf()),
+      nextReset: nextCallReset().toISOString(),
     };
 
     if (limitInfo.limit - callsPerActivity < 0) {
@@ -105,7 +109,7 @@ export class StravaRateLimitService {
 }
 
 export class isRunningService {
-  private runningStatus: RunningStatus;
+  private runningStatus: IsRunningStatus;
   private serviceName: string;
 
   constructor(serviceName: string) {
@@ -114,16 +118,18 @@ export class isRunningService {
   }
 
   public async getServiceStatus() {
-    this.runningStatus = await serviceStatusFromMongoDB<RunningStatus>(
+    this.runningStatus = await serviceStatusFromMongoDB<IsRunningStatus>(
       this.serviceName,
     );
     if (!this.runningStatus) {
       this.runningStatus = {
         _id: this.serviceName,
         isRunning: false,
+        lastUpdated: dayjs().toISOString(),
       };
       await upsertServiceStatusToMongoDB(this.runningStatus);
     }
+    return this.runningStatus;
   }
 
   public async startService() {

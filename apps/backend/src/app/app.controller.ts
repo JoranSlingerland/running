@@ -1,9 +1,17 @@
 import { AdminGuard } from '@guards/admin.guard';
 import { JwtAuthGuard } from '@guards/authenticated.guards';
-import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { RequestWithUser } from 'data';
 
-import { resetIsRunningStatusService } from './src/resetIsRunningStatus';
+import { StravaRateLimitService, isRunningService } from './src/shared';
 import { StravaActivityGatheringService } from './src/StravaActivityGathering';
 import { StravaDataEnhancementService } from './src/stravaDataEnhancement';
 
@@ -24,25 +32,48 @@ export class StravaActivityGatheringController {
   }
 }
 
-@Controller('/admin/strava')
+@Controller('/admin')
 @UseGuards(AdminGuard)
-export class StravaDataEnhancementController {
+export class AdminController {
+  private serviceNames = ['StravaDataEnhancementService'];
   constructor(
     private readonly StravaDataEnhancementService: StravaDataEnhancementService,
   ) {}
 
-  @Get('/enhance')
+  @Get('strava/enhance')
   async gatherData() {
     return await this.StravaDataEnhancementService.orchestrator();
   }
 
-  @Get('/reset')
+  @Get('/strava/rateLimit')
+  async getRateLimit() {
+    const rateLimitService = new StravaRateLimitService('Strava');
+    return await rateLimitService.getServiceStatus();
+  }
+
+  @Get('/serviceStatus/reset')
   async resetIsRunningStatus(@Query('serviceName') serviceName: string) {
-    const resetService = new resetIsRunningStatusService();
-    await resetService.endService(serviceName);
+    if (!this.serviceNames.includes(serviceName)) {
+      throw new HttpException('Service name not found', HttpStatus.NOT_FOUND);
+    }
+    try {
+      const runningService = new isRunningService(serviceName);
+      await runningService.getServiceStatus();
+      await runningService.endService();
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     return {
       status: 'success',
-      message: `Reset ${serviceName} running status`,
     };
+  }
+
+  @Get('/serviceStatus')
+  async getServiceStatus(@Query('serviceName') serviceName: string) {
+    if (!this.serviceNames.includes(serviceName)) {
+      throw new HttpException('Service name not found', HttpStatus.NOT_FOUND);
+    }
+    const resetService = new isRunningService(serviceName);
+    return await resetService.getServiceStatus();
   }
 }
