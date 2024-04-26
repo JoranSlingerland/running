@@ -2259,7 +2259,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.3.1":
+"@types/node@npm:^20.12.7":
   version: 20.12.7
   resolution: "@types/node@npm:20.12.7"
   dependencies:
@@ -3285,7 +3285,7 @@ __metadata:
     "@repo/types": "npm:*"
     "@repo/typescript-config": "npm:*"
     "@types/express": "npm:^4.17.17"
-    "@types/node": "npm:^20.3.1"
+    "@types/node": "npm:^20.12.7"
     dayjs: "npm:^1.11.10"
     reflect-metadata: "npm:^0.2.0"
     rxjs: "npm:^7.8.1"
