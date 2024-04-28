@@ -1,9 +1,13 @@
 import { WretchError, createBasicWretchInstance } from '@repo/api';
 
 import { baseUrl } from './config';
-import { StreamQuery, Streams } from './types';
+import { StravaStreams, StreamQuery } from './types';
 
-async function getStream({ auth, id, keys }: StreamQuery): Promise<Streams> {
+async function getStream({
+  auth,
+  id,
+  keys,
+}: StreamQuery): Promise<StravaStreams> {
   if (!auth) {
     throw new Error('Invalid authentication');
   }
@@ -27,7 +31,7 @@ async function getStream({ auth, id, keys }: StreamQuery): Promise<Streams> {
     .catch((error: WretchError) => {
       console.error('Error fetching activity', error);
       throw new Error('Error fetching activity');
-    })) as Streams;
+    })) as StravaStreams;
 }
 
 export { getStream };
