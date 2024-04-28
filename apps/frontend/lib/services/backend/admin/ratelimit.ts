@@ -7,10 +7,6 @@ function useRateLimitStatus({ enabled = true }: { enabled?: boolean }) {
     url: '/api/admin/strava/rateLimit',
     method: 'GET',
     enabled,
-    cache: {
-      enabled: true,
-      hours: 1,
-    },
   });
 }
 
