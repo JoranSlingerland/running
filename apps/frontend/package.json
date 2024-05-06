@@ -70,6 +70,6 @@
     "@types/object-hash": "^3",
     "@types/react": "^18",
     "serve": "^14.2.1",
-    "tailwindcss": "^3.4.1"
+    "tailwindcss": "^3.4.3"
   }
 }
