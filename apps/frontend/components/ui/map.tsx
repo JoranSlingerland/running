@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 import WebMercatorViewport from 'viewport-mercator-project';
 
+import { getMapTilerToken } from '@services/env/maptilertoken';
 import { Skeleton } from '@ui/skeleton';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
@@ -53,6 +54,7 @@ export default function Map({
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<maplibregl.Map | null>(null);
   const [mapIsLoading, setMapIsLoading] = useState(isLoading);
+  const [maptilertoken, setMaptilertoken] = useState<string | null>(null);
 
   // Calculate initial viewport based on bounding box
   const { longitude, latitude, zoom } = useMemo(() => {
@@ -90,11 +92,24 @@ export default function Map({
     }
   }, [boundingBox]);
 
+  useEffect(() => {
+    const fetchToken = async () => {
+      const token = await getMapTilerToken();
+      setMaptilertoken(token);
+    };
+
+    fetchToken();
+  }, []);
+
   // Initialize map when component mounts
   useEffect(() => {
+    if (!mapContainerRef.current || !maptilertoken) {
+      return;
+    }
+
     const newMap = new maplibregl.Map({
       container: mapContainerRef.current || '',
-      style: `https://api.maptiler.com/maps/outdoor-v2/style.json?key=${process.env.NEXT_PUBLIC_MAPTILERTOKEN}`,
+      style: `https://api.maptiler.com/maps/outdoor-v2/style.json?key=${maptilertoken}`,
       center: initialViewState
         ? initialViewState.center
         : [longitude, latitude],
@@ -114,8 +129,12 @@ export default function Map({
     });
     setMap(newMap);
 
+    return () => {
+      newMap.remove();
+    };
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [longitude, latitude, zoom]);
+  }, [longitude, latitude, zoom, maptilertoken, mapContainerRef.current]);
 
   // Update map when sources change
   useEffect(() => {

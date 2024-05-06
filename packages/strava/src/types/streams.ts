@@ -74,7 +74,7 @@ export type StreamType =
   | 'moving'
   | 'grade_smooth';
 
-export type Streams = {
+export type StravaStreams = {
   time: TimeStream;
   distance: DistanceStream;
   latlng: LatLngStream;

@@ -15,7 +15,9 @@
       "warn",
       {
         "endOfLine": "auto",
-        "trailingComma": "all"
+        "trailingComma": "all",
+        "tabWidth": 2,
+        "singleQuote": true
       }
     ],
     "turbo/no-undeclared-env-vars": "off",

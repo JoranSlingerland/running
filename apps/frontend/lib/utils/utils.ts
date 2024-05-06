@@ -1,4 +1,4 @@
-import { Streams } from '@repo/strava';
+import { Streams } from '@repo/types';
 
 const isNotNullOrZero = (value: unknown) =>
   value !== null && value !== undefined && value !== 0;

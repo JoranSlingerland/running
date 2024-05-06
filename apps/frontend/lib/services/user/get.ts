@@ -23,7 +23,7 @@ const initialData: UserSettings = {
     dark_mode: 'system',
     enable_weather: false,
   },
-  id: '',
+  _id: '',
 };
 
 function useUserSettings({ enabled = true }: { enabled?: boolean } = {}) {
@@ -35,7 +35,6 @@ function useUserSettings({ enabled = true }: { enabled?: boolean } = {}) {
     initialData: initialData,
     cache: {
       enabled: true,
-      hours: 24,
       storageType: 'sessionStorage',
       customKey: 'userSettings',
     },

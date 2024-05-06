@@ -1,8 +1,7 @@
 import {
-  removeKeys,
-  upsertUserSettingsToCosmos,
-  userSettingsFromCosmos,
-} from '@repo/cosmosdb';
+  upsertUserSettingsToMongoDB,
+  userSettingsFromMongoDB,
+} from '@repo/mongodb';
 import type { NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 
@@ -23,7 +22,7 @@ export default async function handler(
       await handleGet(res, token.id as string);
       break;
     case 'POST':
-      await handlePost(req, res);
+      await handlePost(req, res, token.id as string);
       break;
     default:
       res.setHeader('Allow', 'GET, POST');
@@ -32,24 +31,29 @@ export default async function handler(
 }
 
 async function handleGet(res: NextApiResponse, id: string) {
-  const user = await userSettingsFromCosmos(id);
+  const user = await userSettingsFromMongoDB(id);
   if (!user) {
     res.status(400).json({ message: 'User not found' });
     return;
   }
 
-  return res.status(200).json(removeKeys(user));
+  return res.status(200).json(user);
 }
 
-// TODO: More descriptive error messages
-async function handlePost(req: NextApiRequestUnknown, res: NextApiResponse) {
-  const result = await upsertUserSettingsToCosmos(req.body);
+async function handlePost(
+  req: NextApiRequestUnknown,
+  res: NextApiResponse,
+  id: string,
+) {
+  if (typeof req.body !== 'object' || req.body === null) {
+    return res.status(400).json({ message: 'Invalid request body' });
+  }
+  (req.body as Record<string, unknown>)._id = id;
+  const result = await upsertUserSettingsToMongoDB(req.body);
 
   if (!result.isError && result.result) {
-    return res.status(200).json(removeKeys(result.result.resource || {}));
+    return res.status(200).json({ message: 'Account settings saved!' });
   }
 
-  return res
-    .status(result.result?.statusCode || 500)
-    .json({ message: 'Something went wrong' });
+  return res.status(500).json({ message: 'Something went wrong' });
 }
