@@ -1936,22 +1936,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-table@npm:^8.11.6":
-  version: 8.11.7
-  resolution: "@tanstack/react-table@npm:8.11.7"
+"@tanstack/react-table@npm:^8.16.0":
+  version: 8.16.0
+  resolution: "@tanstack/react-table@npm:8.16.0"
   dependencies:
-    "@tanstack/table-core": "npm:8.11.7"
+    "@tanstack/table-core": "npm:8.16.0"
   peerDependencies:
-    react: ">=16"
-    react-dom: ">=16"
-  checksum: 10c0/d510719d5e732509240e48d3f9c781e90ec2713f3f1c4ee21ede93be68e364cd2f4ec4683c1ab40b0278f866d7632f0bfd2fe1ec282a1dce5ea1086f54fab82b
+    react: ">=16.8"
+    react-dom: ">=16.8"
+  checksum: 10c0/e6b05af777592fdd56055e753f4c626b14ed9ba4818c84411adc4e552d2b05474bfac4ca8f505ce9b2ffa36023a489b41297f25216124a4b6150852ac83708d8
   languageName: node
   linkType: hard
 
-"@tanstack/table-core@npm:8.11.7":
-  version: 8.11.7
-  resolution: "@tanstack/table-core@npm:8.11.7"
-  checksum: 10c0/50ffff9e8ef477eb97abc548305af8480696f3c86f82fe7729b372734f97ae1f73efb57cc9b7e7441f253f01165bd6a5423e27d8e13ea69ebd6fd01e462a7570
+"@tanstack/table-core@npm:8.16.0":
+  version: 8.16.0
+  resolution: "@tanstack/table-core@npm:8.16.0"
+  checksum: 10c0/fda4d47d40f61d1c226ecb47051afdcd49faa0b2c6ea2bd5ce138822794b8e0c4ca118aa03a15e1e2bc3882c57c901d5e90067a0c49e3e42a61267b004527434
   languageName: node
   linkType: hard
 
@@ -5368,7 +5368,7 @@ __metadata:
     "@repo/types": "npm:*"
     "@repo/typescript-config": "npm:*"
     "@repo/weather": "npm:*"
-    "@tanstack/react-table": "npm:^8.11.6"
+    "@tanstack/react-table": "npm:^8.16.0"
     "@turf/bbox": "npm:^6.5.0"
     "@types/node": "npm:^20"
     "@types/object-hash": "npm:^3"
