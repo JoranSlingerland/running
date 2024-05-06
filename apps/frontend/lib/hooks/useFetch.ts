@@ -15,7 +15,7 @@ interface UseFetchOptions<Body, Query, Response> {
   initialData?: Response;
   cache?: {
     enabled: boolean;
-    hours?: number;
+    ttl?: number;
     storageType?: StorageType;
     customKey?: string;
     useStartEndDates?: boolean;
@@ -86,7 +86,7 @@ function useFetch<Body, Query extends string | object | undefined, Response>({
       fallback_data: initialData,
       cache: {
         enabled: cache?.enabled || false,
-        hours: cache?.hours || 24,
+        ttl: cache?.ttl || 60000,
         overwrite: overwrite,
         storageType: cache?.storageType || 'sessionStorage',
         customKey: cache?.customKey || undefined,

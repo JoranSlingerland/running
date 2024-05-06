@@ -15,11 +15,7 @@ import {
   upsertUserSettingsToMongoDB,
   userSettingsFromMongoDB,
 } from '@repo/mongodb';
-import {
-  DetailedActivity,
-  StravaClient,
-  Streams as stravaStreams,
-} from '@repo/strava';
+import { DetailedActivity, StravaClient, StravaStreams } from '@repo/strava';
 import { Activity, Streams, UserSettings } from '@repo/types';
 import dayjs from 'dayjs';
 import { bisectLeft } from 'src/lib/helpers';
@@ -42,7 +38,6 @@ export class StravaDataEnhancementService {
     }
 
     console.info('Step 0: Checking rate limits');
-    this.rateLimitService.resetClass();
     const { callsAvailable, limit, nextReset } =
       await this.rateLimitService.checkStravaApiRateLimits(
         this.callsPerActivity,
@@ -124,7 +119,7 @@ export class StravaDataEnhancementService {
 
   private async getActivityAndStream(activity: Activity) {
     let detailedActivity: DetailedActivity;
-    let stravaStream: stravaStreams;
+    let stravaStream: StravaStreams;
 
     const userSettings = await this.getUserSettings(activity.userId);
 

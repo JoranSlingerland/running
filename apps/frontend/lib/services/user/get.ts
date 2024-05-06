@@ -35,7 +35,6 @@ function useUserSettings({ enabled = true }: { enabled?: boolean } = {}) {
     initialData: initialData,
     cache: {
       enabled: true,
-      hours: 24,
       storageType: 'sessionStorage',
       customKey: 'userSettings',
     },

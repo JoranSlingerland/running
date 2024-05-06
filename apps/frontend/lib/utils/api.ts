@@ -4,8 +4,6 @@ import { toast } from 'sonner';
 
 import { NextApiRequestUnknown } from '@pages/api/types';
 
-const MILLISECONDS_IN_HOUR = 1000 * 60 * 60;
-
 // Types
 type CachedResponse<Response> = {
   value: Response;
@@ -15,7 +13,7 @@ type CachedResponse<Response> = {
 
 type CacheSettings = {
   enabled: boolean;
-  hours: number;
+  ttl: number;
   overwrite: boolean;
   storageType: StorageType;
   customKey?: string;
@@ -145,7 +143,7 @@ function handleCacheSet<Query, Response>({
   query,
   key,
   response,
-  hours,
+  ttl,
   storageType,
 }: {
   cache?: CacheSettings;
@@ -153,7 +151,7 @@ function handleCacheSet<Query, Response>({
   query?: Query;
   key: string;
   response: Response;
-  hours: number;
+  ttl: number;
   storageType: StorageType;
 }) {
   let data: Response[] | Response;
@@ -198,7 +196,7 @@ function handleCacheSet<Query, Response>({
   setWithExpiry(
     key,
     data,
-    hours * MILLISECONDS_IN_HOUR,
+    ttl,
     storageType,
     cache?.useStartEndDates ? start_end_dates : undefined,
   );
@@ -325,7 +323,7 @@ async function regularFetch<
   } = message || { enabled: false };
   const {
     enabled: cacheEnabled,
-    hours,
+    ttl,
     overwrite,
     storageType,
   } = cache || {
@@ -401,7 +399,7 @@ async function regularFetch<
       query,
       key,
       response,
-      hours,
+      ttl,
       storageType,
     });
   }

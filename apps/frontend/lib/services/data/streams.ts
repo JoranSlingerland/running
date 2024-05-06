@@ -1,4 +1,4 @@
-import { Streams } from '@repo/strava';
+import { Streams } from '@repo/types';
 
 import { useFetch } from '@hooks/useFetch';
 

@@ -18,10 +18,6 @@ function useServiceStatus({
     method: 'GET',
     query,
     enabled,
-    cache: {
-      enabled: true,
-      hours: 1,
-    },
   });
 }
 
