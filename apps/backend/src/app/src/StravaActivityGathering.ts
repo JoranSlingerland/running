@@ -20,7 +20,6 @@ export class StravaActivityGatheringService {
 
   async orchestrator(userId: string) {
     console.info('Step 0: Checking rate limits');
-    this.rateLimitService.resetClass();
     const { callsAvailable, nextReset } =
       await this.rateLimitService.checkStravaApiRateLimits(
         this.callsPerActivity,

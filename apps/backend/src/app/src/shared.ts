@@ -109,6 +109,7 @@ export class StravaRateLimitService {
     this.serviceStatus.apiCallCount15Min += this.apiCallCount;
     this.serviceStatus.apiCallCountDaily += this.apiCallCount;
     await upsertServiceStatusToMongoDB(this.serviceStatus);
+    this.resetClass();
   }
 }
 
