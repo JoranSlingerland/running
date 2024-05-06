@@ -5383,7 +5383,7 @@ __metadata:
     lucide-react: "npm:^0.378.0"
     maplibre-gl: "npm:^4.1.2"
     next: "npm:^14.2.1"
-    next-auth: "npm:^4.24.5"
+    next-auth: "npm:^4.24.7"
     next-themes: "npm:^0.3.0"
     postcss: "npm:^8.4.38"
     react: "npm:^18.2.0"
@@ -6433,7 +6433,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^4.11.4, jose@npm:^4.15.4":
+"jose@npm:^4.15.4, jose@npm:^4.15.5":
   version: 4.15.5
   resolution: "jose@npm:4.15.5"
   checksum: 10c0/9f208492f55ae9c547fd407c36f67ec3385051b5ca390e24f5449740f17359640b3f96fabfd38bc132cc4292b964c31b921bf356253373b1bd3eb6df799b7433
@@ -7216,14 +7216,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-auth@npm:^4.24.5":
-  version: 4.24.5
-  resolution: "next-auth@npm:4.24.5"
+"next-auth@npm:^4.24.7":
+  version: 4.24.7
+  resolution: "next-auth@npm:4.24.7"
   dependencies:
     "@babel/runtime": "npm:^7.20.13"
     "@panva/hkdf": "npm:^1.0.2"
     cookie: "npm:^0.5.0"
-    jose: "npm:^4.11.4"
+    jose: "npm:^4.15.5"
     oauth: "npm:^0.9.15"
     openid-client: "npm:^5.4.0"
     preact: "npm:^10.6.3"
@@ -7237,7 +7237,7 @@ __metadata:
   peerDependenciesMeta:
     nodemailer:
       optional: true
-  checksum: 10c0/3ba2cf707903af8a0571ba9e95389e8fb110308110589dfa07c7edcfc185f92b3046474991e18f63bdf990694cda7a583cd3b020f9b58243b2c0403f341cc21a
+  checksum: 10c0/40c5f51e02141615069d422431a4906c38f6050b29f654ecc99a92fd3c974958535eb7c5f7bbc3dfd2e5996825d7c4f20d8ca68f372e2f9aad2131701cb95b7d
   languageName: node
   linkType: hard
 
