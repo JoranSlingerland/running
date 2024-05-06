@@ -5470,7 +5470,7 @@ __metadata:
     recharts: "npm:^2.12.4"
     rooks: "npm:^7.14.1"
     serve: "npm:^14.2.1"
-    sonner: "npm:^1.3.1"
+    sonner: "npm:^1.4.41"
     tailwind-merge: "npm:^2.2.0"
     tailwindcss: "npm:^3.4.1"
     tailwindcss-animate: "npm:^1.0.7"
@@ -9106,13 +9106,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sonner@npm:^1.3.1":
-  version: 1.4.0
-  resolution: "sonner@npm:1.4.0"
+"sonner@npm:^1.4.41":
+  version: 1.4.41
+  resolution: "sonner@npm:1.4.41"
   peerDependencies:
     react: ^18.0.0
     react-dom: ^18.0.0
-  checksum: 10c0/2e55de2de03dd0d103d36d18e36a891b16e42102ca789a2eea37635172d7035dea749e95ff0e36cc04f1c43c9fa72637a17a702ef184926bf1c33ed17fba18bd
+  checksum: 10c0/31467ecab0fcbd5161fb76d158c698841b524686f7f598eecbc2a58d76bc496b5d5242df4350e274575aa3df59428d3aacd534415c968b19fc309c192c443330
   languageName: node
   linkType: hard
 
