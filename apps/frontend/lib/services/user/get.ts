@@ -1,5 +1,3 @@
-import { getLatestSchemaVersion } from '@repo/mongodb';
-
 import { useFetch } from '@hooks/useFetch';
 
 const initialData: UserSettings = {
@@ -25,7 +23,7 @@ const initialData: UserSettings = {
     dark_mode: 'system',
     enable_weather: false,
   },
-  version: getLatestSchemaVersion('users'),
+  version: 0,
   _id: '',
 };
 
