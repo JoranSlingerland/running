@@ -72,6 +72,8 @@ interface Activity {
     workout_type: string;
   };
   streams?: null | streams;
+  version: number;
+  enrichment_tries: number;
 }
 
 export interface BestEfforts {

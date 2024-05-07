@@ -1,3 +1,4 @@
+import { getLatestSchemaVersion } from '@repo/mongodb';
 import { DetailedActivity, SummaryActivity } from '@repo/strava';
 import { Activity } from '@repo/types';
 import dayjs from 'dayjs';
@@ -108,6 +109,8 @@ function cleanupDetailedActivity(
       notes: '',
     },
     streams: null,
+    enrichment_tries: 0,
+    version: getLatestSchemaVersion('activities'),
   };
   return result;
 }
@@ -195,6 +198,8 @@ function cleanUpSummaryActivity(
       notes: '',
     },
     streams: null,
+    enrichment_tries: 0,
+    version: getLatestSchemaVersion('activities'),
   };
   return result;
 }

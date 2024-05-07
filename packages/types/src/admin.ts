@@ -6,10 +6,12 @@ export type RateLimitStatus = {
   apiCallLimitDaily: number;
   lastReset15Min: string;
   lastResetDaily: string;
+  version: number;
 };
 
 export type IsRunningStatus = {
   _id: string;
   isRunning: boolean;
   lastUpdated: string;
+  version: number;
 };
