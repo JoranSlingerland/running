@@ -28,15 +28,21 @@ class StravaClient {
   async getActivities({
     before,
     after,
+    page = 1,
+    per_page = 200,
   }: {
     before?: string | number;
     after?: string | number;
+    page?: number;
+    per_page?: number;
   }) {
     const auth = await this.validateAuth();
     return getActivities({
       auth: auth,
       before,
       after,
+      page,
+      per_page,
     });
   }
 

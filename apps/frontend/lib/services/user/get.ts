@@ -24,6 +24,7 @@ const initialData: UserSettings = {
     enable_weather: false,
   },
   version: 0,
+  activity_pages_synced: undefined,
   _id: '',
 };
 

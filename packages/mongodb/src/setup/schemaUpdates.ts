@@ -39,6 +39,17 @@ export const schemaUpdatesUsers: SchemaUpdate[] = [
         );
     },
   },
+  {
+    version: 0.2,
+    update: async (db: Db) => {
+      return await db
+        .collection('users')
+        .updateMany(
+          { activity_pages_synced: { $exists: false }, version: 0.1 },
+          { $set: { activity_pages_synced: undefined, version: 0.2 } },
+        );
+    },
+  },
 ];
 
 export const schemaUpdatesStreams: SchemaUpdate[] = [

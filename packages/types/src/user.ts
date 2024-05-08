@@ -31,6 +31,7 @@ export type UserSettings = {
     enable_weather: boolean;
   };
   gender: 'male' | 'female' | undefined;
+  activity_pages_synced: number | undefined | 'all';
   version: number;
   _id: string;
 };
