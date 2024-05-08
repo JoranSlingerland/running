@@ -7,7 +7,12 @@ import {
   schemaUpdatesStreams,
   schemaUpdatesUsers,
 } from './schemaUpdates';
-import { CollectionNames, LegacyCollectionNames, SchemaUpdate } from '../types';
+import {
+  CollectionNames,
+  IndexSpecification,
+  LegacyCollectionNames,
+  SchemaUpdate,
+} from '../types';
 
 dotenv.config();
 
@@ -44,13 +49,15 @@ async function setupDatabase() {
     console.log('Updating documents schema...');
     await updateDocumentsSchema(client.db('running'));
 
+    console.log('Creating indexes...');
+    await createIndexes(client.db('running'));
+
     console.log('Database setup complete.');
   } catch (error) {
     console.error('Error setting up database:', error);
     throw error;
   } finally {
     await client.close();
-    console.log('Connection to MongoDB closed.');
   }
 }
 
@@ -97,10 +104,44 @@ async function updateDocumentsSchema(db: Db) {
         console.log(
           `Updated ${result.modifiedCount} documents in '${schema.collection}' to version ${update.version}.`,
         );
-        break;
+        continue;
       }
       console.log(
         `All documents in ${schema.collection} already at version ${update.version}.`,
+      );
+    }
+  }
+}
+
+async function createIndexes(db: Db) {
+  const indexSpecifications: IndexSpecification[] = [
+    {
+      collectionName: 'activities',
+      indexDetails: [
+        { indexKeys: { userId: 1 }, indexOptions: { unique: false } },
+        { indexKeys: { start_date: 1 }, indexOptions: { unique: false } },
+      ],
+    },
+    {
+      collectionName: 'streams',
+      indexDetails: [
+        { indexKeys: { userId: 1 }, indexOptions: { unique: false } },
+      ],
+    },
+  ];
+
+  for (const spec of indexSpecifications) {
+    const targetCollection = db.collection(spec.collectionName);
+
+    for (const indexDetail of spec.indexDetails) {
+      await targetCollection.createIndex(
+        indexDetail.indexKeys,
+        indexDetail.indexOptions,
+      );
+      console.log(
+        `Ensured index on collection ${spec.collectionName} for keys:`,
+        indexDetail.indexKeys,
+        `exists.`,
       );
     }
   }

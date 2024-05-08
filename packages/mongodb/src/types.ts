@@ -1,4 +1,4 @@
-import { Db, UpdateResult } from 'mongodb';
+import { CreateIndexesOptions, Db, UpdateResult } from 'mongodb';
 
 export interface SchemaUpdate {
   version: number;
@@ -12,3 +12,11 @@ export type CollectionNames =
   | 'serviceStatus';
 
 export type LegacyCollectionNames = 'notifications';
+
+export interface IndexSpecification {
+  collectionName: CollectionNames;
+  indexDetails: {
+    indexKeys: { [key: string]: 1 | -1 | 'text' };
+    indexOptions?: CreateIndexesOptions;
+  }[];
+}
