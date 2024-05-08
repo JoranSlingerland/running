@@ -1,5 +1,13 @@
 import { Db, Document, MongoClient } from 'mongodb';
 
+import {
+  schemaUpdatesActivities,
+  schemaUpdatesServiceStatus,
+  schemaUpdatesStreams,
+  schemaUpdatesUsers,
+} from './setup/schemaUpdates';
+import { CollectionNames, SchemaUpdate } from './types';
+
 let client: MongoClient;
 
 export async function connectToMongoDB(): Promise<Db> {
@@ -27,4 +35,27 @@ export async function connectToCollection<T extends Document>(
 ) {
   const db = await connectToMongoDB();
   return db.collection<T>(collectionName);
+}
+
+export function getLatestSchemaVersion(schema: CollectionNames): number {
+  function getLatestVersion(schemaUpdates: SchemaUpdate[]): number {
+    let latestVersion = 0;
+    for (const update of schemaUpdates) {
+      if (update.version > latestVersion) {
+        latestVersion = update.version;
+      }
+    }
+    return latestVersion;
+  }
+
+  switch (schema) {
+    case 'activities':
+      return getLatestVersion(schemaUpdatesActivities);
+    case 'users':
+      return getLatestVersion(schemaUpdatesUsers);
+    case 'streams':
+      return getLatestVersion(schemaUpdatesStreams);
+    case 'serviceStatus':
+      return getLatestVersion(schemaUpdatesServiceStatus);
+  }
 }

@@ -1,4 +1,5 @@
 import {
+  getLatestSchemaVersion,
   serviceStatusFromMongoDB,
   upsertServiceStatusToMongoDB,
 } from '@repo/mongodb';
@@ -31,6 +32,7 @@ export class StravaRateLimitService {
         apiCallLimitDaily: parseInt(process.env.STRAVA_DAILY_LIMIT) || 1000,
         lastReset15Min: dayjs().toISOString(),
         lastResetDaily: dayjs().toISOString(),
+        version: getLatestSchemaVersion('serviceStatus'),
       };
       await upsertServiceStatusToMongoDB(this.serviceStatus);
     }
@@ -131,6 +133,7 @@ export class isRunningService {
         _id: this.serviceName,
         isRunning: false,
         lastUpdated: dayjs().toISOString(),
+        version: getLatestSchemaVersion('serviceStatus'),
       };
       await upsertServiceStatusToMongoDB(this.runningStatus);
     }

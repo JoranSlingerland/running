@@ -6,7 +6,7 @@ import {
   upsertUserSettingsToMongoDB,
   userSettingsFromMongoDB,
 } from '@repo/mongodb';
-import { StravaClient } from '@repo/strava';
+import { StravaClient, SummaryActivity } from '@repo/strava';
 import { Activity, UserSettings } from '@repo/types';
 import dayjs from 'dayjs';
 
@@ -15,12 +15,11 @@ import { StravaRateLimitService } from './shared';
 @Injectable()
 export class StravaActivityGatheringService {
   private rateLimitService = new StravaRateLimitService('Strava');
-  // There could be more calls. The actual number of calls is calculated based on the number of activities fetched
-  private callsPerActivity = 2;
+  private callsPerActivity = 1;
 
   async orchestrator(userId: string) {
     console.info('Step 0: Checking rate limits');
-    const { callsAvailable, nextReset } =
+    const { callsAvailable, nextReset, limit } =
       await this.rateLimitService.checkStravaApiRateLimits(
         this.callsPerActivity,
       );
@@ -35,7 +34,7 @@ export class StravaActivityGatheringService {
     const userSettings = await this.getUserSettings(userId);
 
     console.info('Step 2: Fetching user activities');
-    const activities = await this.getActivities(userSettings);
+    const activities = await this.getActivities(userSettings, limit);
 
     console.info('Step 3: Outputting data to MongoDB');
     await this.writeToMongoDB(activities);
@@ -55,10 +54,11 @@ export class StravaActivityGatheringService {
     return userSettings;
   }
 
-  async getActivities(userSettings: UserSettings) {
-    const latestActivityDate = await getLastActivityFromMongoDB(
-      userSettings._id,
-    );
+  async getActivities(userSettings: UserSettings, limit: number) {
+    const maxApiCalls = Math.floor(limit / this.callsPerActivity);
+    let apiCalls = 0;
+    const results: SummaryActivity[] = [];
+    let response: SummaryActivity[];
 
     const stravaClient = new StravaClient(userSettings.strava_authentication);
     const auth = await stravaClient.initialize();
@@ -68,25 +68,95 @@ export class StravaActivityGatheringService {
       strava_authentication: auth,
     });
 
-    let epochStartDate = 0;
-    if (latestActivityDate?.start_date) {
-      epochStartDate = new Date(latestActivityDate.start_date).getTime() / 1000;
+    // eslint-disable-next-line prefer-const
+    let { epochStartDate, page } = await this.getActivitiesQuery(userSettings);
+
+    while (apiCalls < maxApiCalls) {
+      try {
+        apiCalls++;
+        response = await stravaClient.getActivities({
+          after: epochStartDate,
+          page,
+        });
+      } catch (error) {
+        this.handleNotAllPagesSynced(userSettings, page);
+        break;
+      }
+
+      if (!response || response.length === 0) {
+        this.handleAllPagesSynced(userSettings);
+        break;
+      }
+
+      results.push(...response);
+
+      page++;
     }
 
-    const activities = await stravaClient.getActivities({
-      after: epochStartDate,
-    });
-    this.rateLimitService.updateApiCallCount(
-      Math.ceil(activities.length / 200) + 1,
-    );
+    if (apiCalls >= maxApiCalls) {
+      this.handleNotAllPagesSynced(userSettings, page);
+    }
 
-    if (!activities || activities.length === 0) {
+    this.rateLimitService.updateApiCallCount(apiCalls);
+
+    if (!results || results.length === 0) {
       return [];
     }
 
-    return activities.map((activity) =>
+    return results.map((activity) =>
       cleanUpSummaryActivity(activity, userSettings._id),
     );
+  }
+
+  private async getActivitiesQuery(userSettings: UserSettings) {
+    let page = 1;
+    let epochStartDate = 0;
+
+    if (
+      userSettings.activity_pages_synced === 'all' ||
+      !userSettings.activity_pages_synced
+    ) {
+      const latestActivityDate = await getLastActivityFromMongoDB(
+        userSettings._id,
+      );
+      if (latestActivityDate?.start_date) {
+        epochStartDate =
+          new Date(latestActivityDate.start_date).getTime() / 1000;
+      }
+    }
+
+    if (typeof userSettings.activity_pages_synced === 'number') {
+      page = userSettings.activity_pages_synced + 1;
+    }
+
+    return { page, epochStartDate };
+  }
+
+  private async handleNotAllPagesSynced(
+    userSettings: UserSettings,
+    page: number,
+  ) {
+    if (
+      !userSettings.activity_pages_synced ||
+      typeof userSettings.activity_pages_synced === 'number'
+    ) {
+      upsertUserSettingsToMongoDB({
+        ...userSettings,
+        activity_pages_synced: Math.max(page - 1, 0),
+      });
+    }
+  }
+
+  private async handleAllPagesSynced(userSettings: UserSettings) {
+    if (
+      !userSettings.activity_pages_synced ||
+      typeof userSettings.activity_pages_synced === 'number'
+    ) {
+      upsertUserSettingsToMongoDB({
+        ...userSettings,
+        activity_pages_synced: 'all',
+      });
+    }
   }
 
   async writeToMongoDB(activities: Activity[]) {

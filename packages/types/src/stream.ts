@@ -10,6 +10,7 @@ export interface Streams {
   temp: TempStream;
   moving: MovingStream;
   grade_smooth: GradeSmoothStream;
+  version: number;
   _id: string;
   userId: string;
 }

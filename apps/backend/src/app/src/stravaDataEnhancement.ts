@@ -9,6 +9,7 @@ import {
 } from '@lib/trimpHelpers';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import {
+  getLatestSchemaVersion,
   getNonFullDataActivitiesFromMongoDB,
   upsertActivitiesToMongoDB,
   upsertStreamsToMongoDB,
@@ -27,6 +28,7 @@ export class StravaDataEnhancementService {
   private rateLimitService = new StravaRateLimitService('Strava');
   private runningService = new isRunningService('StravaDataEnhancementService');
   private callsPerActivity = 2;
+  private maxTries = 3;
 
   async orchestrator(userId?: string) {
     if (await this.runningService.startService()) {
@@ -60,49 +62,74 @@ export class StravaDataEnhancementService {
       'Step 2: Fetching activity and stream. Then writing to MongoDB',
     );
     const promises = activities.map(async (activity) => {
-      let cleanedActivity: Activity;
-      let stream: Streams;
-      try {
-        const result = await this.getActivityAndStream(activity);
-        if (result) {
-          cleanedActivity = result.activity;
-          stream = result.stream;
-        }
-      } catch (error) {
-        console.error('Error fetching activity or stream:', error);
-        return {
-          status: 'error',
-          message: 'Error fetching activity or stream',
-          activityId: activity._id,
-        };
+      if (activity.enrichment_tries < this.maxTries) {
+        return this.processActivity(activity);
       }
-
-      if (!cleanedActivity || !stream) {
-        return {
-          status: 'error',
-          message: 'Error fetching activity or stream',
-          activityId: activity._id,
-        };
-      }
-
-      const calculatedActivity = await this.calculateCustomFields(
-        cleanedActivity,
-        stream,
-      );
-
-      await this.writeToMongoDB([calculatedActivity], [stream]);
-      return { status: 'success', activityId: activity._id };
     });
-
     const result = await Promise.all(promises);
+
     console.info(`Step 3: Finished with ${result.length} activities enhanced`);
+
+    const hasErrors = result.some((activity) => activity.status === 'error');
+    if (hasErrors) {
+      const activitiesMap = new Map(
+        activities.map((activity) => [activity._id, activity]),
+      );
+      for (const activity of result) {
+        if (activity.status === 'error') {
+          await this.handleErrors(activitiesMap.get(activity.activityId));
+        }
+      }
+    }
+
     this.rateLimitService.updateServiceStatus();
     this.runningService.endService();
+
     return {
       status: 'success',
       activitiesEnhanced: result.filter(Boolean).length,
       details: result,
     };
+  }
+
+  private async handleErrors(activity: Activity) {
+    activity.enrichment_tries += 1;
+    upsertActivitiesToMongoDB([activity]);
+  }
+
+  private async processActivity(activity: Activity) {
+    let cleanedActivity: Activity;
+    let stream: Streams;
+    try {
+      const result = await this.getActivityAndStream(activity);
+      if (result) {
+        cleanedActivity = result.activity;
+        stream = result.stream;
+      }
+    } catch (error) {
+      console.error('Error fetching activity or stream:', error);
+      return {
+        status: 'error',
+        message: 'Error fetching activity or stream',
+        activityId: activity._id,
+      };
+    }
+
+    if (!cleanedActivity || !stream) {
+      return {
+        status: 'error',
+        message: 'Error fetching activity or stream',
+        activityId: activity._id,
+      };
+    }
+
+    const calculatedActivity = await this.calculateCustomFields(
+      cleanedActivity,
+      stream,
+    );
+
+    await this.writeToMongoDB([calculatedActivity], [stream]);
+    return { status: 'success', activityId: activity._id };
   }
 
   private async getUserSettings(_id: string): Promise<UserSettings> {
@@ -163,6 +190,7 @@ export class StravaDataEnhancementService {
       ...stravaStream,
       _id: activity._id,
       userId: activity.userId,
+      version: getLatestSchemaVersion('streams'),
     };
 
     const cleanedActivity = cleanupDetailedActivity(
