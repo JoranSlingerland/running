@@ -10,9 +10,11 @@ function cleanupDetailedActivity(
   activity.start_date = dayjs(activity.start_date).toISOString();
   activity.start_date_local = dayjs(activity.start_date_local).toISOString();
 
-  for (const lap of activity.laps) {
-    lap.start_date = dayjs(lap.start_date).toISOString();
-    lap.start_date_local = dayjs(lap.start_date_local).toISOString();
+  if (activity.laps) {
+    for (const lap of activity.laps) {
+      lap.start_date = dayjs(lap.start_date).toISOString();
+      lap.start_date_local = dayjs(lap.start_date_local).toISOString();
+    }
   }
 
   if (activity.best_efforts) {
@@ -68,16 +70,18 @@ function cleanupDetailedActivity(
     description: activity.description,
     device_name: activity.device_name,
     embed_token: activity.embed_token,
-    laps: activity.laps.map((lap) => {
-      return {
-        ...lap,
-        hr_reserve: null,
-        average_heartrate: null,
-        pace_reserve: null,
-        hr_trimp: null,
-        pace_trimp: null,
-      };
-    }),
+    laps: activity.laps
+      ? activity.laps.map((lap) => {
+          return {
+            ...lap,
+            hr_reserve: null,
+            average_heartrate: null,
+            pace_reserve: null,
+            hr_trimp: null,
+            pace_trimp: null,
+          };
+        })
+      : [],
     splits_metric: activity.splits_metric,
     utc_offset: activity.utc_offset,
     location_city: activity.location_city,

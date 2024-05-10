@@ -7,7 +7,7 @@ async function getStream({
   auth,
   id,
   keys,
-}: StreamQuery): Promise<StravaStreams> {
+}: StreamQuery): Promise<StravaStreams | undefined> {
   if (!auth) {
     throw new Error('Invalid authentication');
   }
@@ -27,11 +27,19 @@ async function getStream({
       console.error('Rate limited');
       throw new Error('Rate limited');
     })
+    .notFound(() => {
+      console.error('Activity not found');
+      throw new Error('Activity not found');
+    })
     .json()
     .catch((error: WretchError) => {
       console.error('Error fetching activity', error);
-      throw new Error('Error fetching activity');
-    })) as StravaStreams;
+      if (error.message === 'Activity not found') {
+        return undefined;
+      } else {
+        throw new Error('Error fetching activity');
+      }
+    })) as StravaStreams | undefined;
 }
 
 export { getStream };

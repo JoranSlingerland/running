@@ -66,7 +66,7 @@ export type DetailedActivity = SummaryActivity & {
   segment_efforts: SegmentEffort[];
   splits_metric: Splits[];
   splits_standard: Splits[];
-  laps: Laps[];
+  laps?: Laps[] | undefined;
   best_efforts: BestEfforts[];
   photos: {
     primary: undefined | string;
