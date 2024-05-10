@@ -1,13 +1,15 @@
 import { Activity } from '@repo/types';
 import { FindOptions } from 'mongodb';
 
-import { connectToCollection } from './helpers';
+import { MongoDBHelper } from './helpers';
 
 async function getLastActivityFromMongoDB(
   userId: string,
 ): Promise<Activity | undefined> {
   try {
-    const collection = await connectToCollection<Activity>('activities');
+    const collection = await new MongoDBHelper().getCollection<Activity>(
+      'activities',
+    );
 
     const queryOptions: FindOptions<Activity> = {
       sort: { start_date: -1 },
@@ -33,7 +35,9 @@ async function getActivityFromMongoDB(
   _id: string,
 ): Promise<Activity | undefined> {
   try {
-    const collection = await connectToCollection<Activity>('activities');
+    const collection = await new MongoDBHelper().getCollection<Activity>(
+      'activities',
+    );
 
     const activity = await collection.findOne({ _id: { $eq: _id } });
 

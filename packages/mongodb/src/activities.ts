@@ -1,7 +1,7 @@
 import { Activity } from '@repo/types';
 import { FindOptions } from 'mongodb';
 
-import { connectToCollection } from './helpers';
+import { MongoDBHelper } from './helpers';
 
 interface Query {
   userId: string;
@@ -20,7 +20,9 @@ async function activitiesFromMongoDB({
   startDate?: string;
   endDate?: string;
 }): Promise<Activity[] | undefined> {
-  const collection = await connectToCollection<Activity>('activities');
+  const collection = await new MongoDBHelper().getCollection<Activity>(
+    'activities',
+  );
 
   const query: Query = { userId: id };
 
@@ -48,7 +50,9 @@ async function upsertActivitiesToMongoDB(
   activities: Activity[],
 ): Promise<void> {
   try {
-    const collection = await connectToCollection<Activity>('activities');
+    const collection = await new MongoDBHelper().getCollection<Activity>(
+      'activities',
+    );
 
     const operations = activities.map((activity) => {
       const { _id, ...dataWithoutId } = activity;
@@ -77,7 +81,9 @@ async function getNonFullDataActivitiesFromMongoDB(
   userId?: string,
 ): Promise<Activity[] | undefined> {
   try {
-    const collection = await connectToCollection<Activity>('activities');
+    const collection = await new MongoDBHelper().getCollection<Activity>(
+      'activities',
+    );
 
     const queryOptions: FindOptions<Activity> = {
       sort: { start_date: -1 },

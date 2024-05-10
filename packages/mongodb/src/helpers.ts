@@ -8,33 +8,50 @@ import {
 } from './setup/schemaUpdates';
 import { CollectionNames, SchemaUpdate } from './types';
 
-let client: MongoClient;
+export class MongoDBHelper {
+  private static client: MongoClient;
+  private static db: Db;
+  private readonly dbName = 'running';
 
-export async function connectToMongoDB(): Promise<Db> {
-  if (!client) {
-    const host = process.env.MONGODB_URI;
-    const password = process.env.MONGO_INITDB_ROOT_PASSWORD;
-    const username = process.env.MONGO_INITDB_ROOT_USERNAME;
-    if (!host || !password || !username) {
-      throw new Error(
-        'Missing MONGO_INITDB_URI or MONGO_INITDB_ROOT_USERNAME or MONGO_INITDB_ROOT_PASSWORD in environment variables.',
-      );
+  constructor() {
+    if (!MongoDBHelper.client) {
+      const host = process.env.MONGODB_URI;
+      const password = process.env.MONGO_INITDB_ROOT_PASSWORD;
+      const username = process.env.MONGO_INITDB_ROOT_USERNAME;
+
+      if (!host || !password || !username) {
+        throw new Error(
+          'Missing MONGO_INITDB_URI or MONGO_INITDB_ROOT_USERNAME or MONGO_INITDB_ROOT_PASSWORD in environment variables.',
+        );
+      }
+
+      const uri = `mongodb://${username}:${password}@${host}`;
+      MongoDBHelper.client = new MongoClient(uri, { socketTimeoutMS: 5000 });
     }
-    const uri = `mongodb://${username}:${password}@${host}`;
-    client = new MongoClient(uri, {
-      socketTimeoutMS: 5000,
-    });
-    await client.connect();
+    MongoDBHelper.client.connect();
   }
 
-  return client.db('running');
-}
+  public async connect(): Promise<Db> {
+    if (!MongoDBHelper.db) {
+      MongoDBHelper.db = MongoDBHelper.client.db(this.dbName);
+    }
+    return MongoDBHelper.db;
+  }
 
-export async function connectToCollection<T extends Document>(
-  collectionName: string,
-) {
-  const db = await connectToMongoDB();
-  return db.collection<T>(collectionName);
+  public async rawClient(): Promise<MongoClient> {
+    return MongoDBHelper.client;
+  }
+
+  public async close(): Promise<void> {
+    if (MongoDBHelper.client) {
+      await MongoDBHelper.client.close();
+    }
+  }
+
+  public async getCollection<T extends Document>(collectionName: string) {
+    const db = await this.connect();
+    return db.collection<T>(collectionName);
+  }
 }
 
 export function getLatestSchemaVersion(schema: CollectionNames): number {

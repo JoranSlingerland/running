@@ -23,7 +23,7 @@ const initialData: UserSettings = {
     dark_mode: 'system',
     enable_weather: false,
   },
-  version: 0,
+  version: 0.2,
   activity_pages_synced: undefined,
   _id: '',
 };
