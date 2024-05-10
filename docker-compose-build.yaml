@@ -8,11 +8,14 @@ services:
         APP_NAME: frontend
     ports:
       - '3000:3000'
+    restart: unless-stopped
     networks:
       - backend_network
     depends_on:
-      - mongodb
-      - backend
+      mongodb:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
     env_file:
       - path: .env
         required: false
@@ -57,10 +60,12 @@ services:
         APP_NAME: backend
     ports:
       - '3001:3001'
+    restart: unless-stopped
     networks:
       - backend_network
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     env_file:
       - path: .env
         required: false
@@ -96,6 +101,7 @@ services:
       - backend_network
     ports:
       - '27017:27017'
+    restart: unless-stopped
     env_file:
       - path: .env
         required: false

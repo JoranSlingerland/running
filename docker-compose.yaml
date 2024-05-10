@@ -5,13 +5,16 @@ services:
     networks:
       - backend_network
     depends_on:
-      - mongodb
-      - backend
+      mongodb:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
     env_file:
       - path: .env
         required: false
     ports:
       - '3000:3000'
+    restart: unless-stopped
     environment:
       - API_SHARED_KEY = ${API_SHARED_KEY}
       - STRAVA_CLIENT_ID = ${STRAVA_CLIENT_ID}
@@ -50,10 +53,12 @@ services:
     networks:
       - backend_network
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     env_file:
       - path: .env
         required: false
+    restart: unless-stopped
     command: >
       /bin/sh -c "
         yarn db:setup &&
@@ -87,6 +92,7 @@ services:
     env_file:
       - path: .env
         required: false
+    restart: unless-stopped
     environment:
       - MONGO_INITDB_ROOT_USERNAME = ${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD = ${MONGO_INITDB_ROOT_PASSWORD}
