@@ -1,11 +1,12 @@
 import { Streams } from '@repo/types';
-import { FindOptions } from 'mongodb';
 
-import { connectToCollection } from './helpers';
+import { MongoDBHelper } from './helpers';
 
 async function upsertStreamsToMongoDB(streams: Streams[]): Promise<void> {
   try {
-    const collection = await connectToCollection<Streams>('streams');
+    const collection = await new MongoDBHelper().getCollection<Streams>(
+      'streams',
+    );
 
     const operations = streams.map((stream) => {
       const { _id, ...dataWithoutId } = stream;
@@ -28,33 +29,11 @@ async function upsertStreamsToMongoDB(streams: Streams[]): Promise<void> {
   }
 }
 
-async function getLastStreamFromMongoDB(
-  userId: string,
-): Promise<Streams | undefined> {
-  try {
-    const collection = await connectToCollection<Streams>('streams');
-
-    const queryOptions: FindOptions<Streams> = {
-      sort: { start_date: -1 },
-      limit: 1,
-    };
-
-    const streams = await collection.find({ userId }, queryOptions).toArray();
-
-    if (streams.length === 0) {
-      return undefined;
-    }
-
-    return streams[0];
-  } catch (error) {
-    console.error('Error retrieving last stream from MongoDB:', error);
-    return undefined;
-  }
-}
-
 async function getStreamFromMongoDB(_id: string): Promise<Streams | undefined> {
   try {
-    const collection = await connectToCollection<Streams>('streams');
+    const collection = await new MongoDBHelper().getCollection<Streams>(
+      'streams',
+    );
 
     const stream = await collection.findOne({ _id: { $eq: _id } });
 
@@ -69,8 +48,4 @@ async function getStreamFromMongoDB(_id: string): Promise<Streams | undefined> {
   }
 }
 
-export {
-  upsertStreamsToMongoDB,
-  getLastStreamFromMongoDB,
-  getStreamFromMongoDB,
-};
+export { upsertStreamsToMongoDB, getStreamFromMongoDB };

@@ -1,4 +1,4 @@
-import { getLastStreamFromMongoDB, getStreamFromMongoDB } from '@repo/mongodb';
+import { getStreamFromMongoDB } from '@repo/mongodb';
 import type { NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 
@@ -17,7 +17,7 @@ export default async function handler(
 
   switch (req.method) {
     case 'GET':
-      await handleGet(res, req, token.id as string);
+      await handleGet(res, req);
       break;
     default:
       res.setHeader('Allow', 'GET');
@@ -25,18 +25,8 @@ export default async function handler(
   }
 }
 
-async function handleGet(
-  res: NextApiResponse,
-  req: NextApiRequestUnknown,
-  id: string,
-) {
+async function handleGet(res: NextApiResponse, req: NextApiRequestUnknown) {
   const activityId = getQueryParam(req.query, 'id') || 'latest';
-
-  if (activityId === 'latest') {
-    const activity = await getLastStreamFromMongoDB(id);
-
-    return res.status(200).json(activity);
-  }
 
   const activity = await getStreamFromMongoDB(activityId);
 

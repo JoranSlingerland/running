@@ -232,23 +232,23 @@ export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
 
     const distance = averageDataPoints(
       streams.distance?.data,
-      streams.distance?.data?.length / dataSmoothing,
+      streams.distance?.data?.length ?? 0 / dataSmoothing,
     );
     const heartrate = averageDataPoints(
       streams.heartrate?.data,
-      streams.heartrate?.data?.length / dataSmoothing,
+      streams.heartrate?.data?.length ?? 0 / dataSmoothing,
     );
     const cadence = averageDataPoints(
       streams.cadence?.data,
-      streams.cadence?.data?.length / dataSmoothing,
+      streams.cadence?.data?.length ?? 0 / dataSmoothing,
     );
     const altitude = averageDataPoints(
       streams.altitude?.data,
-      streams.altitude?.data?.length / dataSmoothing,
+      streams.altitude?.data?.length ?? 0 / dataSmoothing,
     );
     const pace = averageDataPoints(
-      streams.velocity_smooth.data,
-      streams.velocity_smooth?.data?.length / dataSmoothing,
+      streams.velocity_smooth?.data,
+      streams.velocity_smooth?.data?.length ?? 0 / dataSmoothing,
     );
 
     return distance.map((value, index) => ({

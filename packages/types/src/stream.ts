@@ -1,15 +1,15 @@
 export interface Streams {
-  time: TimeStream;
-  distance: DistanceStream;
-  latlng: LatLngStream;
-  altitude: AltitudeStream;
-  velocity_smooth: VelocitySmoothStream;
-  heartrate: HeartrateStream;
-  cadence: CadenceStream;
-  watts: WattsStream;
-  temp: TempStream;
-  moving: MovingStream;
-  grade_smooth: GradeSmoothStream;
+  time?: TimeStream;
+  distance?: DistanceStream;
+  latlng?: LatLngStream;
+  altitude?: AltitudeStream;
+  velocity_smooth?: VelocitySmoothStream;
+  heartrate?: HeartrateStream;
+  cadence?: CadenceStream;
+  watts?: WattsStream;
+  temp?: TempStream;
+  moving?: MovingStream;
+  grade_smooth?: GradeSmoothStream;
   version: number;
   _id: string;
   userId: string;
