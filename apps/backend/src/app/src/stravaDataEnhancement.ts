@@ -45,7 +45,7 @@ export class StravaDataEnhancementService {
         this.callsPerActivity,
       );
     if (!callsAvailable) {
-      this.runningService.endService();
+      await this.runningService.endService();
       throw new HttpException(
         `API call limit reached. Try again after ${dayjs(nextReset).toISOString()}`,
         HttpStatus.TOO_MANY_REQUESTS,
@@ -53,41 +53,40 @@ export class StravaDataEnhancementService {
     }
 
     console.info('Step 1: Fetching activities without full data');
-    const activities = (await this.getActivities(userId)).slice(
-      0,
-      Math.floor(limit / this.callsPerActivity),
-    );
+    const activities =
+      (await this.getActivities(userId))
+        ?.filter((activity) => activity.enrichment_tries < this.maxTries)
+        .slice(0, Math.floor(limit / this.callsPerActivity)) || [];
 
     console.info(
       'Step 2: Fetching activity and stream. Then writing to MongoDB',
     );
     const promises = activities.map(async (activity) => {
-      if (activity.enrichment_tries < this.maxTries) {
-        return this.processActivity(activity);
-      }
+      return this.processActivity(activity);
     });
     const result = await Promise.all(promises);
 
     console.info(`Step 3: Finished with ${result.length} activities enhanced`);
 
-    const hasErrors = result.some((activity) => activity.status === 'error');
-    if (hasErrors) {
-      const activitiesMap = new Map(
-        activities.map((activity) => [activity._id, activity]),
-      );
-      for (const activity of result) {
-        if (activity.status === 'error') {
-          await this.handleErrors(activitiesMap.get(activity.activityId));
+    const activitiesMap = new Map(
+      activities.map((activity) => [activity._id, activity]),
+    );
+    for (const activity of result) {
+      if (activity?.status === 'error') {
+        const activityToHandle = activitiesMap.get(activity.activityId);
+        if (activityToHandle) {
+          await this.handleErrors(activityToHandle);
         }
       }
     }
 
-    this.rateLimitService.updateServiceStatus();
-    this.runningService.endService();
+    await this.rateLimitService.updateServiceStatus();
+    await this.runningService.endService();
 
     return {
       status: 'success',
-      activitiesEnhanced: result.filter(Boolean).length,
+      activitiesEnhanced: result.filter((act) => act?.status === 'success')
+        .length,
       details: result,
     };
   }
@@ -98,8 +97,8 @@ export class StravaDataEnhancementService {
   }
 
   private async processActivity(activity: Activity) {
-    let cleanedActivity: Activity;
-    let stream: Streams;
+    let cleanedActivity: Activity | undefined;
+    let stream: Streams | undefined;
     try {
       const result = await this.getActivityAndStream(activity);
       if (result) {
@@ -140,13 +139,13 @@ export class StravaDataEnhancementService {
     return userSettings;
   }
 
-  private async getActivities(userId?: string) {
+  private async getActivities(userId: string | undefined) {
     return await getNonFullDataActivitiesFromMongoDB(userId);
   }
 
   private async getActivityAndStream(activity: Activity) {
     let detailedActivity: DetailedActivity;
-    let stravaStream: StravaStreams;
+    let stravaStream: StravaStreams | undefined;
 
     const userSettings = await this.getUserSettings(activity.userId);
 
@@ -286,17 +285,20 @@ export class StravaDataEnhancementService {
       const elapsed_time = lap.elapsed_time;
       totalTime += elapsed_time;
 
-      lap.start_index = bisectLeft(stream.time.data, startTime);
-      lap.end_index = bisectLeft(stream.time.data, totalTime);
+      lap.start_index = bisectLeft(stream.time?.data, startTime);
+      lap.end_index = bisectLeft(stream.time?.data, totalTime);
 
-      const heartRateData = stream.heartrate.data.slice(
+      const heartRateData = stream.heartrate?.data.slice(
         lap.start_index,
         lap.end_index,
       );
 
-      const averageHeartRate = Math.round(
-        heartRateData.reduce((a, b) => a + b, 0) / heartRateData.length,
-      );
+      const averageHeartRate = heartRateData
+        ? Math.round(
+            heartRateData.reduce((a, b) => a + b, 0) / heartRateData.length,
+          )
+        : 0;
+
       const heartRateReserve = calculateHrReserve(
         averageHeartRate,
         userSettings.heart_rate.resting,

@@ -27,7 +27,7 @@ export class StravaActivityGatheringController {
   async gatherData(@Req() request: RequestWithUser) {
     const userId = request?.userId;
     const data = await this.StravaActivityGatheringService.orchestrator(userId);
-    this.StravaDataEnhancementService.orchestrator(userId);
+    await this.StravaDataEnhancementService.orchestrator(userId);
     return data;
   }
 }
@@ -61,7 +61,19 @@ export class AdminController {
       await runningService.getServiceStatus();
       await runningService.endService();
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      if (error instanceof Error) {
+        throw new HttpException(
+          error.message,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+      throw new HttpException(
+        'Unknown error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
     return {
       status: 'success',
