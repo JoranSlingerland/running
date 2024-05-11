@@ -1,3 +1,4 @@
+import { HttpException, HttpStatus } from '@nestjs/common';
 import {
   getLatestSchemaVersion,
   serviceStatusFromMongoDB,
@@ -10,13 +11,14 @@ import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 
 export class StravaRateLimitService {
-  private serviceStatus: RateLimitStatus;
+  private serviceStatus: RateLimitStatus | undefined;
   private serviceName: string;
   private apiCallCount: number;
 
   constructor(serviceName: string) {
     this.serviceName = `${serviceName}-rateLimitService`;
     this.resetClass();
+    this.apiCallCount = 0;
   }
 
   public async getServiceStatus() {
@@ -28,18 +30,20 @@ export class StravaRateLimitService {
         _id: this.serviceName,
         apiCallCount15Min: 0,
         apiCallCountDaily: 0,
-        apiCallLimit15Min: parseInt(process.env.STRAVA_15MIN_LIMIT) || 100,
-        apiCallLimitDaily: parseInt(process.env.STRAVA_DAILY_LIMIT) || 1000,
+        apiCallLimit15Min: parseInt(process.env.STRAVA_15MIN_LIMIT || '100'),
+        apiCallLimitDaily: parseInt(process.env.STRAVA_DAILY_LIMIT || '1000'),
         lastReset15Min: dayjs().toISOString(),
         lastResetDaily: dayjs().toISOString(),
         version: getLatestSchemaVersion('serviceStatus'),
       };
       await upsertServiceStatusToMongoDB(this.serviceStatus);
     }
-    this.serviceStatus.apiCallLimit15Min =
-      parseInt(process.env.STRAVA_15MIN_LIMIT) || 100;
-    this.serviceStatus.apiCallLimitDaily =
-      parseInt(process.env.STRAVA_DAILY_LIMIT) || 1000;
+    this.serviceStatus.apiCallLimit15Min = parseInt(
+      process.env.STRAVA_15MIN_LIMIT || '100',
+    );
+    this.serviceStatus.apiCallLimitDaily = parseInt(
+      process.env.STRAVA_DAILY_LIMIT || '1000',
+    );
 
     return this.serviceStatus;
   }
@@ -50,8 +54,18 @@ export class StravaRateLimitService {
 
   public async checkStravaApiRateLimits(callsPerActivity: number) {
     await this.getServiceStatus();
-    const fifteenMinuteLimit = parseInt(process.env.STRAVA_15MIN_LIMIT) || 100;
-    const dailyLimit = parseInt(process.env.STRAVA_DAILY_LIMIT) || 1000;
+
+    if (!this.serviceStatus) {
+      throw new HttpException(
+        'Service status not found',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    const fifteenMinuteLimit = parseInt(
+      process.env.STRAVA_15MIN_LIMIT || '100',
+    );
+    const dailyLimit = parseInt(process.env.STRAVA_DAILY_LIMIT || '1000');
 
     const current = dayjs();
     const nextReset15Min = dayjs(this.serviceStatus.lastReset15Min)
@@ -77,6 +91,13 @@ export class StravaRateLimitService {
     }
 
     const nextCallReset = () => {
+      if (!this.serviceStatus) {
+        throw new HttpException(
+          'Service status not found',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+
       if (this.serviceStatus.apiCallCount15Min >= fifteenMinuteLimit) {
         return nextReset15Min;
       } else if (this.serviceStatus.apiCallCountDaily >= dailyLimit) {
@@ -108,6 +129,14 @@ export class StravaRateLimitService {
 
   public async updateServiceStatus() {
     await this.getServiceStatus();
+
+    if (!this.serviceStatus) {
+      throw new HttpException(
+        'Service status not found',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
     this.serviceStatus.apiCallCount15Min += this.apiCallCount;
     this.serviceStatus.apiCallCountDaily += this.apiCallCount;
     await upsertServiceStatusToMongoDB(this.serviceStatus);
@@ -116,7 +145,7 @@ export class StravaRateLimitService {
 }
 
 export class isRunningService {
-  private runningStatus: IsRunningStatus;
+  private runningStatus: IsRunningStatus | undefined;
   private serviceName: string;
 
   constructor(serviceName: string) {
@@ -142,15 +171,29 @@ export class isRunningService {
 
   public async startService() {
     this.getServiceStatus();
-    if (this.runningStatus.isRunning) {
+    if (this.runningStatus?.isRunning) {
       return true;
     }
+
+    if (!this.runningStatus) {
+      throw new HttpException(
+        'Running status not found',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
     this.runningStatus.isRunning = true;
     await upsertServiceStatusToMongoDB(this.runningStatus);
     return false;
   }
 
   public async endService() {
+    if (!this.runningStatus) {
+      throw new HttpException(
+        'Running status not found',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
     this.runningStatus.isRunning = false;
     await upsertServiceStatusToMongoDB(this.runningStatus);
   }

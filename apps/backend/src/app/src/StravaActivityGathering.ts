@@ -58,7 +58,7 @@ export class StravaActivityGatheringService {
     const maxApiCalls = Math.floor(limit / this.callsPerActivity);
     let apiCalls = 0;
     const results: SummaryActivity[] = [];
-    let response: SummaryActivity[];
+    let response: SummaryActivity[] | undefined = undefined;
 
     const stravaClient = new StravaClient(userSettings.strava_authentication);
     const auth = await stravaClient.initialize();

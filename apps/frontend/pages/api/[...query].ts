@@ -66,5 +66,10 @@ export default async function handler(
       error = err.json; // type-coverage:ignore-line
     });
 
+  if (!statusCode) {
+    console.log('No status code found');
+    statusCode = 500;
+  }
+
   res.status(statusCode).json(isError ? error : response);
 }
