@@ -42,7 +42,7 @@ export class StravaActivityGatheringService {
     console.info(
       `Step 4: Returning data to the user with ${activities.length} activities added to the database`,
     );
-    await this.rateLimitService.updateServiceStatus();
+    this.rateLimitService.updateServiceStatus();
     return { status: 'success', activitiesAdded: activities.length };
   }
 

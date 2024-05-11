@@ -80,8 +80,8 @@ export class StravaDataEnhancementService {
       }
     }
 
-    await this.rateLimitService.updateServiceStatus();
-    await this.runningService.endService();
+    this.rateLimitService.updateServiceStatus();
+    this.runningService.endService();
 
     return {
       status: 'success',
