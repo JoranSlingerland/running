@@ -29,7 +29,14 @@ async function getActivities({
     bearerToken: auth.access_token,
     controller: new AbortController(),
   });
-  const query: ActivitiesQuery = { before, after, page, per_page };
+  let query: ActivitiesQuery = {};
+  if (before) {
+    query = { ...query, before };
+  }
+  if (after) {
+    query = { ...query, after };
+  }
+  query = { ...query, page, per_page };
 
   console.log('Fetching activities', query);
   return (await wretchInstance
