@@ -5,13 +5,12 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
-import { backendEnvFunction } from '@repo/env/src/env';
+import { backendEnv as env } from '@repo/env';
 import { decryptAndVerifyPayload } from '@repo/jwt';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const env = backendEnvFunction();
     const request = context.switchToHttp().getRequest();
     const token = request.headers.authorization?.replace('Bearer ', '');
 

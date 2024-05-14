@@ -1952,6 +1952,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@repo/mongodb@workspace:packages/mongodb"
   dependencies:
+    "@repo/env": "npm:*"
     "@repo/eslint-config": "npm:*"
     "@repo/schemas": "npm:*"
     "@repo/strava": "npm:*"
@@ -1975,6 +1976,7 @@ __metadata:
   resolution: "@repo/strava@workspace:packages/strava"
   dependencies:
     "@repo/api": "npm:*"
+    "@repo/env": "npm:*"
     "@repo/eslint-config": "npm:*"
     "@repo/types": "npm:*"
     "@repo/typescript-config": "npm:*"
@@ -5530,6 +5532,7 @@ __metadata:
     "@radix-ui/react-toggle-group": "npm:^1.0.4"
     "@radix-ui/react-tooltip": "npm:^1.0.7"
     "@repo/api": "npm:*"
+    "@repo/env": "npm:*"
     "@repo/eslint-config": "npm:*"
     "@repo/jwt": "npm:*"
     "@repo/mongodb": "npm:*"

@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { backendEnv as env } from '@repo/env';
 import {
   getLatestSchemaVersion,
   serviceStatusFromMongoDB,
@@ -30,20 +31,16 @@ export class StravaRateLimitService {
         _id: this.serviceName,
         apiCallCount15Min: 0,
         apiCallCountDaily: 0,
-        apiCallLimit15Min: parseInt(process.env.STRAVA_15MIN_LIMIT || '100'),
-        apiCallLimitDaily: parseInt(process.env.STRAVA_DAILY_LIMIT || '1000'),
+        apiCallLimit15Min: env.STRAVA_15MIN_LIMIT,
+        apiCallLimitDaily: env.STRAVA_DAILY_LIMIT,
         lastReset15Min: dayjs().toISOString(),
         lastResetDaily: dayjs().toISOString(),
         version: getLatestSchemaVersion('serviceStatus'),
       };
       await upsertServiceStatusToMongoDB(this.serviceStatus);
     }
-    this.serviceStatus.apiCallLimit15Min = parseInt(
-      process.env.STRAVA_15MIN_LIMIT || '100',
-    );
-    this.serviceStatus.apiCallLimitDaily = parseInt(
-      process.env.STRAVA_DAILY_LIMIT || '1000',
-    );
+    this.serviceStatus.apiCallLimit15Min = env.STRAVA_15MIN_LIMIT;
+    this.serviceStatus.apiCallLimitDaily = env.STRAVA_DAILY_LIMIT;
 
     return this.serviceStatus;
   }
@@ -62,10 +59,8 @@ export class StravaRateLimitService {
       );
     }
 
-    const fifteenMinuteLimit = parseInt(
-      process.env.STRAVA_15MIN_LIMIT || '100',
-    );
-    const dailyLimit = parseInt(process.env.STRAVA_DAILY_LIMIT || '1000');
+    const fifteenMinuteLimit = env.STRAVA_15MIN_LIMIT;
+    const dailyLimit = env.STRAVA_DAILY_LIMIT;
 
     const current = dayjs();
     const nextReset15Min = dayjs(this.serviceStatus.lastReset15Min)

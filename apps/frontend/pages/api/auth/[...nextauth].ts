@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 
+import { frontendServerEnv as env } from '@repo/env';
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
 
@@ -19,8 +20,8 @@ declare module 'next-auth' {
 const authOptions: NextAuthOptions = {
   providers: [
     GithubProvider({
-      clientId: process.env.NEXTAUTH_GITHUB_CLIENTID as string,
-      clientSecret: process.env.NEXTAUTH_GITHUB_CLIENTSECRET as string,
+      clientId: env.NEXTAUTH_GITHUB_CLIENTID as string,
+      clientSecret: env.NEXTAUTH_GITHUB_CLIENTSECRET as string,
     }),
   ],
   callbacks: {
@@ -29,10 +30,10 @@ const authOptions: NextAuthOptions = {
         token.accessToken = account.access_token;
         token.id = crypto
           .createHash('sha256')
-          .update(`${user?.id}-${process.env.NEXTAUTH_SALT}`)
+          .update(`${user?.id}-${env.NEXTAUTH_SALT}`)
           .digest('hex');
         token.admin = false;
-        if (user?.email === process.env.NEXTAUTH_ADMIN_EMAIL) {
+        if (user?.email === env.NEXTAUTH_ADMIN_EMAIL) {
           token.admin = true;
         }
       }

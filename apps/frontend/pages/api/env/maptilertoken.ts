@@ -1,3 +1,4 @@
+import { frontendServerEnv as env } from '@repo/env';
 import type { NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 
@@ -15,21 +16,10 @@ export default async function handler(
 
   switch (req.method) {
     case 'GET':
-      await handleGet(res);
+      res.status(200).json({ maptilerToken: env.MAPTILERTOKEN });
       break;
     default:
       res.setHeader('Allow', 'GET');
       res.status(405).json({ message: `Method ${req.method} Not Allowed` });
   }
-}
-
-async function handleGet(res: NextApiResponse) {
-  const maptilerToken = process.env.MAPTILERTOKEN;
-
-  if (!maptilerToken) {
-    res.status(500).json({ message: 'Missing MAPTILERTOKEN env variable' });
-    return;
-  }
-
-  res.status(200).json({ maptilerToken });
 }

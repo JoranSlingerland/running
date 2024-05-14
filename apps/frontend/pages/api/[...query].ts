@@ -1,4 +1,5 @@
 import { WretchError, createWretchInstance } from '@repo/api';
+import { frontendServerEnv as env } from '@repo/env';
 import { signAndEncryptPayload } from '@repo/jwt';
 import type { NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
@@ -42,10 +43,10 @@ export default async function handler(
   let statusCode = 200;
   let error: unknown;
   const jwt = await signAndEncryptPayload(token, {
-    secret: process.env.API_SHARED_KEY,
-    issuer: process.env.NEXTAUTH_URL,
+    secret: env.API_SHARED_KEY,
+    issuer: env.NEXTAUTH_URL,
   });
-  const url = `${process.env.NESTJS_URL}${urlPath.replace('/api', '')}`;
+  const url = `${env.NESTJS_URL}${urlPath.replace('/api', '')}`;
   const wretchInstance = createWretchInstance({
     url,
     method,

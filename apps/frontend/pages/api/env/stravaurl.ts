@@ -1,3 +1,4 @@
+import { frontendServerEnv as env } from '@repo/env';
 import { stravaConfig } from '@repo/strava';
 import type { NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
@@ -28,7 +29,7 @@ export default async function handler(
 async function handleGet(res: NextApiResponse, req: NextApiRequestUnknown) {
   const callbackUrl = getQueryParam(req.query, 'callbackUrl');
   const scope = getQueryParam(req.query, 'scope');
-  const clientId = process.env.STRAVA_CLIENT_ID;
+  const clientId = env.STRAVA_CLIENT_ID;
 
   if (!callbackUrl || !scope) {
     res.status(400).json({ message: 'Missing required query parameters' });

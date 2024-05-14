@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { backendEnv as env } from '@repo/env';
 import { StravaDataEnhancementService } from 'src/app/src/stravaDataEnhancement';
 
 @Injectable()
@@ -12,7 +13,7 @@ export class StravaDataEnhancementCronService {
     name: 'stravaDataEnhancement',
   })
   async handleCron() {
-    if (process.env.NODE_ENV !== 'production') {
+    if (env.NODE_ENV !== 'production') {
       console.info('Not in production environment, skipping cron job');
       return;
     }

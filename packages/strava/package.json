@@ -14,7 +14,8 @@
     "preinstall": "npx only-allow yarn"
   },
   "dependencies": {
-    "@repo/api": "*"
+    "@repo/api": "*",
+    "@repo/env": "*"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
