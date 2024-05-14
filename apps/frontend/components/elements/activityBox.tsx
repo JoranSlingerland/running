@@ -229,27 +229,46 @@ export function ActivityBox({ activityId }: { activityId: string | 'latest' }) {
     if (!streams) {
       return [];
     }
+    let distance: number[] = [];
+    let heartrate: number[] = [];
+    let cadence: number[] = [];
+    let altitude: number[] = [];
+    let pace: number[] = [];
 
-    const distance = averageDataPoints(
-      streams.distance?.data,
-      streams.distance?.data?.length ?? 0 / dataSmoothing,
-    );
-    const heartrate = averageDataPoints(
-      streams.heartrate?.data,
-      streams.heartrate?.data?.length ?? 0 / dataSmoothing,
-    );
-    const cadence = averageDataPoints(
-      streams.cadence?.data,
-      streams.cadence?.data?.length ?? 0 / dataSmoothing,
-    );
-    const altitude = averageDataPoints(
-      streams.altitude?.data,
-      streams.altitude?.data?.length ?? 0 / dataSmoothing,
-    );
-    const pace = averageDataPoints(
-      streams.velocity_smooth?.data,
-      streams.velocity_smooth?.data?.length ?? 0 / dataSmoothing,
-    );
+    if (streams.distance?.data) {
+      distance = averageDataPoints(
+        streams.distance.data,
+        streams.distance.data.length / dataSmoothing,
+      );
+    }
+
+    if (streams.heartrate?.data) {
+      heartrate = averageDataPoints(
+        streams.heartrate.data,
+        streams.heartrate.data.length / dataSmoothing,
+      );
+    }
+
+    if (streams.cadence?.data) {
+      cadence = averageDataPoints(
+        streams.cadence.data,
+        streams.cadence.data.length / dataSmoothing,
+      );
+    }
+
+    if (streams.altitude?.data) {
+      altitude = averageDataPoints(
+        streams.altitude.data,
+        streams.altitude.data.length / dataSmoothing,
+      );
+    }
+
+    if (streams.velocity_smooth?.data) {
+      pace = averageDataPoints(
+        streams.velocity_smooth.data,
+        streams.velocity_smooth.data.length / dataSmoothing,
+      );
+    }
 
     return distance.map((value, index) => ({
       Distance: value,

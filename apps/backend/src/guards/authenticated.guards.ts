@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
+import { backendEnv as env } from '@repo/env';
 import { decryptAndVerifyPayload } from '@repo/jwt';
 
 @Injectable()
@@ -18,7 +19,7 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     const jwt = await decryptAndVerifyPayload(token, {
-      secret: process.env.API_SHARED_KEY || '',
+      secret: env.API_SHARED_KEY,
     });
 
     if (!jwt || !jwt.id || typeof jwt.id !== 'string') {

@@ -1,5 +1,5 @@
 {
-  "name": "@repo/mongodb",
+  "name": "@repo/env",
   "version": "0.0.0",
   "private": true,
   "publishConfig": {
@@ -13,15 +13,12 @@
     "fix": "npx eslint . --ext .ts --fix --ignore-pattern 'node_modules/*'",
     "preinstall": "npx only-allow yarn"
   },
-  "dependencies": {
-    "@repo/env": "*",
-    "@repo/schemas": "*",
-    "@repo/strava": "*",
-    "mongodb": "^6.5.0"
-  },
   "devDependencies": {
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*"
   },
-  "main": "dist/index.js"
+  "main": "dist/index.js",
+  "dependencies": {
+    "zod": "^3.22.4"
+  }
 }

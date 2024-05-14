@@ -1,3 +1,4 @@
+import { backendEnv as env } from '@repo/env';
 import { Db, Document, MongoClient } from 'mongodb';
 
 import {
@@ -15,22 +16,13 @@ export class MongoDBHelper {
 
   constructor() {
     if (!MongoDBHelper.client) {
-      const host = process.env.MONGODB_URI;
-      const password = process.env.MONGO_INITDB_ROOT_PASSWORD;
-      const username = process.env.MONGO_INITDB_ROOT_USERNAME;
-
-      if (!host || !password || !username) {
-        throw new Error(
-          'Missing MONGO_INITDB_URI or MONGO_INITDB_ROOT_USERNAME or MONGO_INITDB_ROOT_PASSWORD in environment variables.',
-        );
-      }
-
-      const uri = `mongodb://${username}:${password}@${host}`;
+      const uri = `mongodb://${env.MONGO_INITDB_ROOT_USERNAME}:${env.MONGO_INITDB_ROOT_PASSWORD}@${env.MONGODB_URI}`;
       MongoDBHelper.client = new MongoClient(uri, { socketTimeoutMS: 5000 });
     }
     MongoDBHelper.client.connect();
   }
 
+  // TODO: Can this be done in the constructor?
   public async connect(): Promise<Db> {
     if (!MongoDBHelper.db) {
       MongoDBHelper.db = MongoDBHelper.client.db(this.dbName);
