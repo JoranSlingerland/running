@@ -1,1 +1,4 @@
-**
+# Formatting with eslint
+**/*.ts
+**/*.tsx
+**/*.js

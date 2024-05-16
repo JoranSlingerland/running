@@ -1,14 +1,13 @@
 import { WretchError, createWretchInstance } from '@repo/api';
+import { frontendServerEnv as env } from '@repo/env';
 import { signAndEncryptPayload } from '@repo/jwt';
 import type { NextApiResponse } from 'next';
 import { getToken } from 'next-auth/jwt';
 
 import type { NextApiRequestUnknown } from './types';
 
-const allowedMethods = ['POST', 'GET', 'DELETE'];
-
 /**
-This is a catch-all route handler that forwards requests to Azure functions.
+This is a catch-all route handler that forwards requests to the NestJS API.
  - It checks for valid methods, URL, and token before forwarding the request.
  - If any of these checks fail, it sends an appropriate HTTP response.
  - Responses from the Azure function are then forwarded to the client.
@@ -20,8 +19,8 @@ export default async function handler(
   const { url: urlPath, method } = req;
 
   // Check for valid method
-  if (!method || !allowedMethods.includes(method)) {
-    res.setHeader('Allow', allowedMethods.join(', '));
+  if (!method || method !== 'GET') {
+    res.setHeader('Allow', ['GET']);
     res.status(405).json({ message: `Method ${req.method} Not Allowed` });
     return;
   }
@@ -39,23 +38,19 @@ export default async function handler(
     return;
   }
 
-  // Prepare request to Azure function
+  // Prepare request to NestJS
   let isError = false;
   let statusCode = 200;
   let error: unknown;
   const jwt = await signAndEncryptPayload(token, {
-    secret: process.env.API_SHARED_KEY,
-    issuer: process.env.NEXTAUTH_URL,
+    secret: env.API_SHARED_KEY,
+    issuer: env.NEXTAUTH_URL,
   });
-  const url = `${process.env.AZURE_FUNCTION_URL}${urlPath.replace('/api', '')}`;
-  const query = {
-    code: process.env.AZURE_FUNCTION_KEY,
-  };
+  const url = `${env.NESTJS_URL}${urlPath.replace('/api', '')}`;
   const wretchInstance = createWretchInstance({
     url,
     method,
     controller: new AbortController(),
-    query,
     bearerToken: jwt,
   });
 
@@ -71,6 +66,11 @@ export default async function handler(
       statusCode = err.status;
       error = err.json; // type-coverage:ignore-line
     });
+
+  if (!statusCode) {
+    console.log('No status code found');
+    statusCode = 500;
+  }
 
   res.status(statusCode).json(isError ? error : response);
 }

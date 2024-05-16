@@ -24,7 +24,7 @@ function useDailyWeather({
     background,
     cache: {
       enabled: true,
-      hours: 4,
+      ttl: 4 * 1000 * 60 * 60,
       storageType: 'localStorage',
       customKey: 'weather',
     },
@@ -48,7 +48,7 @@ function useHourlyWeather({
     background,
     cache: {
       enabled: true,
-      hours: 4,
+      ttl: 4 * 1000 * 60 * 60,
       storageType: 'localStorage',
     },
   });

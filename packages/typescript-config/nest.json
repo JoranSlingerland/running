@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Default",
+  "compilerOptions": {
+    "allowJs": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "target": "ES2021",
+    "sourceMap": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "downlevelIteration": true,
+    "baseUrl": "./",
+    "noImplicitAny": true,
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "outDir": "./dist",
+    "strictNullChecks": true,
+    "strictBindCallApply": false,
+    "noFallthroughCasesInSwitch": false
+  }
+}

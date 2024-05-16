@@ -1,5 +1,5 @@
 interface Activity {
-  id: string;
+  _id: string;
   achievement_count: number;
   athlete_count: number;
   average_speed: number;
@@ -72,6 +72,8 @@ interface Activity {
     workout_type: string;
   };
   streams?: null | streams;
+  version: number;
+  enrichment_tries: number;
 }
 
 export interface BestEfforts {

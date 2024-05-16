@@ -14,11 +14,12 @@
     "preinstall": "npx only-allow yarn"
   },
   "dependencies": {
-    "wretch": "^2.8.0"
+    "wretch": "^2.8.1"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
-    "@repo/typescript-config": "*"
+    "@repo/typescript-config": "*",
+    "workspace": "^0.0.1-preview.1"
   },
   "main": "dist/index.js"
 }

@@ -1,0 +1,27 @@
+{
+  "name": "@repo/mongodb",
+  "version": "0.0.0",
+  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "ts-coverage": "typescript-coverage-report --threshold 100",
+    "lint": "npx eslint . --ext .ts --ignore-pattern 'node_modules/*'",
+    "fix": "npx eslint . --ext .ts --fix --ignore-pattern 'node_modules/*'",
+    "preinstall": "npx only-allow yarn"
+  },
+  "dependencies": {
+    "@repo/env": "*",
+    "@repo/schemas": "*",
+    "@repo/strava": "*",
+    "mongodb": "^6.5.0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*"
+  },
+  "main": "dist/index.js"
+}

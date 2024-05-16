@@ -15,7 +15,7 @@ interface UseFetchOptions<Body, Query, Response> {
   initialData?: Response;
   cache?: {
     enabled: boolean;
-    hours?: number;
+    ttl?: number;
     storageType?: StorageType;
     customKey?: string;
     useStartEndDates?: boolean;
@@ -38,7 +38,7 @@ interface UseFetchResult<Response> {
   overwriteData: (data: Response) => void;
 }
 
-function useFetch<Body, Query, Response>({
+function useFetch<Body, Query extends string | object | undefined, Response>({
   url,
   method,
   body,
@@ -86,7 +86,7 @@ function useFetch<Body, Query, Response>({
       fallback_data: initialData,
       cache: {
         enabled: cache?.enabled || false,
-        hours: cache?.hours || 24,
+        ttl: cache?.ttl || 60000,
         overwrite: overwrite,
         storageType: cache?.storageType || 'sessionStorage',
         customKey: cache?.customKey || undefined,

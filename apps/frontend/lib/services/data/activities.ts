@@ -24,11 +24,10 @@ function useActivities({
     background,
     cache: {
       enabled: true,
-      hours: 1,
       storageType: 'sessionStorage',
       customKey: query ? 'activities' : undefined,
       useStartEndDates: query ? true : false,
-      deDupeKey: 'id',
+      deDupeKey: '_id',
     },
   });
 }

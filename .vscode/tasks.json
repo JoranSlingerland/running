@@ -3,8 +3,8 @@
   "tasks": [
     {
       "type": "shell",
-      "label": "yarn: dev (frontend)",
-      "command": "yarn dev --filter=frontend",
+      "label": "yarn: dev",
+      "command": "yarn dev --filter=frontend --filter=backend",
       "problemMatcher": [],
       "isBackground": true,
       "presentation": {
@@ -14,10 +14,24 @@
         "showReuseMessage": false,
         "clear": false
       },
-      "dependsOn": ["yarn watch"],
+      "dependsOn": ["yarn watch", "docker: dev up", "yarn: db:setup"],
       "runOptions": {
         "runOn": "folderOpen"
       }
+    },
+    {
+      "type": "shell",
+      "label": "yarn: db:setup",
+      "command": "yarn db:setup --filter=backend",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "never",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false
+      },
+      "dependsOn": ["docker: dev up"]
     },
     {
       "type": "shell",
@@ -34,8 +48,8 @@
     },
     {
       "type": "shell",
-      "label": "run: Comos emulator",
-      "command": "tasklist | findstr /I Microsoft.Azure.Cosmos >nul || Microsoft.Azure.Cosmos.Emulator.exe /AllowNetworkAccess /Key=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
+      "label": "docker: dev up",
+      "command": "docker-compose -f docker-compose-dev.yaml up -d",
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",
@@ -44,23 +58,7 @@
         "showReuseMessage": false,
         "clear": false
       },
-      "runOptions": {
-        "runOn": "folderOpen"
-      }
-    },
-    {
-      "type": "func",
-      "label": "func: host start",
-      "command": "host start",
-      "problemMatcher": "$func-node-watch",
-      "isBackground": true,
-      "dependsOn": ["yarn watch", "azurite"],
-      "options": {
-        "cwd": "${workspaceFolder}/apps\\backend"
-      },
-      "runOptions": {
-        "runOn": "folderOpen"
-      }
+      "isBackground": true
     },
     {
       "label": "yarn watch",
@@ -91,35 +89,6 @@
         "clear": false
       },
       "dependsOn": ["yarn install"]
-    },
-    {
-      "label": "azurite",
-      "type": "shell",
-      "command": "azurite --location ./.azurite",
-      "isBackground": true,
-      "problemMatcher": {
-        "owner": "azurite",
-        "pattern": [
-          {
-            "regexp": "Azurite Blob service is successfully listening at http://[0-9.]+:10000",
-            "file": 1,
-            "line": 2,
-            "message": 3
-          }
-        ],
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": "Azurite Blob service is starting",
-          "endsPattern": "Azurite Blob service is successfully listening"
-        }
-      },
-      "presentation": {
-        "reveal": "never",
-        "focus": false,
-        "panel": "shared",
-        "showReuseMessage": false,
-        "clear": false
-      }
     }
   ]
 }
