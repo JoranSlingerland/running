@@ -10,21 +10,13 @@ import utc from 'dayjs/plugin/utc';
 import { useEffect, useState } from 'react';
 import { useGeolocation } from 'rooks';
 
-import { ActivityBox } from '@elements/activityBox';
+import { ActivityCardWithDialog } from '@elements/activityCard';
 import Calendar from '@elements/calendar';
 import { useProps } from '@hooks/useProps';
 import useSessionStorageState from '@hooks/useSessionStorageState';
 import { GetActivitiesQuery, useActivities } from '@services/data/activities';
 import { useDailyWeather } from '@services/data/weather';
-import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
 import { Chart } from '@ui/chart';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@ui/dialog';
 import {
   Select,
   SelectContent,
@@ -39,15 +31,8 @@ import {
   getFirstMondayBeforeMonth,
   getFirstSundayAfterMonth,
 } from '@utils/dateTimeHelpers';
-import {
-  formatDistance,
-  formatNumber,
-  formatPace,
-  formatTime,
-  sportIcon,
-} from '@utils/formatting';
+import { formatDistance, formatNumber, formatTime } from '@utils/formatting';
 import { getPreferredTss } from '@utils/tss/helpers';
-import { isNotNullOrZero } from '@utils/utils';
 
 dayjs.extend(isBetween);
 dayjs.extend(dayLocaleData);
@@ -81,84 +66,6 @@ interface ChartTotals {
 interface ChartData {
   totals: ChartTotals[];
   [key: string]: ChartTotals[];
-}
-
-function CalendarItem({
-  item,
-  userSettings,
-}: {
-  item: Activity;
-  userSettings: UserSettings | undefined;
-}): JSX.Element {
-  const tss = getPreferredTss(
-    userSettings?.preferences?.preferred_tss_type,
-    item,
-  );
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Card className="my-2 h-full brightness-125 transition-transform duration-200 hover:scale-105">
-          <CardHeader>
-            <CardTitle>
-              <div className="flex items-center space-x-1">
-                {sportIcon(item.type)}
-                {`${item.type} at ${dayjs(item.start_date).format('HH:mm')}`}
-              </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="ml-2 flex flex-col text-left">
-            {isNotNullOrZero(item.elapsed_time) && (
-              <Text>
-                {formatTime({
-                  seconds: item.elapsed_time,
-                  addSeconds: false,
-                })}
-                {' hours'}
-              </Text>
-            )}
-            {isNotNullOrZero(item.distance) && (
-              <Text>
-                {formatDistance({
-                  meters: item.distance,
-                  units: userSettings?.preferences.units || 'metric',
-                })}
-              </Text>
-            )}
-            {isNotNullOrZero(tss.tss) && (
-              <Text>
-                {formatNumber({
-                  number: tss.tss,
-                  decimals: 0,
-                })}{' '}
-                TSS
-              </Text>
-            )}
-
-            {isNotNullOrZero(item.average_heartrate) && (
-              <Text>{item.average_heartrate} BPM</Text>
-            )}
-            {isNotNullOrZero(item.average_speed) && (
-              <Text>
-                {formatPace({
-                  metersPerSecond: item.average_speed,
-                  units: userSettings?.preferences.units || 'metric',
-                })}
-              </Text>
-            )}
-          </CardContent>
-        </Card>
-      </DialogTrigger>
-      <DialogContent className="max-h-[90%] max-w-[90%] overflow-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center space-x-1">
-            {sportIcon(item.type)}
-            {`${item.type} at ${dayjs(item.start_date).format('HH:mm')}`}
-          </DialogTitle>
-          <ActivityBox activityId={item._id} />
-        </DialogHeader>
-      </DialogContent>
-    </Dialog>
-  );
 }
 
 function MetaItem({
@@ -412,11 +319,12 @@ export default function App() {
 
     return (
       <>
-        {filtered.map((item, index) => (
-          <CalendarItem
-            key={index}
-            item={item}
+        {filtered.map((activity, index) => (
+          <ActivityCardWithDialog
+            activity={activity}
             userSettings={userSettings?.data}
+            key={index}
+            cardClassName="my-2 brightness-125 transition-transform duration-200 hover:scale-105"
           />
         ))}
       </>

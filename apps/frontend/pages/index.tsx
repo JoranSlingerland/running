@@ -1,11 +1,14 @@
-import dayjs from 'dayjs';
+import { Units } from '@repo/types';
 import { signIn, useSession } from 'next-auth/react';
 
-import { useActivities } from '@services/data/activities';
+import { ActivityCardWithDialog } from '@elements/activityCard';
+import { useProps } from '@hooks/useProps';
+import { useActivity } from '@services/data/activity';
 import { useDistanceStats } from '@services/data/stats';
 import { Button } from '@ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@ui/card';
 import { Text, Title } from '@ui/typography';
+import { formatDistance, formatPercent } from '@utils/formatting';
 
 export default function Home() {
   const { status } = useSession();
@@ -17,39 +20,94 @@ export default function Home() {
   return <SignIn />;
 }
 
+const StatsCard = ({
+  title,
+  currentDistance,
+  percentageDifference,
+  absoluteDifference,
+  units,
+}: {
+  title: string;
+  currentDistance: number;
+  percentageDifference: number;
+  absoluteDifference: number;
+  units: Units;
+}) => {
+  return (
+    <Card className="text-center">
+      <CardHeader>{title}</CardHeader>
+      <CardContent className="text-lg">
+        <div>
+          {formatDistance({
+            meters: currentDistance,
+            units,
+          })}
+        </div>
+        <div className="flex flex-col">
+          <div>
+            {formatPercent({
+              value: percentageDifference,
+            })}
+          </div>
+          <div>
+            {formatDistance({
+              meters: absoluteDifference,
+              units,
+            })}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
 function Dashboard() {
-  // TODO: ? Write custom api that only gets required stats. This should allow caching and drastically reduce the amount of data fetched.
-  const { data: statsData, isLoading: statsIsLoading } = useDistanceStats({
+  const { data: statsData } = useDistanceStats({
     query: {
-      timeFrames: ['week', 'month', 'year'],
+      timeFrames: ['week', 'month', 'year'].toString(),
     },
   });
-  console.log(statsData);
+  const { userSettings } = useProps();
+  const { data: latestActivity } = useActivity({
+    query: {
+      id: 'latest',
+    },
+  });
+
   return (
     <div className="grid gap-2">
       <div className="grid grid-cols-3 gap-2 pt-2">
-        <Card>
-          <CardHeader>Weekly</CardHeader>
-          <CardContent>10km</CardContent>
-          <CardFooter>10% </CardFooter>
-        </Card>
-        <Card>
-          <CardHeader>Monthly</CardHeader>
-          <CardContent>10km</CardContent>
-          <CardFooter>10% </CardFooter>
-        </Card>
-        <Card>
-          <CardHeader>Yearly</CardHeader>
-          <CardContent>10km</CardContent>
-          <CardFooter>10% </CardFooter>
-        </Card>
+        <StatsCard
+          title="Weekly"
+          currentDistance={statsData?.week?.currentDistance || 0}
+          percentageDifference={statsData?.week?.percentageDifference || 0}
+          absoluteDifference={statsData?.week?.absoluteDifference || 0}
+          units={userSettings?.data?.preferences.units || 'metric'}
+        />
+        <StatsCard
+          title="Monthly"
+          currentDistance={statsData?.month?.currentDistance || 0}
+          percentageDifference={statsData?.month?.percentageDifference || 0}
+          absoluteDifference={statsData?.month?.absoluteDifference || 0}
+          units={userSettings?.data?.preferences.units || 'metric'}
+        />
+        <StatsCard
+          title="Yearly"
+          currentDistance={statsData?.year?.currentDistance || 0}
+          percentageDifference={statsData?.year?.percentageDifference || 0}
+          absoluteDifference={statsData?.year?.absoluteDifference || 0}
+          units={userSettings?.data?.preferences.units || 'metric'}
+        />
       </div>
       <div className="grid gap-2 xl:grid-cols-2">
-        <Card>
-          <CardHeader>Latest run</CardHeader>
-          <CardContent>10km</CardContent>
-          <CardFooter>Map </CardFooter>
-        </Card>
+        {latestActivity ? (
+          <ActivityCardWithDialog
+            activity={latestActivity}
+            userSettings={userSettings?.data}
+          />
+        ) : (
+          <Card />
+        )}
         <Card>
           <CardHeader>Weather</CardHeader>
           <CardContent>Weather</CardContent>

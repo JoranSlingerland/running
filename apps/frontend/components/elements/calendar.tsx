@@ -8,7 +8,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 
-import { HourlyWeatherBlock } from '@elements/hourlyWeather';
+import { HourlyWeatherBlock } from '@elements/weather';
 import { Button } from '@ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@ui/popover';

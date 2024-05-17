@@ -25,6 +25,11 @@ import { cn } from '@utils/shadcn';
 
 const menuItems = [
   {
+    key: '/',
+    icon: <Icon icon={'home'} />,
+    label: 'Dashboard',
+  },
+  {
     key: '/authenticated/calendar/',
     icon: <Icon icon={'calendar_month'} />,
     label: 'Calendar',

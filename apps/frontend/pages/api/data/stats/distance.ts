@@ -1,4 +1,4 @@
-import { activitiesFromCosmos } from '@repo/cosmosdb';
+import { activitiesFromMongoDB } from '@repo/mongodb';
 import { Activity } from '@repo/types';
 import { DistanceStat, DistanceStats } from '@repo/types';
 import dayjs from 'dayjs';
@@ -41,7 +41,7 @@ async function handleGet(
   const timeFrames = (getQueryParam(req.query, 'timeFrames') || '').split(
     ',',
   ) as TimeFrame[];
-  console.log(timeFrames);
+
   const allowedTimeFrames = ['week', 'month', 'year'];
   if (timeFrames.some((timeFrame) => !allowedTimeFrames.includes(timeFrame))) {
     return res.status(400).json({
@@ -62,7 +62,7 @@ async function handleGet(
   // Get all activities within timeFrame
   const startDate = dayjs().subtract(2, largestTimeFrame);
   const endDate = dayjs();
-  const activities = await activitiesFromCosmos({
+  const activities = await activitiesFromMongoDB({
     id,
     startDate: startDate.format('YYYY-MM-DD'),
     endDate: endDate.format('YYYY-MM-DD'),

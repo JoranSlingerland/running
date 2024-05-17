@@ -64,11 +64,15 @@ function formatTime({
   addMinutes = true,
   addHours = true,
 }: {
-  seconds: number;
+  seconds: number | undefined;
   addSeconds?: boolean;
   addMinutes?: boolean;
   addHours?: boolean;
 }) {
+  if (seconds === undefined) {
+    return '';
+  }
+
   const [hours, minutes, remainingSeconds] =
     convertSecondsToTimeComponents(seconds);
 
@@ -163,7 +167,7 @@ function formatNumber({
   return number.toFixed(decimals);
 }
 
-const sportIcon = (sport: string): JSX.Element => {
+const sportIcon = (sport: string | undefined): JSX.Element => {
   switch (sport) {
     case 'Run':
       return <Icon icon="directions_run" />;
@@ -189,12 +193,23 @@ const sportIcon = (sport: string): JSX.Element => {
       return <></>;
   }
 };
+
 function formatCadence(cadence: number | undefined, addUnit = true) {
   if (cadence) {
     cadence = cadence * 2;
   }
   const value = cadence?.toFixed(0);
   return addUnit ? `${value} spm` : `${value}`;
+}
+
+function formatPercent({
+  value,
+  decimals = 2,
+}: {
+  value: number;
+  decimals?: number;
+}) {
+  return `${value.toFixed(decimals)}%`;
 }
 
 export {
@@ -208,4 +223,5 @@ export {
   unitMapper,
   formatSpeed,
   formatCadence,
+  formatPercent,
 };

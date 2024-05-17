@@ -1,9 +1,9 @@
-import { DistanceStats, TimeFrame } from '@repo/types';
+import { DistanceStats } from '@repo/types';
 
 import { useFetch } from '@hooks/useFetch';
 
 interface GetDistanceStatsQuery {
-  timeFrames: TimeFrame[];
+  timeFrames: string;
 }
 
 function useDistanceStats({
@@ -21,12 +21,6 @@ function useDistanceStats({
     query,
     enabled,
     background,
-    cache: {
-      enabled: true,
-      hours: 1,
-      storageType: 'sessionStorage',
-      customKey: 'distanceStats',
-    },
   });
 }
 
