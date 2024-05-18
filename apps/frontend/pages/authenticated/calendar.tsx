@@ -7,7 +7,7 @@ import isBetween from 'dayjs/plugin/isBetween';
 import dayLocaleData from 'dayjs/plugin/localeData';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import utc from 'dayjs/plugin/utc';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useGeolocation } from 'rooks';
 
 import { ActivityCardWithDialog } from '@elements/activityCard';
@@ -107,8 +107,8 @@ function MetaItem({
     <div>
       <div>
         <Text>Total</Text>
-        {sportTotals.map((item) => (
-          <>
+        {sportTotals.map((item, index) => (
+          <div key={index}>
             <Text size="large">
               {formatDistance({
                 meters: item.distance,
@@ -127,7 +127,7 @@ function MetaItem({
                 decimals: 0,
               })} TSS`}
             </Text>
-          </>
+          </div>
         ))}
 
         {chartHasData && (
@@ -195,8 +195,8 @@ function MetaItem({
                 .filter(
                   (item) => !selectedSport || item.sport === selectedSport,
                 )
-                .map((item) => (
-                  <>
+                .map((item, index) => (
+                  <div key={index}>
                     <div key={item.sport}>
                       {item.distance !== 0 && (
                         <Text>
@@ -248,7 +248,7 @@ function MetaItem({
                         </TabsContent>
                       ))}
                     </Tabs>
-                  </>
+                  </div>
                 ))}
           </>
         )}
@@ -362,14 +362,9 @@ export default function App() {
 
     const sports = [...new Set(filtered.map((item) => item.type))];
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useEffect(() => {
-      if (selectedSport === null && sports.length > 0) {
-        const runSport = sports.find((sport) => sport === 'run');
-        setSelectedSport(runSport ? runSport : sports[0]);
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    if (selectedSport === null && sports.length > 0) {
+      setSelectedSport(sports.find((sport) => sport === 'run') || sports[0]);
+    }
 
     // Get distance and time for each sport
     const sportsData: SportData[] = sports.map((sport) => {
