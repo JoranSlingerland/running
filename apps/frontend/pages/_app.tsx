@@ -5,11 +5,10 @@ import Head from 'next/head';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider, useTheme } from 'next-themes';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 import { PropsContext } from '@hooks/useProps';
 import Footer from '@modules/footer';
-import FullScreenLoader from '@modules/loading';
 import Navbar from '@modules/navbar';
 import { useUserSettings } from '@services/user/get';
 import { Toaster } from '@ui/sonner';
@@ -19,41 +18,16 @@ interface PageProps {
   content: string;
 }
 
-interface AppContentProps {
-  Component: AppProps['Component'];
-  pageProps: PageProps;
-}
-
 interface SessionAppProps extends AppProps {
   session: Session;
   pageProps: PageProps;
 }
 
 function MyApp({ Component, pageProps, session }: SessionAppProps) {
-  return (
-    <>
-      <Head>
-        <title>Running</title>
-      </Head>
-      <SessionProvider session={session}>
-        <ThemeProvider defaultTheme="system" attribute="class">
-          <AppContent Component={Component} pageProps={pageProps} />
-        </ThemeProvider>
-      </SessionProvider>
-    </>
-  );
-}
-
-function AppContent({ Component, pageProps }: AppContentProps) {
   const { setTheme } = useTheme();
   const userSettings = useUserSettings();
-  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   useEffect(() => {
-    if (!userSettings.isLoading) {
-      setHasLoadedOnce(true);
-    }
-
     if (userSettings?.data?.preferences?.dark_mode) {
       setTheme(userSettings.data.preferences.dark_mode);
     }
@@ -63,25 +37,31 @@ function AppContent({ Component, pageProps }: AppContentProps) {
     setTheme,
   ]);
 
-  // Main content
   return (
-    <div className="flex min-h-screen flex-col justify-between font-sans antialiased">
-      <PropsContext.Provider
-        value={{
-          userSettings,
-        }}
-      >
-        <Toaster />
+    <>
+      <Head>
+        <title>Running</title>
+      </Head>
+      <SessionProvider session={session}>
+        <ThemeProvider defaultTheme="system" attribute="class">
+          <div className="flex min-h-screen flex-col justify-between font-sans antialiased">
+            <PropsContext.Provider
+              value={{
+                userSettings,
+              }}
+            >
+              <Toaster />
 
-        <Navbar />
-        <div className="px-2">
-          <Component {...pageProps} />
-        </div>
-        <Footer />
-
-        <FullScreenLoader active={userSettings.isLoading && !hasLoadedOnce} />
-      </PropsContext.Provider>
-    </div>
+              <Navbar />
+              <div className="px-2">
+                <Component {...pageProps} />
+              </div>
+              <Footer />
+            </PropsContext.Provider>
+          </div>
+        </ThemeProvider>
+      </SessionProvider>
+    </>
   );
 }
 

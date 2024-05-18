@@ -1,7 +1,6 @@
 import { HourlyWeather } from '@repo/weather';
 import { wmoCodes } from '@repo/weather';
 import dayjs, { Dayjs } from 'dayjs';
-import Image from 'next/image';
 import React, { useState } from 'react';
 import { useGeolocation } from 'rooks';
 
@@ -9,6 +8,8 @@ import { useProps } from '@hooks/useProps';
 import useSessionStorageState from '@hooks/useSessionStorageState';
 import { useDailyWeather, useHourlyWeather } from '@services/data/weather';
 import { Chart } from '@ui/chart';
+import { ImageWithSkeleton } from '@ui/image';
+import { Skeleton } from '@ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/tabs';
 import { Text } from '@ui/typography';
 import { selectedClassName } from '@utils/cssPresets';
@@ -92,7 +93,7 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
         </div>
         <TabsContent value="temperature" className="pt-2">
           <div className="flex flex-row items-baseline space-x-1"></div>
-          <div className="h-32">
+          <div className="h-48">
             <Chart
               data={tableData}
               composedChartProps={{
@@ -261,7 +262,7 @@ function DailyWeatherBlock() {
   const geoLocation = useGeolocation({
     when: userSettings?.data?.preferences.enable_weather,
   });
-  const { data: weatherData } = useDailyWeather({
+  const { data: weatherData, isLoading: weatherIsLoading } = useDailyWeather({
     query: {
       forecast_days: 14,
       latitude: geoLocation?.lat || 0,
@@ -271,8 +272,9 @@ function DailyWeatherBlock() {
   });
   const daily = weatherData?.daily;
   const [activeIndex, setActiveIndex] = useState<number>(0);
+  console.log(weatherIsLoading);
 
-  if (!userSettings?.data?.preferences.enable_weather || geoLocation?.isError) {
+  if (geoLocation?.isError) {
     return (
       <div className="flex h-full items-center justify-center text-center">
         <Text size={'large'}>Enable weather in user settings</Text>
@@ -280,12 +282,16 @@ function DailyWeatherBlock() {
     );
   }
 
+  const next7Days = Array.from({ length: 7 }, (_, i) =>
+    dayjs().add(i + 1, 'day'),
+  );
+
   return (
     <>
       <HourlyWeatherBlock date={dayjs(daily?.time[activeIndex])} />
       <div className="flex flex-row justify-between p-1 md:p-2">
-        {daily?.time.slice(0, 7).map((time, index) => {
-          const formattedTime = dayjs(time).format('ddd');
+        {next7Days?.map((day, index) => {
+          const formattedTime = dayjs(day).format('ddd');
           return (
             <div
               key={index}
@@ -297,23 +303,30 @@ function DailyWeatherBlock() {
               onClick={() => setActiveIndex(index)}
             >
               {formattedTime}
-              <Image
-                src={wmoCodes[`${daily.weather_code[index]}`]?.day.image}
-                alt={wmoCodes[`${daily.weather_code[index]}`]?.day.description}
+              <ImageWithSkeleton
+                src={wmoCodes[`${daily?.weather_code[index]}`]?.day.image}
+                alt={wmoCodes[`${daily?.weather_code[index]}`]?.day.description}
                 width={32}
                 height={32}
+                isLoading={weatherIsLoading}
               />
-              <Text className="text-xs sm:text-base">
-                {formatNumber({
-                  number: daily.temperature_2m_max[index],
-                  decimals: 0,
-                })}
-                ° /{' '}
-                {formatNumber({
-                  number: daily.temperature_2m_min[index],
-                  decimals: 0,
-                })}
-              </Text>
+              {weatherIsLoading ? (
+                <div className="pt-1">
+                  <Skeleton className="h-4 w-12" />
+                </div>
+              ) : (
+                <Text className="text-xs sm:text-base">
+                  {formatNumber({
+                    number: daily?.temperature_2m_max[index],
+                    decimals: 0,
+                  })}
+                  ° /{' '}
+                  {formatNumber({
+                    number: daily?.temperature_2m_min[index],
+                    decimals: 0,
+                  })}
+                </Text>
+              )}
             </div>
           );
         })}

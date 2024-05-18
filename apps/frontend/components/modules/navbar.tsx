@@ -26,8 +26,8 @@ import { cn } from '@utils/shadcn';
 
 const menuItems = [
   {
-    key: '/',
-    icon: <Icon icon={'home'} />,
+    key: '/authenticated/dashboard/',
+    icon: <Icon icon={'dashboard'} />,
     label: 'Dashboard',
   },
   {
@@ -127,7 +127,13 @@ function UserNav({
           ))}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => signOut()}>
+        <DropdownMenuItem
+          onClick={() =>
+            signOut({
+              callbackUrl: '/',
+            })
+          }
+        >
           <div className="flex items-center text-sm font-medium">
             {logOut.icon}
             <span className="ml-2">{logOut.label}</span>
@@ -179,7 +185,11 @@ function SheetNav({
               current,
               'text-sm font-medium h-9 p-2 rounded-xl',
             )}
-            onClick={() => signOut()}
+            onClick={() =>
+              signOut({
+                callbackUrl: '/',
+              })
+            }
           >
             {logOut.icon}
             <span className="ml-2">{logOut.label}</span>
