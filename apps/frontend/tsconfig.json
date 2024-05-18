@@ -10,9 +10,16 @@
       "@services/*": ["lib/services/*"],
       "@ui/*": ["components/ui/*"],
       "@utils/*": ["lib/utils/*"],
-      "@pages/*": ["pages/*"],
+      "@pages/*": ["pages/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/_app.tsx", "tailwind.config.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "pages/_app.tsx",
+    "tailwind.config.ts",
+    "types/*.d.ts"
+  ],
   "exclude": ["node_modules"]
 }

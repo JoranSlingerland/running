@@ -1,12 +1,12 @@
 import dayjs from 'dayjs';
 import { Hourglass, Loader2, RotateCcw } from 'lucide-react';
 import { useRouter } from 'next/router';
+import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 
 import { AccountForm } from '@elements/forms/Account';
 import { PreferencesForm } from '@elements/forms/preferences';
 import useSessionStorageState from '@hooks/useSessionStorageState';
-import { useIsAdmin } from '@services/auth/isAdmin';
 import { enhanceStravaData } from '@services/backend/admin/enhance';
 import { useRateLimitStatus } from '@services/backend/admin/ratelimit';
 import { useServiceStatus } from '@services/backend/admin/servicestatus/get';
@@ -255,9 +255,8 @@ function Admin() {
 export default function Settings() {
   const [tab, setTab] = useSessionStorageState('settingsTab', 'account');
   const router = useRouter();
-  const { data: isAdminData } = useIsAdmin({
-    enabled: true,
-  });
+  const { data: session } = useSession();
+  session?.user.admin;
 
   return (
     <>
@@ -271,7 +270,7 @@ export default function Settings() {
               <TabsTrigger value="account">Account</TabsTrigger>
               <TabsTrigger value="preferences">Preferences</TabsTrigger>
               <TabsTrigger value="actions">Actions</TabsTrigger>
-              {isAdminData?.isAdmin && (
+              {session?.user.admin && (
                 <TabsTrigger value="admin">Admin</TabsTrigger>
               )}
             </TabsList>
@@ -285,7 +284,7 @@ export default function Settings() {
           <TabsContent className="px-2" value="actions">
             {Actions(router)}
           </TabsContent>
-          {isAdminData?.isAdmin && (
+          {session?.user.admin && (
             <TabsContent className="px-2" value="admin">
               <Admin />
             </TabsContent>
