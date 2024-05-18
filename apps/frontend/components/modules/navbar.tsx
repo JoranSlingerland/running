@@ -21,6 +21,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@ui/sheet';
+import { selectedClassName } from '@utils/cssPresets';
 import { cn } from '@utils/shadcn';
 
 const menuItems = [
@@ -49,14 +50,6 @@ const logOut = {
   label: 'Logout',
 };
 
-function getLinkClassName(key: string, current: string) {
-  return `flex items-center text-sm font-medium transition-colors rounded-xl h-9 p-2 ${
-    key === current
-      ? 'bg-zinc-100 text-zinc-900 shadow-sm hover:bg-zinc-100/80 dark:bg-zinc-800 dark:text-zinc-50 dark:hover:bg-zinc-800/80'
-      : 'hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-50'
-  }`;
-}
-
 function MainNav({
   className,
   current,
@@ -72,7 +65,11 @@ function MainNav({
         <Link
           key={item.key}
           href={item.key}
-          className={getLinkClassName(item.key, current)}
+          className={selectedClassName(
+            item.key,
+            current,
+            'text-sm font-medium h-9 p-2 rounded-xl',
+          )}
           onClick={() => setCurrent(item.key)}
         >
           {item.icon}
@@ -164,7 +161,11 @@ function SheetNav({
             <Link
               key={item.key}
               href={item.key}
-              className={getLinkClassName(item.key, current)}
+              className={selectedClassName(
+                item.key,
+                current,
+                'text-sm font-medium h-9 p-2 rounded-xl',
+              )}
               onClick={() => setCurrent(item.key)}
             >
               {item.icon}
@@ -173,7 +174,11 @@ function SheetNav({
           ))}
           <Separator />
           <div
-            className={getLinkClassName('', current)}
+            className={selectedClassName(
+              '',
+              current,
+              'text-sm font-medium h-9 p-2 rounded-xl',
+            )}
             onClick={() => signOut()}
           >
             {logOut.icon}

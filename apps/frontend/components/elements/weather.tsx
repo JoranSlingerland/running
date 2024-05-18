@@ -1,16 +1,18 @@
 import { HourlyWeather } from '@repo/weather';
+import { wmoCodes } from '@repo/weather';
 import dayjs, { Dayjs } from 'dayjs';
-import { MoveDown } from 'lucide-react';
+import Image from 'next/image';
 import React, { useState } from 'react';
 import { useGeolocation } from 'rooks';
 
 import { useProps } from '@hooks/useProps';
 import useSessionStorageState from '@hooks/useSessionStorageState';
-import { useHourlyWeather } from '@services/data/weather';
+import { useDailyWeather, useHourlyWeather } from '@services/data/weather';
 import { Chart } from '@ui/chart';
-import { Skeleton } from '@ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/tabs';
 import { Text } from '@ui/typography';
+import { selectedClassName } from '@utils/cssPresets';
+import { formatNumber } from '@utils/formatting';
 import { formatSpeed } from '@utils/formatting';
 
 type WeatherData = {
@@ -22,15 +24,6 @@ type WeatherData = {
   'Wind Speed': number;
   'Wind Gusts': number;
   'Wind Direction': number;
-};
-
-type TextLoadingProps = {
-  children: React.ReactNode;
-  isLoading: boolean;
-};
-
-const TextLoading: React.FC<TextLoadingProps> = ({ children, isLoading }) => {
-  return isLoading ? <Skeleton className="h-4 w-12" /> : children;
 };
 
 const formatters = (units: Units) => [
@@ -73,8 +66,6 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
     'hourlyWeatherBlockSelectedTab',
     'temperature',
   );
-  const [dataIndex, setDataIndex] = useState<number>(0);
-
   const hourlyWeather = useHourlyWeather({
     query: {
       date: date.format('YYYY-MM-DD'),
@@ -84,60 +75,9 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
     enabled: geoLocation?.isError === false,
   });
 
-  const hourlyWeatherData = hourlyWeather.data?.hourly;
-
   const tableData = convertData(hourlyWeather.data);
   return (
     <>
-      <div className="grid grid-cols-3 grid-rows-1 items-center justify-center py-2">
-        <div className="flex flex-row items-baseline justify-center space-x-1">
-          <TextLoading isLoading={hourlyWeather.isLoading}>
-            <Text bold size="large">
-              {hourlyWeatherData?.temperature_2m[dataIndex]}°
-            </Text>
-          </TextLoading>
-        </div>
-        <div className="flex flex-row items-baseline justify-center space-x-1">
-          <TextLoading isLoading={hourlyWeather.isLoading}>
-            <Text bold size="large">
-              {hourlyWeatherData?.precipitation[dataIndex]} mm
-            </Text>
-          </TextLoading>
-          <TextLoading isLoading={hourlyWeather.isLoading}>
-            <Text type={'muted'}>
-              {hourlyWeatherData?.precipitation_probability[dataIndex]}%
-            </Text>
-          </TextLoading>
-        </div>
-        <div className="flex flex-row items-baseline justify-center space-x-1">
-          <TextLoading isLoading={hourlyWeather.isLoading}>
-            <Text bold size="large">
-              {formatSpeed({
-                metersPerSecond: hourlyWeatherData?.wind_speed_10m[dataIndex],
-                units: userSettings?.data?.preferences.units || 'metric',
-                decimals: 1,
-              })}
-            </Text>
-          </TextLoading>
-          <TextLoading isLoading={hourlyWeather.isLoading}>
-            <Text type={'muted'}>
-              {formatSpeed({
-                metersPerSecond: hourlyWeatherData?.wind_gusts_10m[dataIndex],
-                units: userSettings?.data?.preferences.units || 'metric',
-                decimals: 1,
-              })}
-            </Text>
-          </TextLoading>
-          <TextLoading isLoading={hourlyWeather.isLoading}>
-            <MoveDown
-              style={{
-                transform: `rotate(${hourlyWeatherData?.wind_direction_10m[dataIndex]}deg)`,
-              }}
-              className="size-4"
-            />
-          </TextLoading>
-        </div>
-      </div>
       <Tabs
         onValueChange={(value) => setSelectedTab(value)}
         value={selectedTab}
@@ -152,15 +92,24 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
         </div>
         <TabsContent value="temperature" className="pt-2">
           <div className="flex flex-row items-baseline space-x-1"></div>
-          <div className="h-48">
+          <div className="h-32">
             <Chart
-              dataIndexCallback={(index) => setDataIndex(index)}
               data={tableData}
+              composedChartProps={{
+                margin: {
+                  right: 10,
+                },
+              }}
               areas={[
                 {
                   dataKey: 'Temperature',
                   animationDuration: 0,
                   useGradient: true,
+                  label: {
+                    position: 'top',
+                    minLabelGap: 2,
+                    skipFirst: true,
+                  },
                 },
               ]}
               formatters={formatters(
@@ -190,13 +139,22 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
         <TabsContent value="precipitation">
           <div className="h-48">
             <Chart
-              dataIndexCallback={(index) => setDataIndex(index)}
               data={tableData}
+              composedChartProps={{
+                margin: {
+                  right: 10,
+                },
+              }}
               areas={[
                 {
                   dataKey: 'Precipitation',
                   animationDuration: 0,
                   useGradient: true,
+                  label: {
+                    position: 'top',
+                    minLabelGap: 2,
+                    skipFirst: true,
+                  },
                 },
               ]}
               formatters={formatters(
@@ -226,13 +184,22 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
         <TabsContent value="wind">
           <div className="h-48">
             <Chart
-              dataIndexCallback={(index) => setDataIndex(index)}
               data={tableData}
+              composedChartProps={{
+                margin: {
+                  right: 10,
+                },
+              }}
               areas={[
                 {
                   dataKey: 'Wind Speed',
                   animationDuration: 0,
                   useGradient: true,
+                  label: {
+                    position: 'top',
+                    minLabelGap: 2,
+                    skipFirst: true,
+                  },
                 },
               ]}
               formatters={formatters(
@@ -271,6 +238,72 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
   );
 }
 
+function DailyWeatherBlock() {
+  const { userSettings } = useProps();
+  const geoLocation = useGeolocation({
+    when: userSettings?.data?.preferences.enable_weather,
+  });
+  const { data: weatherData } = useDailyWeather({
+    query: {
+      forecast_days: 14,
+      latitude: geoLocation?.lat || 0,
+      longitude: geoLocation?.lng || 0,
+    },
+    enabled: geoLocation?.isError === false,
+  });
+  const daily = weatherData?.daily;
+  const [activeIndex, setActiveIndex] = useState<number>(0);
+
+  if (!userSettings?.data?.preferences.enable_weather || geoLocation?.isError) {
+    return (
+      <div className="flex h-full items-center justify-center text-center">
+        <Text size={'large'}>Enable weather in user settings</Text>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <HourlyWeatherBlock date={dayjs(daily?.time[activeIndex])} />
+      <div className="flex flex-row justify-between p-1 md:p-2">
+        {daily?.time.slice(0, 7).map((time, index) => {
+          const formattedTime = dayjs(time).format('ddd');
+          return (
+            <div
+              key={index}
+              className={selectedClassName(
+                index,
+                activeIndex,
+                'flex flex-col items-center justify-center rounded-md p-1 md:p-2 cursor-pointer',
+              )}
+              onClick={() => setActiveIndex(index)}
+            >
+              {formattedTime}
+              <Image
+                src={wmoCodes[`${daily.weather_code[index]}`]?.day.image}
+                alt={wmoCodes[`${daily.weather_code[index]}`]?.day.description}
+                width={32}
+                height={32}
+              />
+              <Text className="text-xs sm:text-base">
+                {formatNumber({
+                  number: daily.temperature_2m_max[index],
+                  decimals: 0,
+                })}
+                ° /{' '}
+                {formatNumber({
+                  number: daily.temperature_2m_min[index],
+                  decimals: 0,
+                })}
+              </Text>
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
 const convertData = (data: HourlyWeather | undefined): WeatherData[] => {
   const result: WeatherData[] = [];
 
@@ -298,4 +331,4 @@ const convertData = (data: HourlyWeather | undefined): WeatherData[] => {
   return result;
 };
 
-export { HourlyWeatherBlock };
+export { HourlyWeatherBlock, DailyWeatherBlock };

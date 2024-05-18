@@ -2,6 +2,7 @@ import { Units } from '@repo/types';
 import { signIn, useSession } from 'next-auth/react';
 
 import { ActivityCardWithDialog } from '@elements/activityCard';
+import { DailyWeatherBlock } from '@elements/weather';
 import { useProps } from '@hooks/useProps';
 import { useActivity } from '@services/data/activity';
 import { useDistanceStats } from '@services/data/stats';
@@ -36,25 +37,25 @@ const StatsCard = ({
   return (
     <Card className="text-center">
       <CardHeader>{title}</CardHeader>
-      <CardContent className="text-lg">
-        <div>
+      <CardContent>
+        <Text size="large">
           {formatDistance({
             meters: currentDistance,
             units,
           })}
-        </div>
+        </Text>
         <div className="flex flex-col">
-          <div>
+          <Text type="muted">
             {formatPercent({
               value: percentageDifference,
             })}
-          </div>
-          <div>
+          </Text>
+          <Text type="muted">
             {formatDistance({
               meters: absoluteDifference,
               units,
             })}
-          </div>
+          </Text>
         </div>
       </CardContent>
     </Card>
@@ -75,8 +76,8 @@ function Dashboard() {
   });
 
   return (
-    <div className="grid gap-2">
-      <div className="grid grid-cols-3 gap-2 pt-2">
+    <div className="grid gap-4">
+      <div className="grid grid-cols-3 gap-4 pt-2">
         <StatsCard
           title="Weekly"
           currentDistance={statsData?.week?.currentDistance || 0}
@@ -99,22 +100,25 @@ function Dashboard() {
           units={userSettings?.data?.preferences.units || 'metric'}
         />
       </div>
-      <div className="grid gap-2 xl:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2">
         {latestActivity ? (
-          <ActivityCardWithDialog
-            activity={latestActivity}
-            userSettings={userSettings?.data}
-          />
+          <Card className="p-2">
+            <Text size="large" className="pb-2">
+              Your latest activity
+            </Text>
+            <ActivityCardWithDialog
+              activity={latestActivity}
+              userSettings={userSettings?.data}
+            />
+          </Card>
         ) : (
           <Card />
         )}
-        <Card>
-          <CardHeader>Weather</CardHeader>
-          <CardContent>Weather</CardContent>
-          <CardFooter>10% </CardFooter>
+        <Card className="pr-2 pt-2">
+          <DailyWeatherBlock />
         </Card>
       </div>
-      <div className="grid gap-2 xl:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>Chart 1</CardHeader>
           <CardContent>Chart</CardContent>

@@ -24,6 +24,7 @@ import {
   formatTime,
   sportIcon,
 } from '@utils/formatting';
+import { cn } from '@utils/shadcn';
 import { getPreferredTss } from '@utils/tss/helpers';
 import { isNotNullOrZero } from '@utils/utils';
 
@@ -44,7 +45,7 @@ export const ActivityCard = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & CardProps
 >(({ activity, userSettings, tss, className, ...props }, ref) => (
-  <Card className={className} ref={ref} {...props}>
+  <Card className={cn('cursor-pointer', className)} ref={ref} {...props}>
     <CardHeader>
       <CardTitle>
         <div className="flex items-center space-x-1">
