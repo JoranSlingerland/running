@@ -103,7 +103,7 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
               areas={[
                 {
                   dataKey: 'Temperature',
-                  animationDuration: 0,
+                  animationDuration: 200,
                   useGradient: true,
                   label: {
                     position: 'top',
@@ -124,6 +124,13 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
                 {
                   orientation: 'right',
                   dataKey: 'Temperature',
+                  domain([dataMin, dataMax]) {
+                    return [
+                      Math.ceil(dataMin < 0 ? 1.1 * dataMin : 0.9 * dataMin),
+                      Math.ceil(dataMax < 0 ? 0.9 * dataMax : 1.1 * dataMax),
+                    ];
+                  },
+                  allowDataOverflow: true,
                 },
               ]}
               toolTip={{
@@ -148,7 +155,7 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
               areas={[
                 {
                   dataKey: 'Precipitation',
-                  animationDuration: 0,
+                  animationDuration: 200,
                   useGradient: true,
                   label: {
                     position: 'top',
@@ -169,6 +176,17 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
                 {
                   orientation: 'right',
                   dataKey: 'Precipitation',
+                  domain([dataMin, dataMax]) {
+                    return [
+                      dataMin,
+                      Math.ceil(
+                        Math.max(
+                          dataMax < 0 ? 0.9 * dataMax : 1.1 * dataMax,
+                          1,
+                        ),
+                      ),
+                    ];
+                  },
                 },
               ]}
               toolTip={{
@@ -193,7 +211,7 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
               areas={[
                 {
                   dataKey: 'Wind Speed',
-                  animationDuration: 0,
+                  animationDuration: 200,
                   useGradient: true,
                   label: {
                     position: 'top',
@@ -208,7 +226,7 @@ function HourlyWeatherBlock({ date }: { date: Dayjs }) {
               lines={[
                 {
                   dataKey: 'Wind Gusts',
-                  animationDuration: 0,
+                  animationDuration: 200,
                 },
               ]}
               xAxis={[
