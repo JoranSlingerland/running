@@ -8,8 +8,7 @@ declare module 'next-auth' {
     };
   }
   interface JWT extends DefaultJWT {
-    user: DefaultJWT['user'] & {
-      admin: boolean;
-    };
+    admin: boolean;
+    id: string;
   }
 }
