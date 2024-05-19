@@ -20,13 +20,9 @@ dotenv.config();
 async function setupDatabase() {
   console.log('Setting up database...');
   const helper = new MongoDBHelper();
-  const client = await helper.rawClient();
-  const db = await helper.connect();
+  const db = helper.db();
 
   try {
-    await client.connect();
-    console.log('Connected to MongoDB');
-
     console.log('Creating collections...');
     await createCollections(db);
 

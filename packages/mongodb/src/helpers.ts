@@ -19,19 +19,18 @@ export class MongoDBHelper {
       const uri = `mongodb://${env.MONGO_INITDB_ROOT_USERNAME}:${env.MONGO_INITDB_ROOT_PASSWORD}@${env.MONGODB_URI}`;
       MongoDBHelper.client = new MongoClient(uri, { socketTimeoutMS: 5000 });
     }
-    MongoDBHelper.client.connect();
-  }
-
-  // TODO: Can this be done in the constructor?
-  public async connect(): Promise<Db> {
     if (!MongoDBHelper.db) {
       MongoDBHelper.db = MongoDBHelper.client.db(this.dbName);
     }
-    return MongoDBHelper.db;
+    MongoDBHelper.client.connect();
   }
 
-  public async rawClient(): Promise<MongoClient> {
+  public rawClient(): MongoClient {
     return MongoDBHelper.client;
+  }
+
+  public db(): Db {
+    return MongoDBHelper.db;
   }
 
   public async close(): Promise<void> {
@@ -40,9 +39,8 @@ export class MongoDBHelper {
     }
   }
 
-  public async getCollection<T extends Document>(collectionName: string) {
-    const db = await this.connect();
-    return db.collection<T>(collectionName);
+  public getCollection<T extends Document>(collectionName: string) {
+    return MongoDBHelper.db.collection<T>(collectionName);
   }
 }
 

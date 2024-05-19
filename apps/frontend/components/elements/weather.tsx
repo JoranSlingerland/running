@@ -272,7 +272,6 @@ function DailyWeatherBlock() {
   });
   const daily = weatherData?.daily;
   const [activeIndex, setActiveIndex] = useState<number>(0);
-  console.log(weatherIsLoading);
 
   if (geoLocation?.isError) {
     return (

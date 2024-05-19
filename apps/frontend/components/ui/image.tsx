@@ -9,8 +9,8 @@ interface Props extends ImageProps {
 }
 
 export const ImageWithSkeleton = React.forwardRef<HTMLImageElement, Props>(
-  ({ width, height, className, ...props }) => {
-    if (props.isLoading) {
+  ({ width, height, className, isLoading, ...props }, ref) => {
+    if (isLoading) {
       return (
         <Skeleton
           style={{
@@ -23,7 +23,13 @@ export const ImageWithSkeleton = React.forwardRef<HTMLImageElement, Props>(
     }
 
     return (
-      <Image width={width} height={height} className={className} {...props} />
+      <Image
+        ref={ref}
+        width={width}
+        height={height}
+        className={className}
+        {...props}
+      />
     );
   },
 );
