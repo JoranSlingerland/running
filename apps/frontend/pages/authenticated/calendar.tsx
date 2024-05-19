@@ -13,7 +13,6 @@ import { useGeolocation } from 'rooks';
 import { ActivityCardWithDialog } from '@elements/activityCard';
 import Calendar from '@elements/calendar';
 import { useProps } from '@hooks/useProps';
-import useSessionStorageState from '@hooks/useSessionStorageState';
 import { GetActivitiesQuery, useActivities } from '@services/data/activities';
 import { useDailyWeather } from '@services/data/weather';
 import { Chart } from '@ui/chart';
@@ -72,23 +71,22 @@ function MetaItem({
   sportsData,
   sportTotals,
   sports,
-  selectedSport,
-  setSelectedSport,
   chartData,
-  chartTab,
-  setChartTab,
   units,
 }: {
   sportsData: SportData[];
   sportTotals: SportTotals[];
   sports: string[];
-  selectedSport: string | null;
-  setSelectedSport: (value: string) => void;
   chartData: ChartData;
-  chartTab?: 'tss' | 'distance' | 'moving_time';
-  setChartTab: (value: 'tss' | 'distance' | 'moving_time') => void;
   units: Units;
 }): JSX.Element {
+  const [selectedSport, setSelectedSport] = useState<string | null>(
+    sports.find((sport) => sport === 'run') || sports[0],
+  );
+  const [chartTab, setChartTab] = useState<'tss' | 'distance' | 'moving_time'>(
+    'tss',
+  );
+
   const tabValues = {
     tss: 'TSS',
     distance: 'Distance',
@@ -271,12 +269,6 @@ export default function App() {
     endDate: getFirstSundayAfterMonth(currentDay).format(dateFormat),
   });
   const { userSettings } = useProps();
-  const [selectedSport, setSelectedSport] = useSessionStorageState<
-    string | null
-  >('calendarSelectedSport', null);
-  const [chartTab, setChartTab] = useSessionStorageState<
-    'tss' | 'distance' | 'moving_time'
-  >('calendarChartTab', 'tss');
 
   const { data: activitiesData, isLoading: activitiesIsLoading } =
     useActivities({
@@ -335,36 +327,29 @@ export default function App() {
     const firstDay = value.startOf('week');
     const lastDay = value.endOf('week');
 
-    if (activitiesData === undefined) {
-      return <></>;
-    }
-
-    let filtered: ActivityWithTss[] = activitiesData
-      ? activitiesData.filter((item) => {
+    // Filter activities for the week
+    const filtered: ActivityWithTss[] = activitiesData
+      ? activitiesData.reduce((acc: ActivityWithTss[], item) => {
           const itemStartDate = dayjs
             .utc(item.start_date)
             .utcOffset(value.utcOffset());
-          return itemStartDate.isBetween(firstDay, lastDay, undefined, '[]');
-        })
+
+          if (itemStartDate.isBetween(firstDay, lastDay, undefined, '[]')) {
+            const tss = getPreferredTss(
+              userSettings?.data?.preferences.preferred_tss_type,
+              item,
+            );
+
+            acc.push({
+              ...item,
+              tss: tss.tss || 0,
+            });
+          }
+
+          return acc;
+        }, [])
       : [];
-
-    // Add preferred tss to each activity
-    filtered = filtered.map((item) => {
-      const tss = getPreferredTss(
-        userSettings?.data?.preferences.preferred_tss_type,
-        item,
-      );
-      return {
-        ...item,
-        tss: tss.tss || 0,
-      };
-    });
-
     const sports = [...new Set(filtered.map((item) => item.type))];
-
-    if (selectedSport === null && sports.length > 0) {
-      setSelectedSport(sports.find((sport) => sport === 'run') || sports[0]);
-    }
 
     // Get distance and time for each sport
     const sportsData: SportData[] = sports.map((sport) => {
@@ -464,11 +449,7 @@ export default function App() {
             sportsData={sportsData}
             sportTotals={[totals]}
             sports={sports}
-            selectedSport={selectedSport}
-            setSelectedSport={setSelectedSport}
             chartData={chartData}
-            chartTab={chartTab}
-            setChartTab={setChartTab}
             units={userSettings?.data?.preferences.units || 'metric'}
           />
         )}

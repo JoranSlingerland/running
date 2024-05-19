@@ -3,11 +3,11 @@ import { accountForm } from '@repo/schemas';
 import type { AccountForm } from '@repo/schemas';
 import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { useDeepCompareEffect } from 'rooks';
 
 import { heartRateZoneColumns } from '@elements/columns/heartRateZoneColumns';
 import { paceZoneColumns } from '@elements/columns/paceZoneColumns';
 import { DataTable } from '@elements/shadcnTable';
+import { useDeepCompareEffect } from '@hooks/useDeepCompareEffect';
 import { useProps } from '@hooks/useProps';
 import { addUserData } from '@services/user/post';
 import { Button } from '@ui/button';
