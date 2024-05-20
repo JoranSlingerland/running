@@ -1,4 +1,4 @@
-import { DistanceStats } from '@repo/types';
+import { Statistics } from '@repo/types';
 
 import { useFetch } from '@hooks/useFetch';
 
@@ -6,7 +6,7 @@ interface GetDistanceStatsQuery {
   timeFrames: string;
 }
 
-function useDistanceStats({
+function useAbsoluteStats({
   query,
   enabled = true,
   background = false,
@@ -15,8 +15,8 @@ function useDistanceStats({
   enabled?: boolean;
   background?: boolean;
 }) {
-  return useFetch<undefined, GetDistanceStatsQuery, DistanceStats>({
-    url: '/api/data/stats/distance',
+  return useFetch<undefined, GetDistanceStatsQuery, Statistics>({
+    url: '/api/data/stats/absolute',
     method: 'GET',
     query,
     enabled,
@@ -24,6 +24,6 @@ function useDistanceStats({
   });
 }
 
-export { useDistanceStats };
+export { useAbsoluteStats };
 
 export type { GetDistanceStatsQuery };

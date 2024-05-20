@@ -53,7 +53,7 @@ function MyApp({ Component, pageProps, session }: SessionAppProps) {
               <Toaster />
 
               <Navbar />
-              <div className="px-2">
+              <div className="px-1 sm:px-2">
                 <Component {...pageProps} />
               </div>
               <Footer />

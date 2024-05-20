@@ -276,7 +276,7 @@ function DailyWeatherBlock() {
   if (geoLocation?.isError) {
     return (
       <div className="flex h-full items-center justify-center text-center">
-        <Text size={'large'}>Enable weather in user settings</Text>
+        <Text size="large">View weather by enabling it in the settings</Text>
       </div>
     );
   }
@@ -314,7 +314,7 @@ function DailyWeatherBlock() {
                   <Skeleton className="h-4 w-12" />
                 </div>
               ) : (
-                <Text className="text-xs sm:text-base">
+                <Text className="text-xs sm:text-base lg:text-sm xl:text-base">
                   {formatNumber({
                     number: daily?.temperature_2m_max[index],
                     decimals: 0,

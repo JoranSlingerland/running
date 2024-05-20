@@ -72,9 +72,11 @@ function formatTime({
   if (seconds === undefined) {
     return '';
   }
+  const isNegative = seconds < 0;
 
-  const [hours, minutes, remainingSeconds] =
-    convertSecondsToTimeComponents(seconds);
+  const [hours, minutes, remainingSeconds] = convertSecondsToTimeComponents(
+    Math.abs(seconds),
+  );
 
   let formattedTime = '';
 
@@ -96,6 +98,10 @@ function formatTime({
   // Remove trailing colon if seconds are not included
   if (!addSeconds) {
     formattedTime = formattedTime.slice(0, -1);
+  }
+
+  if (isNegative) {
+    formattedTime = `-${formattedTime}`;
   }
 
   return formattedTime;

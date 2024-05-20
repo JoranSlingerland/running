@@ -1,49 +1,126 @@
 import { Units } from '@repo/types';
+import { ActivityStats } from '@repo/types';
 
 import { ActivityCardWithDialog } from '@elements/activityCard';
+import { Icon } from '@elements/icon';
 import { DailyWeatherBlock } from '@elements/weather';
 import { useProps } from '@hooks/useProps';
 import { useActivity } from '@services/data/activity';
-import { useDistanceStats } from '@services/data/stats';
+import { useAbsoluteStats } from '@services/data/stats';
+import { Badge } from '@ui/badge';
+import { Button } from '@ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@ui/card';
 import { Text } from '@ui/typography';
-import { formatDistance, formatPercent } from '@utils/formatting';
+import { formatDistance, formatTime } from '@utils/formatting';
 
 const StatsCard = ({
   title,
-  currentDistance,
-  percentageDifference,
-  absoluteDifference,
+  stats,
   units,
 }: {
   title: string;
-  currentDistance: number;
-  percentageDifference: number;
-  absoluteDifference: number;
+  stats: ActivityStats | undefined;
   units: Units;
 }) => {
+  const Stats = ({
+    title,
+    currentValue,
+    absoluteDifference,
+    isPositive,
+  }: {
+    title: string;
+    currentValue: string | number | '() => string | number';
+    percentageDifference: number;
+    absoluteDifference: string | number | '() => string | number';
+    isPositive: boolean;
+  }) => {
+    return (
+      <div>
+        <Text className="text-xs" type="muted">
+          {title}
+        </Text>
+        <Text className="text-base sm:text-lg">{currentValue}</Text>
+        <Badge className="px-2" variant={isPositive ? 'success' : 'outline'}>
+          <div className="flex items-center justify-center space-x-2">
+            <div>
+              <Icon
+                className="size-4 pr-4"
+                icon={isPositive ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}
+              />
+            </div>
+            <Text>{absoluteDifference}</Text>
+          </div>
+        </Badge>
+      </div>
+    );
+  };
+
   return (
     <Card className="text-center">
-      <CardHeader>{title}</CardHeader>
-      <CardContent>
-        <Text size="large">
-          {formatDistance({
-            meters: currentDistance,
-            units,
-          })}
-        </Text>
-        <div className="flex flex-col">
-          <Text type="muted">
-            {formatPercent({
-              value: percentageDifference,
-            })}
-          </Text>
-          <Text type="muted">
-            {formatDistance({
-              meters: absoluteDifference,
+      <CardHeader>
+        <div className="flex items-center justify-center">
+          <Text size="large">{title}</Text>
+          <Button size={'icon'} variant="ghost">
+            <Icon icon="swap_horiz" />
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div>
+          <Stats
+            title="Distance"
+            currentValue={formatDistance({
+              meters: stats?.distance.currentValue || 0,
               units,
             })}
-          </Text>
+            percentageDifference={stats?.distance.percentageDifference || 0}
+            absoluteDifference={formatDistance({
+              meters: stats?.distance.absoluteDifference || 0,
+              units,
+            })}
+            isPositive={
+              stats?.distance.absoluteDifference &&
+              stats?.distance.absoluteDifference > 0
+                ? stats?.distance.absoluteDifference > 0
+                : false
+            }
+          />
+        </div>
+        <div className="hidden sm:block">
+          <Stats
+            title="Duration"
+            currentValue={formatTime({
+              seconds: stats?.duration.currentValue,
+              addSeconds: false,
+            })}
+            percentageDifference={stats?.duration.percentageDifference || 0}
+            absoluteDifference={formatTime({
+              seconds: stats?.duration.absoluteDifference,
+              addSeconds: false,
+            })}
+            isPositive={
+              stats?.duration.absoluteDifference &&
+              stats?.duration.absoluteDifference > 0
+                ? stats?.duration.absoluteDifference > 0
+                : false
+            }
+          />
+        </div>
+        <div className="hidden lg:block">
+          <Stats
+            title="Activities"
+            currentValue={stats?.activityCount.currentValue || 0}
+            percentageDifference={
+              stats?.activityCount.percentageDifference || 0
+            }
+            absoluteDifference={stats?.activityCount.absoluteDifference || 0}
+            isPositive={
+              stats?.activityCount.absoluteDifference &&
+              stats?.activityCount.absoluteDifference > 0
+                ? stats?.activityCount.absoluteDifference > 0
+                : false
+            }
+          />
         </div>
       </CardContent>
     </Card>
@@ -51,7 +128,7 @@ const StatsCard = ({
 };
 
 export default function Dashboard() {
-  const { data: statsData } = useDistanceStats({
+  const { data: statsData } = useAbsoluteStats({
     query: {
       timeFrames: ['week', 'month', 'year'].toString(),
     },
@@ -64,31 +141,25 @@ export default function Dashboard() {
   });
 
   return (
-    <div className="grid gap-4">
-      <div className="grid grid-cols-3 gap-4 pt-2">
+    <div className="grid gap-2 md:gap-4">
+      <div className="grid grid-cols-3 gap-2 pt-2 md:gap-4">
         <StatsCard
           title="Weekly"
-          currentDistance={statsData?.week?.currentDistance || 0}
-          percentageDifference={statsData?.week?.percentageDifference || 0}
-          absoluteDifference={statsData?.week?.absoluteDifference || 0}
+          stats={statsData?.week}
           units={userSettings?.data?.preferences.units || 'metric'}
         />
         <StatsCard
           title="Monthly"
-          currentDistance={statsData?.month?.currentDistance || 0}
-          percentageDifference={statsData?.month?.percentageDifference || 0}
-          absoluteDifference={statsData?.month?.absoluteDifference || 0}
+          stats={statsData?.month}
           units={userSettings?.data?.preferences.units || 'metric'}
         />
         <StatsCard
           title="Yearly"
-          currentDistance={statsData?.year?.currentDistance || 0}
-          percentageDifference={statsData?.year?.percentageDifference || 0}
-          absoluteDifference={statsData?.year?.absoluteDifference || 0}
+          stats={statsData?.year}
           units={userSettings?.data?.preferences.units || 'metric'}
         />
       </div>
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-2 md:gap-4 lg:grid-cols-2">
         {latestActivity ? (
           <Card className="p-2">
             <Text size="large" className="pb-2">
@@ -100,13 +171,17 @@ export default function Dashboard() {
             />
           </Card>
         ) : (
-          <Card />
+          <Card className="flex h-full items-center justify-center">
+            <Text size="large">
+              Begin tracking your activities to view them here
+            </Text>
+          </Card>
         )}
         <Card className="pr-2 pt-2">
           <DailyWeatherBlock />
         </Card>
       </div>
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-2 md:gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>Chart 1</CardHeader>
           <CardContent>Chart</CardContent>
