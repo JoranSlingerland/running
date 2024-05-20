@@ -17,7 +17,7 @@
     "@repo/env": "*",
     "@repo/schemas": "*",
     "@repo/strava": "*",
-    "mongodb": "^6.5.0"
+    "mongodb": "^6.6.2"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
