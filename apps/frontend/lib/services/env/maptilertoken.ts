@@ -6,7 +6,7 @@ type Response = {
 
 export async function getMapTilerToken(): Promise<string> {
   const response = await regularFetch<undefined, undefined, Response>({
-    url: '/api/env/maptilertoken',
+    url: '/api/data/env/maptilertoken/',
     method: 'GET',
   });
   return response.response.maptilerToken;
