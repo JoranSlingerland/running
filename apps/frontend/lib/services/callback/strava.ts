@@ -17,7 +17,7 @@ function useStravaCallback({
   enabled?: boolean;
 }) {
   return useFetch<undefined, StravaCallbackQuery, StravaCallbackData>({
-    url: '/api/callback/strava',
+    url: '/api/callback/strava/',
     method: 'GET',
     query,
     enabled,

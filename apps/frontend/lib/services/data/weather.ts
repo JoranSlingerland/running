@@ -23,7 +23,7 @@ function useDailyWeather({
   };
 
   return useFetch<undefined, DailyWeatherQuery, DailyWeather>({
-    url: '/api/data/weather/daily',
+    url: '/api/data/weather/daily/',
     method: 'GET',
     query,
     enabled,

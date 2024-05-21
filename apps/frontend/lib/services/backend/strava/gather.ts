@@ -2,7 +2,7 @@ import { regularFetch } from '@utils/api';
 
 function gatherStravaData() {
   regularFetch({
-    url: '/api/strava/gather',
+    url: '/api/strava/gather/',
     message: {
       enabled: true,
       success: 'Refreshed activities',

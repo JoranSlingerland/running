@@ -17,7 +17,7 @@ function useActivities({
   background?: boolean;
 }) {
   return useFetch<undefined, GetActivitiesQuery, Activity[]>({
-    url: '/api/data/activities',
+    url: '/api/data/activities/',
     method: 'GET',
     query,
     enabled,
