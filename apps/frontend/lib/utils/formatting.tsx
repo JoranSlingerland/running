@@ -70,7 +70,7 @@ function formatTime({
   addHours?: boolean;
 }) {
   if (seconds === undefined) {
-    return '';
+    seconds = 0;
   }
   const isNegative = seconds < 0;
 
