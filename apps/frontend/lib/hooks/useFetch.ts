@@ -79,29 +79,40 @@ function useFetch<Body, Query extends string | object | undefined, Response>({
   };
 
   const fetchDataAsync = async (abortController: AbortController) => {
-    await regularFetch<Query, Body, Response>({
-      url,
-      method,
-      query,
-      body,
-      fallback_data: initialData,
-      cache: {
-        enabled: cache?.enabled || false,
-        ttl: cache?.ttl || 60000,
-        overwrite: overwrite,
-        storageType: cache?.storageType || 'sessionStorage',
-        customKey: cache?.customKey || undefined,
-        useStartEndDates: cache?.useStartEndDates || false,
-      },
-      controller: abortController,
-      message,
-    }).then((data) => {
-      setData(data.response);
-      setIsError(data.isError);
-      setIsLoading(false);
-      setRefetch(false);
-      setError(data.error);
-    });
+    try {
+      const data = await regularFetch<Query, Body, Response>({
+        url,
+        method,
+        query,
+        body,
+        fallback_data: initialData,
+        cache: {
+          enabled: cache?.enabled || false,
+          ttl: cache?.ttl || 60000,
+          overwrite: overwrite,
+          storageType: cache?.storageType || 'sessionStorage',
+          customKey: cache?.customKey || undefined,
+          useStartEndDates: cache?.useStartEndDates || false,
+        },
+        controller: abortController,
+        message,
+      });
+
+      if (!abortController.signal.aborted) {
+        setData(data.response);
+        setIsError(data.isError);
+        setError(data.error);
+        setRefetch(false);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      if (!abortController.signal.aborted) {
+        setIsError(true);
+        setError(error as WretchError);
+        setRefetch(false);
+        setIsLoading(false);
+      }
+    }
   };
 
   // Effects
