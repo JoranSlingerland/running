@@ -100,7 +100,7 @@ function UserNav({
           disabled={!isAuthenticated}
         >
           <Avatar className="size-8">
-            <AvatarImage src={avatarImage || ''} />
+            <AvatarImage src={avatarImage || ''} alt="Profile Picture" />
             <AvatarFallback>
               {avatarFallback && avatarFallback[0]}
             </AvatarFallback>

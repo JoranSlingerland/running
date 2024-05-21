@@ -6,4 +6,8 @@ module.exports = {
   },
   output: 'standalone',
   reactStrictMode: process.env.NODE_ENV === 'development',
+  i18n: {
+    locales: ['en'],
+    defaultLocale: 'en',
+  },
 };

@@ -41,6 +41,11 @@ function MyApp({ Component, pageProps, session }: SessionAppProps) {
     <>
       <Head>
         <title>Running</title>
+        <meta
+          name="description"
+          content="Running is a web application that helps you track your runs and improve your running performance."
+          key="desc"
+        />
       </Head>
       <SessionProvider session={session}>
         <ThemeProvider defaultTheme="system" attribute="class">
