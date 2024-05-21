@@ -116,10 +116,12 @@ const StatsCard = ({
             currentValue={formatDistance({
               meters: stats?.distance.currentValue || 0,
               units,
+              decimals: 0,
             })}
             absoluteDifference={formatDistance({
               meters: stats?.distance.absoluteDifference || 0,
               units,
+              decimals: 0,
             })}
             isPositive={
               stats?.distance.absoluteDifference &&
