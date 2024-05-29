@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { goalForm } from '@repo/schemas';
 import type { GoalForm } from '@repo/schemas';
-import { Goal } from '@repo/types';
+import { AbsoluteTimes, Goal } from '@repo/types';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -21,16 +21,18 @@ import {
 export function GoalsFormElement({
   goal,
   useGoals,
+  timeFrame,
 }: {
   goal: Goal | undefined;
   useGoals: UseGoals;
+  timeFrame: AbsoluteTimes | undefined;
 }) {
   const { userSettings } = useProps();
   const form = useForm<GoalForm>({
     resolver: zodResolver(goalForm),
     defaultValues: {
       value: goal?.value || undefined,
-      timeFrame: goal?.timeFrame || undefined,
+      timeFrame: goal?.timeFrame || timeFrame || undefined,
       type: goal?.type || undefined,
       sport: goal?.sport || undefined,
     },

@@ -12,13 +12,7 @@ import { UseGoals, useGoals } from '@services/goals';
 import { Badge } from '@ui/badge';
 import { Button } from '@ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@ui/popover';
 import { Progress } from '@ui/progress';
 import { Skeleton } from '@ui/skeleton';
 import { Text } from '@ui/typography';
@@ -120,19 +114,20 @@ const StatsCard = ({
       <div className="flex flex-col">
         <div className="flex items-center justify-center">
           <Text>Goals</Text>
-          <Dialog>
-            <DialogTrigger asChild>
+          <Popover>
+            <PopoverTrigger asChild>
               <Button size="icon" variant="ghost">
                 <Icon icon="add" />
               </Button>
-            </DialogTrigger>
-            <DialogContent className="w-[22rem]">
-              <DialogHeader>
-                <DialogTitle>Add goal</DialogTitle>
-              </DialogHeader>
-              <GoalsFormElement goal={undefined} useGoals={useGoals} />
-            </DialogContent>
-          </Dialog>
+            </PopoverTrigger>
+            <PopoverContent>
+              <GoalsFormElement
+                goal={undefined}
+                useGoals={useGoals}
+                timeFrame={timeFrame}
+              />
+            </PopoverContent>
+          </Popover>
         </div>
         {isLoading ? (
           <Skeleton className="mx-2 mb-1 h-6 w-full self-center" />
@@ -147,11 +142,11 @@ const StatsCard = ({
                 100;
 
               return (
-                <Dialog key={goal._id}>
-                  <DialogTrigger asChild>
+                <Popover key={goal._id}>
+                  <PopoverTrigger asChild>
                     <div className="cursor-pointer">
                       <div className="flex  flex-col items-center justify-center sm:mx-2 sm:flex-row">
-                        <div className="flex w-full items-center justify-center">
+                        <div className="flex w-full items-center justify-center space-x-1">
                           <SportIcon sport={goal.sport} />
                           <Progress value={progress} />
                         </div>
@@ -191,11 +186,8 @@ const StatsCard = ({
                         }
                       </Text>
                     </div>
-                  </DialogTrigger>
-                  <DialogContent className="w-[22rem]-">
-                    <DialogHeader>
-                      <DialogTitle>Edit goal</DialogTitle>
-                    </DialogHeader>
+                  </PopoverTrigger>
+                  <PopoverContent>
                     <GoalsFormElement
                       goal={{
                         ...goal,
@@ -205,9 +197,10 @@ const StatsCard = ({
                             : goal.value / 60,
                       }}
                       useGoals={useGoals}
+                      timeFrame={timeFrame}
                     />
-                  </DialogContent>
-                </Dialog>
+                  </PopoverContent>
+                </Popover>
               );
             })}
           </div>
