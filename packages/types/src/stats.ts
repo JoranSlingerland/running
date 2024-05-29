@@ -1,5 +1,6 @@
 export type AbsoluteTimes = 'week' | 'month' | 'year';
 export type RelativeTimes = '7d' | '30d' | '365d';
+type TimeFrames = AbsoluteTimes | RelativeTimes;
 
 export type ActivityStats = {
   [key in 'distance' | 'duration' | 'activityCount']: {
@@ -10,6 +11,10 @@ export type ActivityStats = {
   };
 };
 
-export type Statistics = Partial<
-  Record<AbsoluteTimes | RelativeTimes, ActivityStats>
->;
+export type SportStats = {
+  [key in string | 'totals']?: ActivityStats;
+};
+
+export type Statistics = {
+  [key in TimeFrames]?: SportStats;
+};

@@ -72,7 +72,7 @@ async function handleGet(
     relativeResult = await handleRelativeTimeFrame(res, id, relativeTimeFrames);
   }
 
-  const result = {
+  const result: Statistics = {
     ...absoluteResult,
     ...relativeResult,
   };
@@ -106,19 +106,44 @@ async function handleAbsoluteTimeFrame(
     .subtract(1, largestTimeFrame)
     .startOf(largestTimeFrame);
   const endDate = dayjs().endOf(largestTimeFrame);
-  const activities = await activitiesFromMongoDB({
-    id,
-    startDate: startDate.format('YYYY-MM-DD'),
-    endDate: endDate.format('YYYY-MM-DD'),
-  });
+  const activities = (
+    await activitiesFromMongoDB({
+      id,
+      startDate: startDate.format('YYYY-MM-DD'),
+      endDate: endDate.format('YYYY-MM-DD'),
+    })
+  )?.map((activity) => ({ ...activity, type: activity.type.toLowerCase() }));
 
   if (!activities) {
     return undefined;
   }
 
+  const uniqueSports = [
+    ...new Set(activities.map((activity) => activity.type.toLowerCase())),
+  ];
+
   const result: Statistics = {};
+
   timeFrames.forEach((timeFrame) => {
-    result[timeFrame] = getTimeFrameData(
+    result[timeFrame] = {};
+
+    uniqueSports.forEach((sport) => {
+      const sportActivities = activities.filter(
+        (activity) => activity.type === sport,
+      );
+
+      // @ts-expect-error Setting result[timeFrame] to an empty object above
+      result[timeFrame][sport] = getTimeFrameData(
+        dayjs().subtract(1, timeFrame).startOf(timeFrame),
+        dayjs().subtract(1, timeFrame).endOf(timeFrame),
+        dayjs().startOf(timeFrame),
+        dayjs().endOf(timeFrame),
+        sportActivities,
+      );
+    });
+
+    // @ts-expect-error Setting result[timeFrame] to an empty object above
+    result[timeFrame]['totals'] = getTimeFrameData(
       dayjs().subtract(1, timeFrame).startOf(timeFrame),
       dayjs().subtract(1, timeFrame).endOf(timeFrame),
       dayjs().startOf(timeFrame),
@@ -143,19 +168,44 @@ async function handleRelativeTimeFrame(
 
   const startDate = dayjs().subtract(2 * largestTimeFrame, 'day');
   const endDate = dayjs();
-  const activities = await activitiesFromMongoDB({
-    id,
-    startDate: startDate.format('YYYY-MM-DD'),
-    endDate: endDate.format('YYYY-MM-DD'),
-  });
+  const activities = (
+    await activitiesFromMongoDB({
+      id,
+      startDate: startDate.format('YYYY-MM-DD'),
+      endDate: endDate.format('YYYY-MM-DD'),
+    })
+  )?.map((activity) => ({ ...activity, type: activity.type.toLowerCase() }));
 
   if (!activities) {
     return undefined;
   }
 
+  const uniqueSports = [
+    ...new Set(activities.map((activity) => activity.type.toLowerCase())),
+  ];
+
   const result: Statistics = {};
+
   timeFramesInDays.forEach((timeFrame) => {
-    result[`${timeFrame}d`] = getTimeFrameData(
+    result[`${timeFrame}d`] = {};
+
+    uniqueSports.forEach((sport) => {
+      const sportActivities = activities.filter(
+        (activity) => activity.type === sport,
+      );
+
+      // @ts-expect-error Setting result[timeFrame] to an empty object above
+      result[`${timeFrame}d`][sport] = getTimeFrameData(
+        dayjs().subtract(2 * timeFrame, 'day'),
+        dayjs().subtract(timeFrame, 'day'),
+        dayjs().subtract(timeFrame, 'day'),
+        dayjs(),
+        sportActivities,
+      );
+    });
+
+    // @ts-expect-error Setting result[timeFrame] to an empty object above
+    result[`${timeFrame}d`]['totals'] = getTimeFrameData(
       dayjs().subtract(2 * timeFrame, 'day'),
       dayjs().subtract(timeFrame, 'day'),
       dayjs().subtract(timeFrame, 'day'),

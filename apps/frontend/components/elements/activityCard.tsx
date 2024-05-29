@@ -18,11 +18,11 @@ import {
 } from '@ui/dialog';
 import { Text } from '@ui/typography';
 import {
+  SportIcon,
   formatDistance,
   formatNumber,
   formatPace,
   formatTime,
-  sportIcon,
 } from '@utils/formatting';
 import { cn } from '@utils/shadcn';
 import { getPreferredTss } from '@utils/tss/helpers';
@@ -49,7 +49,7 @@ export const ActivityCard = React.forwardRef<
     <CardHeader>
       <CardTitle>
         <div className="flex items-center space-x-1">
-          {sportIcon(activity.type)}
+          <SportIcon sport={activity.type} />
           {`${activity.type} at ${dayjs(activity.start_date).format('HH:mm')}`}
         </div>
       </CardTitle>
@@ -129,7 +129,7 @@ export function ActivityCardWithDialog({
       <DialogContent className="max-h-[90%] max-w-[90%] overflow-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-1">
-            {sportIcon(activity.type)}
+            <SportIcon sport={activity.type} />
             {`${activity.type} at ${dayjs(activity.start_date).format('HH:mm')}`}
           </DialogTitle>
           <ActivityBox activityId={activity._id} />

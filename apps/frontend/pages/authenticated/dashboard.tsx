@@ -1,37 +1,50 @@
-import { AbsoluteTimes, Units } from '@repo/types';
-import { ActivityStats } from '@repo/types';
+import { AbsoluteTimes, SportStats, Units } from '@repo/types';
 
 import { ActivityCardWithDialog } from '@elements/activityCard';
+import { GoalsFormElement } from '@elements/forms/goals';
 import { Icon } from '@elements/icon';
 import { DailyWeatherBlock } from '@elements/weather';
 import { useProps } from '@hooks/useProps';
 import useSessionStorageState from '@hooks/useSessionStorageState';
 import { useActivity } from '@services/data/activity';
 import { useStats } from '@services/data/stats';
+import { UseGoals, useGoals } from '@services/goals';
 import { Badge } from '@ui/badge';
 import { Button } from '@ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@ui/dialog';
+import { Progress } from '@ui/progress';
 import { Skeleton } from '@ui/skeleton';
 import { Text } from '@ui/typography';
 import { formatDistance, formatTime } from '@utils/formatting';
+import { SportIcon } from '@utils/formatting';
 
 const StatsCard = ({
   timeFrame,
   absoluteStats,
   relativeStats,
   units,
+  useGoals,
   isLoading,
 }: {
   timeFrame: AbsoluteTimes;
-  absoluteStats: ActivityStats | undefined;
-  relativeStats: ActivityStats | undefined;
+  absoluteStats: SportStats | undefined;
+  relativeStats: SportStats | undefined;
   units: Units;
+  useGoals: UseGoals;
   isLoading: boolean;
 }) => {
   const [statTimeFrame, setStatTimeFrame] = useSessionStorageState<
     'absolute' | 'relative'
   >(`${timeFrame}-DashboardStats`, 'absolute');
   const stats = statTimeFrame === 'absolute' ? absoluteStats : relativeStats;
+  const totals = stats?.totals;
   const titles = {
     absolute: {
       week: 'Weekly',
@@ -91,6 +104,118 @@ const StatsCard = ({
     );
   };
 
+  const Goals = ({
+    useGoals,
+    absoluteStats,
+    timeFrame,
+  }: {
+    useGoals: UseGoals;
+    absoluteStats: SportStats | undefined;
+    timeFrame: AbsoluteTimes;
+  }) => {
+    const goals =
+      useGoals?.data?.filter((goal) => goal.timeFrame === timeFrame) || [];
+
+    return (
+      <div className="flex flex-col">
+        <div className="flex items-center justify-center">
+          <Text>Goals</Text>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button size="icon" variant="ghost">
+                <Icon icon="add" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="w-[22rem]">
+              <DialogHeader>
+                <DialogTitle>Add goal</DialogTitle>
+              </DialogHeader>
+              <GoalsFormElement goal={undefined} useGoals={useGoals} />
+            </DialogContent>
+          </Dialog>
+        </div>
+        {isLoading ? (
+          <Skeleton className="mx-2 mb-1 h-6 w-full self-center" />
+        ) : (
+          <div>
+            {goals.map((goal) => {
+              const progress =
+                ((absoluteStats?.[goal.sport]?.[
+                  goal.type === 'distance' ? 'distance' : 'duration'
+                ].currentValue || 0) /
+                  goal.value) *
+                100;
+
+              return (
+                <Dialog key={goal._id}>
+                  <DialogTrigger asChild>
+                    <div className="cursor-pointer">
+                      <div className="flex  flex-col items-center justify-center sm:mx-2 sm:flex-row">
+                        <div className="flex w-full items-center justify-center">
+                          <SportIcon sport={goal.sport} />
+                          <Progress value={progress} />
+                        </div>
+                        <Icon
+                          className={`size-4 ${progress >= 100 ? 'text-green-500 dark:text-green-900' : ''} hidden sm:block`}
+                          icon={
+                            progress >= 100
+                              ? 'check_circle'
+                              : 'keyboard_arrow_right'
+                          }
+                        />
+                      </div>
+                      <Text>
+                        {
+                          {
+                            distance: `${formatDistance({
+                              meters:
+                                absoluteStats?.[goal.sport]?.distance
+                                  .currentValue || 0,
+                              units,
+                              decimals: 0,
+                            })} / ${formatDistance({
+                              meters: goal.value,
+                              units,
+                              decimals: 0,
+                            })}`,
+                            time: `${formatTime({
+                              seconds:
+                                absoluteStats?.[goal.sport]?.duration
+                                  .currentValue || 0,
+                              addSeconds: false,
+                            })} / ${formatTime({
+                              seconds: goal.value,
+                              addSeconds: false,
+                            })}`,
+                          }[goal.type]
+                        }
+                      </Text>
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent className="w-[22rem]-">
+                    <DialogHeader>
+                      <DialogTitle>Edit goal</DialogTitle>
+                    </DialogHeader>
+                    <GoalsFormElement
+                      goal={{
+                        ...goal,
+                        value:
+                          goal.type === 'distance'
+                            ? goal.value / 1000
+                            : goal.value / 60,
+                      }}
+                      useGoals={useGoals}
+                    />
+                  </DialogContent>
+                </Dialog>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <Card className="text-center">
       <CardHeader>
@@ -109,58 +234,67 @@ const StatsCard = ({
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        <div>
-          <Stats
-            title="Distance"
-            currentValue={formatDistance({
-              meters: stats?.distance.currentValue || 0,
-              units,
-              decimals: 0,
-            })}
-            absoluteDifference={formatDistance({
-              meters: stats?.distance.absoluteDifference || 0,
-              units,
-              decimals: 0,
-            })}
-            isPositive={
-              stats?.distance.absoluteDifference &&
-              stats?.distance.absoluteDifference > 0
-                ? stats?.distance.absoluteDifference > 0
-                : false
-            }
-          />
+      <CardContent>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <div>
+            <Stats
+              title="Distance"
+              currentValue={formatDistance({
+                meters: totals?.distance.currentValue || 0,
+                units,
+                decimals: 0,
+              })}
+              absoluteDifference={formatDistance({
+                meters: totals?.distance.absoluteDifference || 0,
+                units,
+                decimals: 0,
+              })}
+              isPositive={
+                totals?.distance.absoluteDifference &&
+                totals?.distance.absoluteDifference > 0
+                  ? totals?.distance.absoluteDifference > 0
+                  : false
+              }
+            />
+          </div>
+          <div className="hidden sm:block">
+            <Stats
+              title="Duration"
+              currentValue={formatTime({
+                seconds: totals?.duration.currentValue,
+                addSeconds: false,
+              })}
+              absoluteDifference={formatTime({
+                seconds: totals?.duration.absoluteDifference,
+                addSeconds: false,
+              })}
+              isPositive={
+                totals?.duration.absoluteDifference &&
+                totals?.duration.absoluteDifference > 0
+                  ? totals?.duration.absoluteDifference > 0
+                  : false
+              }
+            />
+          </div>
+          <div className="hidden lg:block">
+            <Stats
+              title="Activities"
+              currentValue={totals?.activityCount.currentValue || 0}
+              absoluteDifference={totals?.activityCount.absoluteDifference || 0}
+              isPositive={
+                totals?.activityCount.absoluteDifference &&
+                totals?.activityCount.absoluteDifference > 0
+                  ? totals?.activityCount.absoluteDifference > 0
+                  : false
+              }
+            />
+          </div>
         </div>
-        <div className="hidden sm:block">
-          <Stats
-            title="Duration"
-            currentValue={formatTime({
-              seconds: stats?.duration.currentValue,
-              addSeconds: false,
-            })}
-            absoluteDifference={formatTime({
-              seconds: stats?.duration.absoluteDifference,
-              addSeconds: false,
-            })}
-            isPositive={
-              stats?.duration.absoluteDifference &&
-              stats?.duration.absoluteDifference > 0
-                ? stats?.duration.absoluteDifference > 0
-                : false
-            }
-          />
-        </div>
-        <div className="hidden lg:block">
-          <Stats
-            title="Activities"
-            currentValue={stats?.activityCount.currentValue || 0}
-            absoluteDifference={stats?.activityCount.absoluteDifference || 0}
-            isPositive={
-              stats?.activityCount.absoluteDifference &&
-              stats?.activityCount.absoluteDifference > 0
-                ? stats?.activityCount.absoluteDifference > 0
-                : false
-            }
+        <div className="mt-2">
+          <Goals
+            useGoals={useGoals}
+            absoluteStats={absoluteStats}
+            timeFrame={timeFrame}
           />
         </div>
       </CardContent>
@@ -180,6 +314,7 @@ export default function Dashboard() {
       id: 'latest',
     },
   });
+  const goals = useGoals({});
 
   return (
     <div className="grid gap-2 md:gap-4">
@@ -189,21 +324,24 @@ export default function Dashboard() {
           absoluteStats={stats?.week}
           relativeStats={stats?.['7d']}
           units={userSettings?.data?.preferences.units || 'metric'}
-          isLoading={statsIsLoading}
+          isLoading={statsIsLoading || goals.isLoading}
+          useGoals={goals}
         />
         <StatsCard
           timeFrame="month"
           absoluteStats={stats?.month}
           relativeStats={stats?.['30d']}
           units={userSettings?.data?.preferences.units || 'metric'}
-          isLoading={statsIsLoading}
+          isLoading={statsIsLoading || goals.isLoading}
+          useGoals={goals}
         />
         <StatsCard
           timeFrame="year"
           absoluteStats={stats?.year}
           relativeStats={stats?.['365d']}
           units={userSettings?.data?.preferences.units || 'metric'}
-          isLoading={statsIsLoading}
+          isLoading={statsIsLoading || goals.isLoading}
+          useGoals={goals}
         />
       </div>
       <div className="grid gap-2 md:gap-4 lg:grid-cols-2">

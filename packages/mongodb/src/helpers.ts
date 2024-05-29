@@ -3,6 +3,7 @@ import { Db, Document, MongoClient } from 'mongodb';
 
 import {
   schemaUpdatesActivities,
+  schemaUpdatesGoals,
   schemaUpdatesServiceStatus,
   schemaUpdatesStreams,
   schemaUpdatesUsers,
@@ -39,7 +40,7 @@ export class MongoDBHelper {
     }
   }
 
-  public getCollection<T extends Document>(collectionName: string) {
+  public getCollection<T extends Document>(collectionName: CollectionNames) {
     return MongoDBHelper.db.collection<T>(collectionName);
   }
 }
@@ -64,5 +65,7 @@ export function getLatestSchemaVersion(schema: CollectionNames): number {
       return getLatestVersion(schemaUpdatesStreams);
     case 'serviceStatus':
       return getLatestVersion(schemaUpdatesServiceStatus);
+    case 'goals':
+      return getLatestVersion(schemaUpdatesGoals);
   }
 }

@@ -173,27 +173,27 @@ function formatNumber({
   return number.toFixed(decimals);
 }
 
-const sportIcon = (sport: string | undefined): JSX.Element => {
-  switch (sport) {
-    case 'Run':
+const SportIcon = ({ sport }: { sport: string | undefined }): JSX.Element => {
+  switch (sport?.toLowerCase()) {
+    case 'run':
       return <Icon icon="directions_run" />;
-    case 'Ride':
+    case 'ride':
       return <Icon icon="directions_bike" />;
-    case 'Swim':
+    case 'swim':
       return <Icon icon="pool" />;
-    case 'Walk':
+    case 'walk':
       return <Icon icon="directions_walk" />;
-    case 'Hike':
+    case 'hike':
       return <Icon icon="terrain" />;
-    case 'Workout':
+    case 'workout':
       return <Icon icon="fitness_center" />;
-    case 'WeightTraining':
+    case 'weighttraining':
       return <Icon icon="fitness_center" />;
-    case 'Yoga':
+    case 'yoga':
       return <Icon icon="self_improvement" />;
-    case 'VirtualRide':
+    case 'virtualride':
       return <Icon icon="directions_bike" />;
-    case 'VirtualRun':
+    case 'virtualrun':
       return <Icon icon="directions_run" />;
     default:
       return <></>;
@@ -224,7 +224,7 @@ export {
   formatPace,
   formatHeartRate,
   formatNumber,
-  sportIcon,
+  SportIcon,
   formatDateTime,
   unitMapper,
   formatSpeed,

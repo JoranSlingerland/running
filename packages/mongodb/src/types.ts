@@ -9,7 +9,8 @@ export type CollectionNames =
   | 'activities'
   | 'users'
   | 'streams'
-  | 'serviceStatus';
+  | 'serviceStatus'
+  | 'goals';
 
 export type LegacyCollectionNames = 'notifications';
 
