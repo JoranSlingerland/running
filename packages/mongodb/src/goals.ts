@@ -26,7 +26,6 @@ async function goalsFromMongoDB(id: string): Promise<Goal[] | undefined> {
   const collection = new MongoDBHelper().getCollection<Goal>('goals');
 
   const goals = await collection.find({ userId: id }).toArray();
-  console.log('goals', goals);
   if (!goals || goals.length === 0) {
     return undefined;
   }
@@ -39,7 +38,6 @@ async function upsertGoalToMongoDB(
 ): Promise<{ result: string; isError: boolean }> {
   try {
     const collection = new MongoDBHelper().getCollection<Goal>('goals');
-    console.log('body', body);
     const validated = goalSchema.safeParse(body);
     if (!validated.success) {
       return { result: 'Validation failed', isError: true };
