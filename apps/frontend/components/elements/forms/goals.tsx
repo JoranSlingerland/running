@@ -123,7 +123,7 @@ export function GoalsFormElement({
             name="timeFrame"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Time frame</FormLabel>
+                <FormLabel>Period</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger className="w-36">
@@ -144,22 +144,37 @@ export function GoalsFormElement({
             name="value"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Goal Value</FormLabel>
+                <FormLabel>
+                  {form.watch('type') === 'time'
+                    ? 'Goal time'
+                    : form.watch('type') === 'distance'
+                      ? 'Goal distance'
+                      : 'Goal value'}
+                </FormLabel>
                 <FormControl>
                   <div className="flex items-center">
                     <Input
                       className="w-36"
                       type="number"
+                      placeholder={
+                        form.watch('type') === 'time'
+                          ? 'Goal time'
+                          : 'Goal distance'
+                      }
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      onChange={(e) => {
+                        field.onChange(
+                          e.target.value && Number(e.target.value),
+                        );
+                      }}
+                      affix={
+                        form.watch('type') === 'time'
+                          ? 'Min'
+                          : userSettings?.data?.preferences.units === 'imperial'
+                            ? 'MI'
+                            : 'KM'
+                      }
                     />
-                    <span className="ml-2">
-                      {form.watch('type') === 'time'
-                        ? 'minutes'
-                        : userSettings?.data?.preferences.units === 'imperial'
-                          ? 'Miles'
-                          : 'Kilometers'}
-                    </span>
                   </div>
                 </FormControl>
               </FormItem>

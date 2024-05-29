@@ -120,7 +120,7 @@ const StatsCard = ({
                 <Icon icon="add" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent>
+            <PopoverContent className="w-auto px-6">
               <GoalsFormElement
                 goal={undefined}
                 useGoals={useGoals}
@@ -187,7 +187,7 @@ const StatsCard = ({
                       </Text>
                     </div>
                   </PopoverTrigger>
-                  <PopoverContent>
+                  <PopoverContent className="w-auto px-6">
                     <GoalsFormElement
                       goal={{
                         ...goal,

@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Overides */
 html,
 body {
   padding: 0;
@@ -11,7 +12,18 @@ body {
 * {
   box-sizing: border-box;
 }
- 
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
 /* shadcn/ui configuration */
 
 @layer base {
@@ -61,7 +73,6 @@ body {
   }
 }
 
- 
 @layer base {
   * {
     @apply border-border;
