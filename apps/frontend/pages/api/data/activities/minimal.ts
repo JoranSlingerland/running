@@ -42,7 +42,9 @@ async function handleGet(
   return res.status(200).json(
     activities.map((activity) => ({
       distance: activity.distance,
-      duration: activity.moving_time,
+      moving_time: activity.moving_time,
+      start_date: activity.start_date,
+      type: activity.type,
     })),
   );
 }

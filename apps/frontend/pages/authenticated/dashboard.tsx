@@ -1,4 +1,7 @@
 import { AbsoluteTimes, SportStats, Units } from '@repo/types';
+import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
+import updateLocale from 'dayjs/plugin/updateLocale';
 
 import { ActivityCardWithDialog } from '@elements/activityCard';
 import { GoalsFormElement } from '@elements/forms/goals';
@@ -6,8 +9,8 @@ import { Icon } from '@elements/icon';
 import { DailyWeatherBlock } from '@elements/weather';
 import { useProps } from '@hooks/useProps';
 import useSessionStorageState from '@hooks/useSessionStorageState';
+import { useMinActivities } from '@services/data/activities';
 import { useActivity } from '@services/data/activity';
-import { useStats } from '@services/data/stats';
 import { UseGoals, useGoals } from '@services/goals';
 import { Badge } from '@ui/badge';
 import { Button } from '@ui/button';
@@ -18,6 +21,13 @@ import { Skeleton } from '@ui/skeleton';
 import { Text } from '@ui/typography';
 import { formatDistance, formatTime } from '@utils/formatting';
 import { SportIcon } from '@utils/formatting';
+import { getStats } from '@utils/stats';
+
+dayjs.extend(isBetween);
+dayjs.extend(updateLocale);
+dayjs.updateLocale('en', {
+  weekStart: 1,
+});
 
 const StatsCard = ({
   timeFrame,
@@ -140,7 +150,6 @@ const StatsCard = ({
                 ].currentValue || 0) /
                   goal.value) *
                 100;
-
               return (
                 <Popover key={goal._id}>
                   <PopoverTrigger asChild>
@@ -296,17 +305,22 @@ const StatsCard = ({
 };
 
 export default function Dashboard() {
-  const { data: stats, isLoading: statsIsLoading } = useStats({
-    query: {
-      timeFrames: ['week', 'month', 'year', '7d', '30d', '365d'],
-    },
-  });
   const { userSettings } = useProps();
   const { data: latestActivity } = useActivity({
     query: {
       id: 'latest',
     },
   });
+  const { data: activities, isLoading: statsIsLoading } = useMinActivities({
+    query: {
+      startDate: dayjs()
+        .subtract(1, 'year')
+        .startOf('year')
+        .format('YYYY-MM-DD'),
+      endDate: dayjs().add(1, 'day').format('YYYY-MM-DD'),
+    },
+  });
+  const stats = getStats(activities || []);
   const goals = useGoals({});
 
   return (

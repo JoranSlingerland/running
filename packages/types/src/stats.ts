@@ -15,6 +15,14 @@ export type SportStats = {
   [key in string | 'totals']?: ActivityStats;
 };
 
+export type AbsoluteStatistics = {
+  [key in AbsoluteTimes]: SportStats;
+};
+
+export type RelativeStatistics = {
+  [key in RelativeTimes]: SportStats;
+};
+
 export type Statistics = {
-  [key in TimeFrames]?: SportStats;
+  [key in TimeFrames]: SportStats;
 };

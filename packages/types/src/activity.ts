@@ -78,7 +78,9 @@ export interface Activity {
 
 export interface MinimalActivity {
   distance: number;
-  duration: number;
+  moving_time: number;
+  start_date: string;
+  type: string;
 }
 
 export interface BestEfforts {
