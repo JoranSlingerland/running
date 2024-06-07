@@ -74,7 +74,7 @@ async function handleGet(
     await activitiesFromMongoDB({
       id,
       startDate: startDate.format('YYYY-MM-DD'),
-      endDate: endDate.format('YYYY-MM-DD'),
+      endDate: endDate.add(1, 'day').format('YYYY-MM-DD'),
     })
   )?.map((activity) => ({ ...activity, type: activity.type.toLowerCase() }));
 

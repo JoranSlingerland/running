@@ -1,4 +1,4 @@
-interface Activity {
+export interface Activity {
   _id: string;
   achievement_count: number;
   athlete_count: number;
@@ -74,6 +74,11 @@ interface Activity {
   streams?: null | streams;
   version: number;
   enrichment_tries: number;
+}
+
+export interface MinimalActivity {
+  distance: number;
+  duration: number;
 }
 
 export interface BestEfforts {
@@ -152,5 +157,3 @@ interface streams {
   heartrate?: stream<number>;
   time?: stream<number>;
 }
-
-export type { Activity };
