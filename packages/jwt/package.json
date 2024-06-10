@@ -14,7 +14,7 @@
     "preinstall": "npx only-allow yarn"
   },
   "dependencies": {
-    "jose": "^5.2.4"
+    "jose": "^5.4.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
