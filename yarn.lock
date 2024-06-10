@@ -769,9 +769,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/testing@npm:^10.0.0":
-  version: 10.3.7
-  resolution: "@nestjs/testing@npm:10.3.7"
+"@nestjs/testing@npm:^10.3.9":
+  version: 10.3.9
+  resolution: "@nestjs/testing@npm:10.3.9"
   dependencies:
     tslib: "npm:2.6.2"
   peerDependencies:
@@ -784,7 +784,7 @@ __metadata:
       optional: true
     "@nestjs/platform-express":
       optional: true
-  checksum: 10c0/1599e457dd43666903ae367c7941e3b6821006f895dca422ccf9411a9e8bf6280fcd99fbd7bdd887efbb616d85bf49b8baf84a1ef35d761ce6f16cbf31fd607b
+  checksum: 10c0/99d16197eab852ee4bf1631d468f3a741aa1a24d7e70a52d3db46ddfb04d07ff83127fca0566798c5ece10ebfe0a27b033bc0fd96bbd2d4d76cf872d9ee5a785
   languageName: node
   linkType: hard
 
@@ -3368,7 +3368,7 @@ __metadata:
     "@nestjs/platform-express": "npm:^10.0.0"
     "@nestjs/schedule": "npm:^4.0.2"
     "@nestjs/schematics": "npm:^10.0.0"
-    "@nestjs/testing": "npm:^10.0.0"
+    "@nestjs/testing": "npm:^10.3.9"
     "@repo/env": "npm:*"
     "@repo/eslint-config": "npm:*"
     "@repo/jwt": "npm:*"
