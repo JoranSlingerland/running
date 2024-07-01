@@ -1957,7 +1957,7 @@ __metadata:
     "@repo/schemas": "npm:*"
     "@repo/strava": "npm:*"
     "@repo/typescript-config": "npm:*"
-    mongodb: "npm:^6.5.0"
+    mongodb: "npm:^6.8.0"
   languageName: unknown
   linkType: soft
 
@@ -3512,10 +3512,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bson@npm:^6.4.0":
-  version: 6.6.0
-  resolution: "bson@npm:6.6.0"
-  checksum: 10c0/cb1690c6a72fbda88bc6af97540d5152d8f5c7ce3f004012b3dc8bfc3420a30af8aaf4eee47c731432ab7e470e288d078b0a339bdfe9cab1ebfc7c3bb3dcebc4
+"bson@npm:^6.7.0":
+  version: 6.8.0
+  resolution: "bson@npm:6.8.0"
+  checksum: 10c0/0503bb2a4ce2e183bd06151bdb983a623cfde05c76fbb5a34e941c594f3a681b52333d61b37c7933b8733b0ba14607b3599d94b46635d90bb96b1e7cec51aa8f
   languageName: node
   linkType: hard
 
@@ -7250,12 +7250,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:^6.5.0":
-  version: 6.5.0
-  resolution: "mongodb@npm:6.5.0"
+"mongodb@npm:^6.8.0":
+  version: 6.8.0
+  resolution: "mongodb@npm:6.8.0"
   dependencies:
     "@mongodb-js/saslprep": "npm:^1.1.5"
-    bson: "npm:^6.4.0"
+    bson: "npm:^6.7.0"
     mongodb-connection-string-url: "npm:^3.0.0"
   peerDependencies:
     "@aws-sdk/credential-providers": ^3.188.0
@@ -7280,7 +7280,7 @@ __metadata:
       optional: true
     socks:
       optional: true
-  checksum: 10c0/d51f8673b76f073ef5d0101d96b1adc3ebacd63890771cb72ae245081415887a2e0b5a9451b18e370f930d63173f2af68fac98371487995ae921140756fe510b
+  checksum: 10c0/5ea1b78d3d7915b7d8e1047f15247e7d831ff79c537c51656b34b5a223f917ab686b96cdf5eca7495a1f0125f7cc4b1355881645138c995a50c42b8b0665e518
   languageName: node
   linkType: hard
 
