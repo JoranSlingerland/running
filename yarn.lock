@@ -1944,7 +1944,7 @@ __metadata:
     "@repo/eslint-config": "npm:*"
     "@repo/typescript-config": "npm:*"
     "@types/jsonwebtoken": "npm:^9"
-    jose: "npm:^5.2.4"
+    jose: "npm:^5.6.2"
   languageName: unknown
   linkType: soft
 
@@ -6622,10 +6622,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^5.2.4":
-  version: 5.2.4
-  resolution: "jose@npm:5.2.4"
-  checksum: 10c0/e566417f66c36a8e1e9e899c18a9bf31d4e5a29c0e304e695564c3969b0e44594e62c68ed2b0fe2408fb99237973de95fe6a5cdb9c85ad739bd32fb7025232c0
+"jose@npm:^5.6.2":
+  version: 5.6.2
+  resolution: "jose@npm:5.6.2"
+  checksum: 10c0/86df19254559785968b10873a23cc6361e5dfd5fc9b8774d7d0692c43a234a7ef91bd4a6832c441e15c6282f89d13515f8d979623952baf465442529ccc01509
   languageName: node
   linkType: hard
 
