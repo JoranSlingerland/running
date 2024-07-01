@@ -22,7 +22,7 @@
     "@repo/env": "*",
     "@repo/jwt": "*",
     "@repo/strava": "*",
-    "dayjs": "^1.11.10",
+    "dayjs": "^1.11.11",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "tsx": "^4.10.2"
