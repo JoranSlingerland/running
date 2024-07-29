@@ -67,7 +67,7 @@
     "@repo/eslint-config": "*",
     "@repo/types": "*",
     "@repo/typescript-config": "*",
-    "@types/node": "^20",
+    "@types/node": "^22",
     "@types/object-hash": "^3",
     "@types/react": "^18",
     "serve": "^14.2.1",
