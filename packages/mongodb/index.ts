@@ -5,3 +5,4 @@ export * from './src/streams';
 export * from './src/serviceStatus';
 export * from './src/setup/setup';
 export * from './src/helpers';
+export * from './src/goals';

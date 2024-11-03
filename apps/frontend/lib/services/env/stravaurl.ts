@@ -11,7 +11,7 @@ type Response = {
 
 export async function getStravaUrl(query: Query): Promise<string> {
   const response = await regularFetch<Query, undefined, Response>({
-    url: '/api/env/stravaurl',
+    url: '/api/data/env/stravaurl/',
     query,
     method: 'GET',
   });

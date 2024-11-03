@@ -3,6 +3,7 @@ import { Db } from 'mongodb';
 
 import {
   schemaUpdatesActivities,
+  schemaUpdatesGoals,
   schemaUpdatesServiceStatus,
   schemaUpdatesStreams,
   schemaUpdatesUsers,
@@ -20,13 +21,9 @@ dotenv.config();
 async function setupDatabase() {
   console.log('Setting up database...');
   const helper = new MongoDBHelper();
-  const client = await helper.rawClient();
-  const db = await helper.connect();
+  const db = helper.db();
 
   try {
-    await client.connect();
-    console.log('Connected to MongoDB');
-
     console.log('Creating collections...');
     await createCollections(db);
 
@@ -54,6 +51,7 @@ async function createCollections(db: Db) {
     'users',
     'streams',
     'serviceStatus',
+    'goals',
   ];
   for (const collection of collections) {
     const collectionList = await db
@@ -89,6 +87,7 @@ async function updateDocumentsSchema(db: Db) {
     { collection: 'users', updates: schemaUpdatesUsers },
     { collection: 'streams', updates: schemaUpdatesStreams },
     { collection: 'serviceStatus', updates: schemaUpdatesServiceStatus },
+    { collection: 'goals', updates: schemaUpdatesGoals },
   ];
 
   for (const schema of schemas) {
@@ -118,6 +117,12 @@ async function createIndexes(db: Db) {
     },
     {
       collectionName: 'streams',
+      indexDetails: [
+        { indexKeys: { userId: 1 }, indexOptions: { unique: false } },
+      ],
+    },
+    {
+      collectionName: 'goals',
       indexDetails: [
         { indexKeys: { userId: 1 }, indexOptions: { unique: false } },
       ],

@@ -7,24 +7,15 @@ import isBetween from 'dayjs/plugin/isBetween';
 import dayLocaleData from 'dayjs/plugin/localeData';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import utc from 'dayjs/plugin/utc';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useGeolocation } from 'rooks';
 
-import { ActivityBox } from '@elements/activityBox';
+import { ActivityCardWithDialog } from '@elements/activityCard';
 import Calendar from '@elements/calendar';
 import { useProps } from '@hooks/useProps';
-import useSessionStorageState from '@hooks/useSessionStorageState';
 import { GetActivitiesQuery, useActivities } from '@services/data/activities';
 import { useDailyWeather } from '@services/data/weather';
-import { Card, CardContent, CardHeader, CardTitle } from '@ui/card';
 import { Chart } from '@ui/chart';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@ui/dialog';
 import {
   Select,
   SelectContent,
@@ -39,15 +30,8 @@ import {
   getFirstMondayBeforeMonth,
   getFirstSundayAfterMonth,
 } from '@utils/dateTimeHelpers';
-import {
-  formatDistance,
-  formatNumber,
-  formatPace,
-  formatTime,
-  sportIcon,
-} from '@utils/formatting';
+import { formatDistance, formatNumber, formatTime } from '@utils/formatting';
 import { getPreferredTss } from '@utils/tss/helpers';
-import { isNotNullOrZero } from '@utils/utils';
 
 dayjs.extend(isBetween);
 dayjs.extend(dayLocaleData);
@@ -83,105 +67,26 @@ interface ChartData {
   [key: string]: ChartTotals[];
 }
 
-function CalendarItem({
-  item,
-  userSettings,
-}: {
-  item: Activity;
-  userSettings: UserSettings | undefined;
-}): JSX.Element {
-  const tss = getPreferredTss(
-    userSettings?.preferences?.preferred_tss_type,
-    item,
-  );
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Card className="my-2 h-full brightness-125 transition-transform duration-200 hover:scale-105">
-          <CardHeader>
-            <CardTitle>
-              <div className="flex items-center space-x-1">
-                {sportIcon(item.type)}
-                {`${item.type} at ${dayjs(item.start_date).format('HH:mm')}`}
-              </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="ml-2 flex flex-col text-left">
-            {isNotNullOrZero(item.elapsed_time) && (
-              <Text>
-                {formatTime({
-                  seconds: item.elapsed_time,
-                  addSeconds: false,
-                })}
-                {' hours'}
-              </Text>
-            )}
-            {isNotNullOrZero(item.distance) && (
-              <Text>
-                {formatDistance({
-                  meters: item.distance,
-                  units: userSettings?.preferences.units || 'metric',
-                })}
-              </Text>
-            )}
-            {isNotNullOrZero(tss.tss) && (
-              <Text>
-                {formatNumber({
-                  number: tss.tss,
-                  decimals: 0,
-                })}{' '}
-                TSS
-              </Text>
-            )}
-
-            {isNotNullOrZero(item.average_heartrate) && (
-              <Text>{item.average_heartrate} BPM</Text>
-            )}
-            {isNotNullOrZero(item.average_speed) && (
-              <Text>
-                {formatPace({
-                  metersPerSecond: item.average_speed,
-                  units: userSettings?.preferences.units || 'metric',
-                })}
-              </Text>
-            )}
-          </CardContent>
-        </Card>
-      </DialogTrigger>
-      <DialogContent className="max-h-[90%] max-w-[90%] overflow-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center space-x-1">
-            {sportIcon(item.type)}
-            {`${item.type} at ${dayjs(item.start_date).format('HH:mm')}`}
-          </DialogTitle>
-          <ActivityBox activityId={item._id} />
-        </DialogHeader>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
 function MetaItem({
   sportsData,
   sportTotals,
   sports,
-  selectedSport,
-  setSelectedSport,
   chartData,
-  chartTab,
-  setChartTab,
   units,
 }: {
   sportsData: SportData[];
   sportTotals: SportTotals[];
   sports: string[];
-  selectedSport: string | null;
-  setSelectedSport: (value: string) => void;
   chartData: ChartData;
-  chartTab?: 'tss' | 'distance' | 'moving_time';
-  setChartTab: (value: 'tss' | 'distance' | 'moving_time') => void;
   units: Units;
 }): JSX.Element {
+  const [selectedSport, setSelectedSport] = useState<string | null>(
+    sports.find((sport) => sport === 'run') || sports[0],
+  );
+  const [chartTab, setChartTab] = useState<'tss' | 'distance' | 'moving_time'>(
+    'tss',
+  );
+
   const tabValues = {
     tss: 'TSS',
     distance: 'Distance',
@@ -200,8 +105,8 @@ function MetaItem({
     <div>
       <div>
         <Text>Total</Text>
-        {sportTotals.map((item) => (
-          <>
+        {sportTotals.map((item, index) => (
+          <div key={index}>
             <Text size="large">
               {formatDistance({
                 meters: item.distance,
@@ -220,7 +125,7 @@ function MetaItem({
                 decimals: 0,
               })} TSS`}
             </Text>
-          </>
+          </div>
         ))}
 
         {chartHasData && (
@@ -288,8 +193,8 @@ function MetaItem({
                 .filter(
                   (item) => !selectedSport || item.sport === selectedSport,
                 )
-                .map((item) => (
-                  <>
+                .map((item, index) => (
+                  <div key={index}>
                     <div key={item.sport}>
                       {item.distance !== 0 && (
                         <Text>
@@ -341,7 +246,7 @@ function MetaItem({
                         </TabsContent>
                       ))}
                     </Tabs>
-                  </>
+                  </div>
                 ))}
           </>
         )}
@@ -364,12 +269,6 @@ export default function App() {
     endDate: getFirstSundayAfterMonth(currentDay).format(dateFormat),
   });
   const { userSettings } = useProps();
-  const [selectedSport, setSelectedSport] = useSessionStorageState<
-    string | null
-  >('calendarSelectedSport', null);
-  const [chartTab, setChartTab] = useSessionStorageState<
-    'tss' | 'distance' | 'moving_time'
-  >('calendarChartTab', 'tss');
 
   const { data: activitiesData, isLoading: activitiesIsLoading } =
     useActivities({
@@ -412,11 +311,12 @@ export default function App() {
 
     return (
       <>
-        {filtered.map((item, index) => (
-          <CalendarItem
-            key={index}
-            item={item}
+        {filtered.map((activity, index) => (
+          <ActivityCardWithDialog
+            activity={activity}
             userSettings={userSettings?.data}
+            key={index}
+            cardClassName="my-2 brightness-125 transition-transform duration-200 hover:scale-105"
           />
         ))}
       </>
@@ -427,41 +327,29 @@ export default function App() {
     const firstDay = value.startOf('week');
     const lastDay = value.endOf('week');
 
-    if (activitiesData === undefined) {
-      return <></>;
-    }
-
-    let filtered: ActivityWithTss[] = activitiesData
-      ? activitiesData.filter((item) => {
+    // Filter activities for the week
+    const filtered: ActivityWithTss[] = activitiesData
+      ? activitiesData.reduce((acc: ActivityWithTss[], item) => {
           const itemStartDate = dayjs
             .utc(item.start_date)
             .utcOffset(value.utcOffset());
-          return itemStartDate.isBetween(firstDay, lastDay, undefined, '[]');
-        })
+
+          if (itemStartDate.isBetween(firstDay, lastDay, undefined, '[]')) {
+            const tss = getPreferredTss(
+              userSettings?.data?.preferences.preferred_tss_type,
+              item,
+            );
+
+            acc.push({
+              ...item,
+              tss: tss.tss || 0,
+            });
+          }
+
+          return acc;
+        }, [])
       : [];
-
-    // Add preferred tss to each activity
-    filtered = filtered.map((item) => {
-      const tss = getPreferredTss(
-        userSettings?.data?.preferences.preferred_tss_type,
-        item,
-      );
-      return {
-        ...item,
-        tss: tss.tss || 0,
-      };
-    });
-
     const sports = [...new Set(filtered.map((item) => item.type))];
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useEffect(() => {
-      if (selectedSport === null && sports.length > 0) {
-        const runSport = sports.find((sport) => sport === 'run');
-        setSelectedSport(runSport ? runSport : sports[0]);
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     // Get distance and time for each sport
     const sportsData: SportData[] = sports.map((sport) => {
@@ -561,11 +449,7 @@ export default function App() {
             sportsData={sportsData}
             sportTotals={[totals]}
             sports={sports}
-            selectedSport={selectedSport}
-            setSelectedSport={setSelectedSport}
             chartData={chartData}
-            chartTab={chartTab}
-            setChartTab={setChartTab}
             units={userSettings?.data?.preferences.units || 'metric'}
           />
         )}

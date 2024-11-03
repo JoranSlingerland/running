@@ -4,7 +4,8 @@ import type { PreferencesForm } from '@repo/schemas';
 import { Loader2 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useForm } from 'react-hook-form';
-import { useDeepCompareEffect, useGeolocation } from 'rooks';
+import { useGeolocation } from 'rooks';
+import { useDeepCompareEffect } from 'rooks';
 import { toast } from 'sonner';
 
 import { useProps } from '@hooks/useProps';

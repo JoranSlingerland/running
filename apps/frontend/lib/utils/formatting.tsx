@@ -64,13 +64,19 @@ function formatTime({
   addMinutes = true,
   addHours = true,
 }: {
-  seconds: number;
+  seconds: number | undefined;
   addSeconds?: boolean;
   addMinutes?: boolean;
   addHours?: boolean;
 }) {
-  const [hours, minutes, remainingSeconds] =
-    convertSecondsToTimeComponents(seconds);
+  if (seconds === undefined) {
+    seconds = 0;
+  }
+  const isNegative = seconds < 0;
+
+  const [hours, minutes, remainingSeconds] = convertSecondsToTimeComponents(
+    Math.abs(seconds),
+  );
 
   let formattedTime = '';
 
@@ -92,6 +98,10 @@ function formatTime({
   // Remove trailing colon if seconds are not included
   if (!addSeconds) {
     formattedTime = formattedTime.slice(0, -1);
+  }
+
+  if (isNegative) {
+    formattedTime = `-${formattedTime}`;
   }
 
   return formattedTime;
@@ -163,32 +173,33 @@ function formatNumber({
   return number.toFixed(decimals);
 }
 
-const sportIcon = (sport: string): JSX.Element => {
-  switch (sport) {
-    case 'Run':
+const SportIcon = ({ sport }: { sport: string | undefined }): JSX.Element => {
+  switch (sport?.toLowerCase()) {
+    case 'run':
       return <Icon icon="directions_run" />;
-    case 'Ride':
+    case 'ride':
       return <Icon icon="directions_bike" />;
-    case 'Swim':
+    case 'swim':
       return <Icon icon="pool" />;
-    case 'Walk':
+    case 'walk':
       return <Icon icon="directions_walk" />;
-    case 'Hike':
+    case 'hike':
       return <Icon icon="terrain" />;
-    case 'Workout':
+    case 'workout':
       return <Icon icon="fitness_center" />;
-    case 'WeightTraining':
+    case 'weighttraining':
       return <Icon icon="fitness_center" />;
-    case 'Yoga':
+    case 'yoga':
       return <Icon icon="self_improvement" />;
-    case 'VirtualRide':
+    case 'virtualride':
       return <Icon icon="directions_bike" />;
-    case 'VirtualRun':
+    case 'virtualrun':
       return <Icon icon="directions_run" />;
     default:
       return <></>;
   }
 };
+
 function formatCadence(cadence: number | undefined, addUnit = true) {
   if (cadence) {
     cadence = cadence * 2;
@@ -197,15 +208,26 @@ function formatCadence(cadence: number | undefined, addUnit = true) {
   return addUnit ? `${value} spm` : `${value}`;
 }
 
+function formatPercent({
+  value,
+  decimals = 2,
+}: {
+  value: number;
+  decimals?: number;
+}) {
+  return `${value.toFixed(decimals)}%`;
+}
+
 export {
   formatDistance,
   formatTime,
   formatPace,
   formatHeartRate,
   formatNumber,
-  sportIcon,
+  SportIcon,
   formatDateTime,
   unitMapper,
   formatSpeed,
   formatCadence,
+  formatPercent,
 };

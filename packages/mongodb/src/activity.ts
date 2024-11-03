@@ -7,7 +7,7 @@ async function getLastActivityFromMongoDB(
   userId: string,
 ): Promise<Activity | undefined> {
   try {
-    const collection = await new MongoDBHelper().getCollection<Activity>(
+    const collection = new MongoDBHelper().getCollection<Activity>(
       'activities',
     );
 
@@ -35,7 +35,7 @@ async function getActivityFromMongoDB(
   _id: string,
 ): Promise<Activity | undefined> {
   try {
-    const collection = await new MongoDBHelper().getCollection<Activity>(
+    const collection = new MongoDBHelper().getCollection<Activity>(
       'activities',
     );
 

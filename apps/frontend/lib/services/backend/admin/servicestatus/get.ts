@@ -14,7 +14,7 @@ function useServiceStatus({
   enabled?: boolean;
 }) {
   return useFetch<undefined, Query, IsRunningStatus>({
-    url: '/api/admin/serviceStatus',
+    url: '/api/admin/serviceStatus/',
     method: 'GET',
     query,
     enabled,

@@ -79,3 +79,17 @@ export const schemaUpdatesServiceStatus: SchemaUpdate[] = [
     },
   },
 ];
+
+export const schemaUpdatesGoals: SchemaUpdate[] = [
+  {
+    version: 0.1,
+    update: async (db: Db) => {
+      return await db
+        .collection('goals')
+        .updateMany(
+          { version: { $exists: false } },
+          { $set: { version: 0.1 } },
+        );
+    },
+  },
+];

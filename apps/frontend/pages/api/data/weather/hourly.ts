@@ -27,8 +27,8 @@ export default async function handler(
 
 async function handleGet(res: NextApiResponse, req: NextApiRequestUnknown) {
   const date = getQueryParam(req.query, 'date') || undefined;
-  const longitude = getQueryParam(req.query, 'longitude') || undefined;
-  const latitude = getQueryParam(req.query, 'latitude') || undefined;
+  const longitude = Number(getQueryParam(req.query, 'longitude')) || undefined;
+  const latitude = Number(getQueryParam(req.query, 'latitude')) || undefined;
 
   if (!longitude || !latitude || !date) {
     res.status(400).json({ message: 'Missing required query parameters' });

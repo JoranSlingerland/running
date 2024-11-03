@@ -32,11 +32,19 @@ async function handleGet(
 ) {
   const startDate = getQueryParam(req.query, 'startDate') || '';
   const endDate = getQueryParam(req.query, 'endDate') || '';
-  const activities = await activitiesFromMongoDB({
-    id,
-    startDate,
-    endDate,
-  });
+  const activities =
+    (await activitiesFromMongoDB({
+      id,
+      startDate,
+      endDate,
+    })) || [];
 
-  return res.status(200).json(activities);
+  return res.status(200).json(
+    activities.map((activity) => ({
+      distance: activity.distance,
+      moving_time: activity.moving_time,
+      start_date: activity.start_date,
+      type: activity.type,
+    })),
+  );
 }

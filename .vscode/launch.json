@@ -5,7 +5,8 @@
       "name": "Next.js: debug server-side",
       "type": "node-terminal",
       "request": "launch",
-      "command": "yarn run dev"
+      "command": "yarn run dev",
+      "localRoot": "${workspaceFolder}/apps/frontend"
     },
     {
       "name": "Next.js: debug client-side",
@@ -18,6 +19,7 @@
       "type": "node-terminal",
       "request": "launch",
       "command": "yarn run dev",
+      "localRoot": "${workspaceFolder}/apps/frontend",
       "serverReadyAction": {
         "pattern": "started server on .+, url: (https?://.+)",
         "uriFormat": "%s",
@@ -29,7 +31,8 @@
       "type": "node",
       "request": "attach",
       "port": 9229,
-      "preLaunchTask": "func: host start"
+      "preLaunchTask": "func: host start",
+      "localRoot": "${workspaceFolder}/apps/backend"
     }
   ]
 }

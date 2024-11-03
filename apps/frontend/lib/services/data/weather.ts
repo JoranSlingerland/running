@@ -16,8 +16,14 @@ function useDailyWeather({
   enabled?: boolean;
   background?: boolean;
 }) {
+  query = {
+    ...query,
+    longitude: Math.round(query.longitude * 100) / 100,
+    latitude: Math.round(query.latitude * 100) / 100,
+  };
+
   return useFetch<undefined, DailyWeatherQuery, DailyWeather>({
-    url: '/api/data/weather/daily',
+    url: '/api/data/weather/daily/',
     method: 'GET',
     query,
     enabled,
@@ -26,7 +32,6 @@ function useDailyWeather({
       enabled: true,
       ttl: 4 * 1000 * 60 * 60,
       storageType: 'localStorage',
-      customKey: 'weather',
     },
   });
 }
@@ -36,10 +41,16 @@ function useHourlyWeather({
   enabled = true,
   background = false,
 }: {
-  query?: HourlyWeatherQuery;
+  query: HourlyWeatherQuery;
   enabled?: boolean;
   background?: boolean;
 }) {
+  query = {
+    ...query,
+    longitude: Math.round(query.longitude * 100) / 100,
+    latitude: Math.round(query.latitude * 100) / 100,
+  };
+
   return useFetch<undefined, HourlyWeatherQuery, HourlyWeather>({
     url: '/api/data/weather/hourly',
     method: 'GET',

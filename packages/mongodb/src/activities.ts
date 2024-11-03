@@ -20,9 +20,7 @@ async function activitiesFromMongoDB({
   startDate?: string;
   endDate?: string;
 }): Promise<Activity[] | undefined> {
-  const collection = await new MongoDBHelper().getCollection<Activity>(
-    'activities',
-  );
+  const collection = new MongoDBHelper().getCollection<Activity>('activities');
 
   const query: Query = { userId: id };
 
@@ -50,7 +48,7 @@ async function upsertActivitiesToMongoDB(
   activities: Activity[],
 ): Promise<void> {
   try {
-    const collection = await new MongoDBHelper().getCollection<Activity>(
+    const collection = new MongoDBHelper().getCollection<Activity>(
       'activities',
     );
 
@@ -81,7 +79,7 @@ async function getNonFullDataActivitiesFromMongoDB(
   userId?: string,
 ): Promise<Activity[] | undefined> {
   try {
-    const collection = await new MongoDBHelper().getCollection<Activity>(
+    const collection = new MongoDBHelper().getCollection<Activity>(
       'activities',
     );
 

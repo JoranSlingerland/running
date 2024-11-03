@@ -16,6 +16,7 @@ import {
   YAxis,
   YAxisProps,
 } from 'recharts';
+import { CategoricalChartProps } from 'recharts/types/chart/generateCategoricalChart';
 import { BaseAxisProps } from 'recharts/types/util/types';
 
 import { ChartColor, chartColorsList, chartColorsMap } from '@ui/colors';
@@ -24,18 +25,44 @@ import { Skeleton } from '@ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@ui/toggle-group';
 import { Text } from '@ui/typography';
 
+type ChartLabel = {
+  position:
+    | 'top'
+    | 'left'
+    | 'right'
+    | 'bottom'
+    | 'inside'
+    | 'outside'
+    | 'insideLeft'
+    | 'insideRight'
+    | 'insideTop'
+    | 'insideBottom'
+    | 'insideTopLeft'
+    | 'insideBottomLeft'
+    | 'insideTopRight'
+    | 'insideBottomRight'
+    | 'insideStart'
+    | 'insideEnd'
+    | 'end';
+  minLabelGap?: number;
+  skipFirst?: boolean;
+};
+
 interface Areas extends AreaProps {
   useGradient?: boolean;
   isActive?: boolean;
+  label?: ChartLabel;
 }
 
 interface Bars extends BarProps {
   useGradient?: boolean;
   isActive?: boolean;
+  label?: ChartLabel;
 }
 
 interface Lines extends LineProps {
   isActive?: boolean;
+  label?: ChartLabel;
 }
 
 interface ToolTips extends TooltipProps<number, string> {
@@ -52,6 +79,48 @@ type Formatters = {
   dataKeys: string[];
 };
 
+function findFormatter(formatters: Formatters[] | undefined, dataKey: unknown) {
+  if (typeof dataKey !== 'string') {
+    return undefined;
+  }
+
+  return formatters?.find((formatter) => formatter.dataKeys.includes(dataKey))
+    ?.formatter;
+}
+
+function formatLabel(
+  value: number | string,
+  label: ChartLabel | undefined,
+  dataKey: Areas['dataKey'] | Bars['dataKey'] | Lines['dataKey'] | undefined,
+  formatters: Formatters[] | undefined,
+  index: number,
+  incrementIndexCallBack: () => void,
+  resetIndexCallBack: () => void,
+  dataLength: number,
+) {
+  let shouldSkip = false;
+  if (
+    !label ||
+    !formatters ||
+    (label?.minLabelGap && index % (label?.minLabelGap + 1) !== 0) ||
+    (label?.skipFirst && index === 0)
+  ) {
+    shouldSkip = true;
+  }
+  incrementIndexCallBack();
+  if (index + 1 === dataLength) {
+    resetIndexCallBack();
+  }
+
+  if (shouldSkip) {
+    return undefined;
+  }
+
+  const formatter = findFormatter(formatters, dataKey);
+
+  return formatter ? formatter(value, index - 1) : value;
+}
+
 export function Chart<T>({
   data,
   areas = [],
@@ -66,6 +135,7 @@ export function Chart<T>({
   toggle,
   dataIndexCallback,
   formatters,
+  composedChartProps,
 }: {
   data: T[];
   areas?: Areas[];
@@ -88,6 +158,7 @@ export function Chart<T>({
     initial: string[];
   };
   formatters?: Formatters[];
+  composedChartProps?: CategoricalChartProps;
 }) {
   const { resolvedTheme } = useTheme();
   const keys = [...areas, ...bars, ...lines].map(
@@ -185,7 +256,7 @@ export function Chart<T>({
         </ToggleGroup>
       )}
 
-      <ResponsiveContainer className="size-full">
+      <ResponsiveContainer className="size-full overflow-visible">
         <ComposedChart
           data={data}
           onMouseMove={(e) => {
@@ -193,6 +264,7 @@ export function Chart<T>({
               dataIndexCallback(e.activeTooltipIndex || 0);
             }
           }}
+          {...composedChartProps}
         >
           {/* Setup Gradients */}
           <defs>
@@ -222,7 +294,7 @@ export function Chart<T>({
           {/* Setup Axises */}
           {xAxis.map((xAxis, index) => (
             <XAxis
-              key={index}
+              key={`${index}-x-axis`}
               tickLine={xAxis.tickLine || false}
               axisLine={xAxis.axisLine || false}
               tick={
@@ -232,11 +304,7 @@ export function Chart<T>({
               }
               className="pt-2"
               padding={xAxis.padding || { left: 10, right: 10 }}
-              tickFormatter={
-                formatters?.find((formatter) =>
-                  formatter.dataKeys.includes(xAxis.dataKey as string),
-                )?.formatter
-              }
+              tickFormatter={findFormatter(formatters, xAxis.dataKey)}
               {...xAxis}
             />
           ))}
@@ -245,7 +313,7 @@ export function Chart<T>({
               (!yAxis.dataKey ||
                 activeKeys.includes(yAxis.dataKey.toString())) && (
                 <YAxis
-                  key={index}
+                  key={`${index}-y-axis`}
                   tickLine={yAxis.tickLine || false}
                   axisLine={yAxis.axisLine || false}
                   tick={{
@@ -254,11 +322,7 @@ export function Chart<T>({
                   width={yAxis.width || 60}
                   {...yAxis}
                   padding={yAxis.padding || { top: 10, bottom: 10 }}
-                  tickFormatter={
-                    formatters?.find((formatter) =>
-                      formatter.dataKeys.includes(yAxis.dataKey as string),
-                    )?.formatter
-                  }
+                  tickFormatter={findFormatter(formatters, yAxis.dataKey)}
                 />
               ),
           )}
@@ -295,7 +359,7 @@ export function Chart<T>({
                           )?.formatter;
                           return (
                             <div
-                              key={index}
+                              key={`${index}-tooltip`}
                               className="flex items-center align-middle"
                             >
                               <div
@@ -329,9 +393,10 @@ export function Chart<T>({
           {/* Setup Charts */}
           {areas.map((area, index) => {
             keyCount += 1;
+            let labelIndex = 0;
             return (
               <Area
-                key={keyCount}
+                key={`${keyCount}-area`}
                 type="monotone"
                 dataKey={area.isActive ? area.dataKey : ''}
                 stackId={index}
@@ -345,15 +410,31 @@ export function Chart<T>({
                 strokeWidth={area.strokeWidth || 2}
                 fillOpacity={area.fillOpacity || 1}
                 animationDuration={area.animationDuration}
+                label={{
+                  formatter: (value: number | string) => {
+                    return formatLabel(
+                      value,
+                      area.label,
+                      area.dataKey,
+                      formatters,
+                      labelIndex,
+                      () => (labelIndex += 1),
+                      () => (labelIndex = 0),
+                      data.length,
+                    );
+                  },
+                  position: area.label?.position || 'top',
+                }}
               />
             );
           })}
 
           {bars.map((bar) => {
             keyCount += 1;
+            let labelIndex = 0;
             return (
               <Bar
-                key={keyCount}
+                key={`${keyCount}-bar`}
                 dataKey={bar.isActive ? bar.dataKey : ''}
                 fill={
                   bar.useGradient
@@ -362,20 +443,58 @@ export function Chart<T>({
                 }
                 animationDuration={bar.animationDuration}
                 stackId={bar.stackId}
+                label={{
+                  formatter: (value: number | string) =>
+                    formatLabel(
+                      value,
+                      bar.label,
+                      bar.dataKey,
+                      formatters,
+                      labelIndex,
+                      () => {
+                        labelIndex += 1;
+                      },
+                      () => {
+                        labelIndex = 0;
+                      },
+                      data.length,
+                    ),
+                  position: bar.label?.position || 'top',
+                }}
               />
             );
           })}
 
           {lines.map((line) => {
             keyCount += 1;
+            let labelIndex = 0;
             return (
               <Line
-                key={keyCount}
+                key={`${keyCount}-line`}
                 type="monotone"
                 dataKey={line.isActive ? line.dataKey : ''}
                 stroke={chartColorsMap[colors[keyCount % colors.length]]}
                 dot={line.dot || false}
                 strokeWidth={line.strokeWidth || 2}
+                animationDuration={line.animationDuration}
+                label={{
+                  formatter: (value: number | string) =>
+                    formatLabel(
+                      value,
+                      line.label,
+                      line.dataKey,
+                      formatters,
+                      labelIndex,
+                      () => {
+                        labelIndex += 1;
+                      },
+                      () => {
+                        labelIndex = 0;
+                      },
+                      data.length,
+                    ),
+                  position: line.label?.position || 'top',
+                }}
               />
             );
           })}

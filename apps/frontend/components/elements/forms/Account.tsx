@@ -3,11 +3,11 @@ import { accountForm } from '@repo/schemas';
 import type { AccountForm } from '@repo/schemas';
 import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { useDeepCompareEffect } from 'rooks';
 
 import { heartRateZoneColumns } from '@elements/columns/heartRateZoneColumns';
 import { paceZoneColumns } from '@elements/columns/paceZoneColumns';
 import { DataTable } from '@elements/shadcnTable';
+import { useDeepCompareEffect } from '@hooks/useDeepCompareEffect';
 import { useProps } from '@hooks/useProps';
 import { addUserData } from '@services/user/post';
 import { Button } from '@ui/button';
@@ -217,12 +217,12 @@ export function AccountForm() {
                     <div className="flex items-center">
                       <Input
                         disabled={userSettings?.isLoading}
-                        className="w-32"
+                        className="w-24"
                         type="number"
                         placeholder="Max"
+                        affix="BPM"
                         {...field}
                       />
-                      <span className="ml-2">BPM</span>
                     </div>
                   </FormControl>
                 </FormItem>
@@ -241,9 +241,9 @@ export function AccountForm() {
                         className="w-24"
                         type="number"
                         placeholder="Resting"
+                        affix="BPM"
                         {...field}
                       />
-                      <span className="ml-2">BPM</span>
                     </div>
                   </FormControl>
                 </FormItem>
@@ -262,9 +262,9 @@ export function AccountForm() {
                         className="w-24"
                         type="number"
                         placeholder="Threshold"
+                        affix="BPM"
                         {...field}
                       />
-                      <span className="ml-2">BPM</span>
                     </div>
                   </FormControl>
                 </FormItem>
@@ -286,12 +286,19 @@ export function AccountForm() {
               <FormItem>
                 <FormLabel>Threshold Pace</FormLabel>
                 <FormControl>
-                  <Input
-                    disabled={userSettings?.isLoading}
-                    className="w-32"
-                    placeholder="Threshold"
-                    {...field}
-                  />
+                  <div className="flex items-center">
+                    <Input
+                      disabled={userSettings?.isLoading}
+                      className="w-32"
+                      placeholder="Threshold"
+                      affix={
+                        userSettings?.data?.preferences.units === 'imperial'
+                          ? 'min/mi'
+                          : 'min/km'
+                      }
+                      {...field}
+                    />
+                  </div>
                 </FormControl>
               </FormItem>
             )}

@@ -4,9 +4,7 @@ import { MongoDBHelper } from './helpers';
 
 async function upsertStreamsToMongoDB(streams: Streams[]): Promise<void> {
   try {
-    const collection = await new MongoDBHelper().getCollection<Streams>(
-      'streams',
-    );
+    const collection = new MongoDBHelper().getCollection<Streams>('streams');
 
     const operations = streams.map((stream) => {
       const { _id, ...dataWithoutId } = stream;
@@ -31,9 +29,7 @@ async function upsertStreamsToMongoDB(streams: Streams[]): Promise<void> {
 
 async function getStreamFromMongoDB(_id: string): Promise<Streams | undefined> {
   try {
-    const collection = await new MongoDBHelper().getCollection<Streams>(
-      'streams',
-    );
+    const collection = new MongoDBHelper().getCollection<Streams>('streams');
 
     const stream = await collection.findOne({ _id: { $eq: _id } });
 

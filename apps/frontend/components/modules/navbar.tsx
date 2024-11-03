@@ -21,9 +21,15 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@ui/sheet';
+import { selectedClassName } from '@utils/cssPresets';
 import { cn } from '@utils/shadcn';
 
 const menuItems = [
+  {
+    key: '/authenticated/dashboard/',
+    icon: <Icon icon={'dashboard'} />,
+    label: 'Dashboard',
+  },
   {
     key: '/authenticated/calendar/',
     icon: <Icon icon={'calendar_month'} />,
@@ -44,14 +50,6 @@ const logOut = {
   label: 'Logout',
 };
 
-function getLinkClassName(key: string, current: string) {
-  return `flex items-center text-sm font-medium transition-colors rounded-xl h-9 p-2 ${
-    key === current
-      ? 'bg-zinc-100 text-zinc-900 shadow-sm hover:bg-zinc-100/80 dark:bg-zinc-800 dark:text-zinc-50 dark:hover:bg-zinc-800/80'
-      : 'hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-50'
-  }`;
-}
-
 function MainNav({
   className,
   current,
@@ -67,7 +65,11 @@ function MainNav({
         <Link
           key={item.key}
           href={item.key}
-          className={getLinkClassName(item.key, current)}
+          className={selectedClassName(
+            item.key,
+            current,
+            'text-sm font-medium h-9 p-2 rounded-xl',
+          )}
           onClick={() => setCurrent(item.key)}
         >
           {item.icon}
@@ -98,7 +100,7 @@ function UserNav({
           disabled={!isAuthenticated}
         >
           <Avatar className="size-8">
-            <AvatarImage src={avatarImage || ''} />
+            <AvatarImage src={avatarImage || ''} alt="Profile Picture" />
             <AvatarFallback>
               {avatarFallback && avatarFallback[0]}
             </AvatarFallback>
@@ -125,7 +127,13 @@ function UserNav({
           ))}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => signOut()}>
+        <DropdownMenuItem
+          onClick={() =>
+            signOut({
+              callbackUrl: '/',
+            })
+          }
+        >
           <div className="flex items-center text-sm font-medium">
             {logOut.icon}
             <span className="ml-2">{logOut.label}</span>
@@ -159,7 +167,11 @@ function SheetNav({
             <Link
               key={item.key}
               href={item.key}
-              className={getLinkClassName(item.key, current)}
+              className={selectedClassName(
+                item.key,
+                current,
+                'text-sm font-medium h-9 p-2 rounded-xl',
+              )}
               onClick={() => setCurrent(item.key)}
             >
               {item.icon}
@@ -168,8 +180,16 @@ function SheetNav({
           ))}
           <Separator />
           <div
-            className={getLinkClassName('', current)}
-            onClick={() => signOut()}
+            className={selectedClassName(
+              '',
+              current,
+              'text-sm font-medium h-9 p-2 rounded-xl',
+            )}
+            onClick={() =>
+              signOut({
+                callbackUrl: '/',
+              })
+            }
           >
             {logOut.icon}
             <span className="ml-2">{logOut.label}</span>

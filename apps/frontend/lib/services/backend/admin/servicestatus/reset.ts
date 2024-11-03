@@ -6,7 +6,7 @@ type Query = {
 
 function resetServiceStatus({ query }: { query: Query }) {
   regularFetch({
-    url: '/api/admin/serviceStatus/reset',
+    url: '/api/admin/serviceStatus/reset/',
     message: {
       enabled: true,
       success: 'Reset service status',

@@ -7,9 +7,7 @@ async function userSettingsFromMongoDB(
   _id: string,
 ): Promise<UserSettings | undefined> {
   try {
-    const collection = await new MongoDBHelper().getCollection<UserSettings>(
-      'users',
-    );
+    const collection = new MongoDBHelper().getCollection<UserSettings>('users');
 
     const userSettings = await collection.findOne({
       _id,
@@ -30,9 +28,7 @@ async function upsertUserSettingsToMongoDB(
   body: unknown,
 ): Promise<{ result: string; isError: boolean }> {
   try {
-    const collection = await new MongoDBHelper().getCollection<UserSettings>(
-      'users',
-    );
+    const collection = new MongoDBHelper().getCollection<UserSettings>('users');
 
     const validated = userSettingsSchema.safeParse(body);
     if (!validated.success) {

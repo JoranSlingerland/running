@@ -2,7 +2,7 @@ import { regularFetch } from '@utils/api';
 
 function enhanceStravaData() {
   regularFetch({
-    url: '/api/admin/strava/enhance',
+    url: '/api/admin/strava/enhance/',
     message: {
       enabled: true,
       success: 'Activity data enhanced successfully',

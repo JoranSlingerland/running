@@ -47,8 +47,8 @@ export interface DailyWeather extends MetaData {
 
 export type DailyWeatherQuery = {
   forecast_days: number;
-  longitude: string | number;
-  latitude: string | number;
+  longitude: number;
+  latitude: number;
 };
 
 export interface HourlyWeather extends MetaData {
@@ -74,7 +74,7 @@ export interface HourlyWeather extends MetaData {
 }
 
 export type HourlyWeatherQuery = {
-  longitude: string | number;
-  latitude: string | number;
+  longitude: number;
+  latitude: number;
   date: string;
 };

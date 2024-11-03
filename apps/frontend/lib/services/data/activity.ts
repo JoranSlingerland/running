@@ -16,7 +16,7 @@ function useActivity({
   background?: boolean;
 }) {
   return useFetch<undefined, GetActivityQuery, Activity>({
-    url: '/api/data/activity',
+    url: '/api/data/activity/',
     method: 'GET',
     query,
     enabled,

@@ -16,7 +16,7 @@ function useStreams({
   background?: boolean;
 }) {
   return useFetch<undefined, GetStreamsQuery, Streams>({
-    url: '/api/data/stream',
+    url: '/api/data/stream/',
     method: 'GET',
     query,
     enabled,
